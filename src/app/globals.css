@@ -1,0 +1,17 @@
+body {
+  text-align: center;
+  vertical-align: middle;
+  height: 100%;
+}
+
+input[type="numeric"] {
+  border: 1px solid grey;
+  border-radius: 8px;
+}
+
+li {
+  display: inline-block;
+  list-style: none;
+  margin-left: 8px;
+
+}
