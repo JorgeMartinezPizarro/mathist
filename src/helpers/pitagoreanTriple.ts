@@ -1,7 +1,10 @@
 import { children, pitagoreanTriple } from "./pitagoreanTree"
 
-export default (n: number): number[] => {
+export default (n: number) => {
     const x = n.toString(3)
+
+
+    console.log(x)
 
     const initialFibonacciSquare = [[1,1],[3,2]]
 
@@ -16,7 +19,7 @@ export default (n: number): number[] => {
     }
 
 
-    return pitagoreanTriple(currentFS)
+    return {path: x.split("").reverse().join(""), triple: pitagoreanTriple(currentFS)}
 
 
 }

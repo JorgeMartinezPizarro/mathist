@@ -31,8 +31,11 @@ export default () => {
     console.log(items)
 
     return <div>
+        <p>Enter a number below to obtain its factorization into primes</p>
         <TextField
             className="input"
+            label="Number"
+
             type="number"
             disabled={loading}
             value={value}

@@ -13,6 +13,6 @@ export async function GET(request: Request) {
 
 
 
-    const a = pitagoreanTriple(LIMIT)
-  return Response.json( a )
+    const {path, triple} = pitagoreanTriple(LIMIT)
+  return Response.json( {path, triple} )
 }

@@ -12,7 +12,7 @@ export default (n: number) => {
     const result = arrayOfSquares.map(square => pitagoreanTriple(square))
     
 
-    let array = [result.slice(0, 1)]
+    let array = []
     
     for (var i = 0; i<n; i++) {
 
@@ -24,6 +24,8 @@ export default (n: number) => {
         
         array.push(x)
     }
+
+    console.log(array)
 
     return {triples: array, time: Date.now() - start};
 }
