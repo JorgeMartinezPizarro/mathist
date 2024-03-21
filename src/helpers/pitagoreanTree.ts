@@ -1,3 +1,5 @@
+
+
 export default (n: number) => {
     
     const start = Date.now()
@@ -24,8 +26,6 @@ export default (n: number) => {
         
         array.push(x)
     }
-
-    console.log(array)
 
     return {triples: array, time: Date.now() - start};
 }

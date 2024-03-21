@@ -13,7 +13,7 @@ export default () => {
     const [triple, setTriple] = useState([3,4,5])
 
 
-    const size = 4
+    const size = 5
 
     const handleSend = () => {
         fetch("/api/pitagoreanTriple?" + (new URLSearchParams( {LIMIT: number})).toString())
@@ -37,7 +37,7 @@ export default () => {
 
     return <div>
         <div>
-            <img src="/image.png" height={200}  />
+            <img src="/image4.png" height={200}  />
             <img src="/image2.png" height={200}  />
         </div>
         <TextField

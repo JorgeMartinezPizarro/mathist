@@ -28,10 +28,11 @@ export default () => {
 
     const items = (number && number.map(nr => BigInt(nr).toString()))
 
-    console.log(items)
-
     return <div>
         <p>Enter a number below to obtain its factorization into primes</p>
+        <hr />
+        <img height={200} src="/image3.png" />
+        <hr />
         <TextField
             className="input"
             label="Number"
@@ -44,10 +45,11 @@ export default () => {
                     setValue(event.target.value)
             })}
         />
-        <Button disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
+        <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
         {items && JSON.stringify(items, null, 2)}
         {loading && <CircularProgress/>}
         <div>Done in {duration} ms</div>
     </div>
 
 }
+
