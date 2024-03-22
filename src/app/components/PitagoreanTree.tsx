@@ -30,9 +30,6 @@ export default () => {
             .then(res => res.json())
             .then(res => setTree(res))
             .catch(error => alert("WTF"))
-
-        
-        
     }, [])
 
     return <div>
