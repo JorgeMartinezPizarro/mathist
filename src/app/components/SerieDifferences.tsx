@@ -44,9 +44,13 @@ export default function PrimesDifferences() {
       })
     }, [value, amount])
 
+  const LENGTH = 25;
+
   return (
     <div className="main">
-        <p>Select a serie S and a length N to obtain it's serie of differences N-times. Some of these series of series have regularities, where others not.</p>
+        <p>Select a serie S and a length N to obtain it's serie of differences N-times. </p>
+        <p>Some of these series of series have regularities, where others not.</p>
+        <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
       {error && JSON.stringify(error, null, 2)}
       Calculated in {duration} ms
       <Autocomplete
@@ -79,13 +83,15 @@ export default function PrimesDifferences() {
             }}
         />
       <Button onClick={()=> {
-        if (amount > 100) {
-            setError("The length cannot be bigger than " + 100)
+        if (amount > 1000) {
+            setError("The length cannot be bigger than " + 1000)
             setNumber(false)
         }
         else
             handleSubmit()
       }} variant="contained">Submit</Button>
+      <hr />
+      Below the 10 x 10 first elements
       <hr />
       {loading && (
         <CircularProgress />
@@ -93,7 +99,7 @@ export default function PrimesDifferences() {
       {number && (
         <table>
           <tbody>
-            {number.map(row => <tr key={JSON.stringify(row)}>{row.map((nr, idx) => <td key={idx}>{nr && BigInt(nr).toString()}</td>)}</tr>)}
+            {number.slice(0, LENGTH).map(row => <tr key={JSON.stringify(row)}>{row.slice(0, LENGTH).map((nr, idx) => <td key={idx}>{nr && BigInt(nr).toString()}</td>)}</tr>)}
           </tbody>
         </table>
       )}

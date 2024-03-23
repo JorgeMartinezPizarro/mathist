@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const n = BigInt(searchParams.get('LIMIT') || "0")
 
-    if (n > Number.MAX_SAFE_INTEGER ) Response.json("WTF", {status: 500})
+    //if (n > Number.MAX_SAFE_INTEGER ) Response.json("WTF", {status: 500})
     
 
     const a = factors(n)

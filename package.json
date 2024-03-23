@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.15.14",
+    "bitset": "^5.1.1",
     "chart.js": "^4.4.2",
     "nano-time": "^1.0.0",
     "next": "14.1.3",

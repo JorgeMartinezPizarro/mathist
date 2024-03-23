@@ -1,6 +1,8 @@
 import { children, pitagoreanTriple } from "./pitagoreanTree"
 
 export default (n: number) => {
+    const start = Date.now();
+
     const x = n.toString(3)
 
 
@@ -14,7 +16,7 @@ export default (n: number) => {
     }
 
 
-    return {path: x.split("").reverse().join(""), triple: pitagoreanTriple(currentFS)}
+    return {path: x.split("").reverse().join(""), triple: pitagoreanTriple(currentFS), square: currentFS, time: Date.now()-start}
 
 
 }

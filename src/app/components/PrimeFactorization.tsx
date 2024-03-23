@@ -29,6 +29,7 @@ export default () => {
     const items = (number && number.map(nr => BigInt(nr).toString()))
 
     return <div>
+        
         <p>Enter a number below to obtain its factorization into primes</p>
         <hr />
         <img height={200} src="/image3.png" />
@@ -36,7 +37,6 @@ export default () => {
         <TextField
             className="input"
             label="Number"
-
             type="number"
             disabled={loading}
             value={value}

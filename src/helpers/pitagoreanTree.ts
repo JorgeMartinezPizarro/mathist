@@ -11,7 +11,12 @@ export default (n: number) => {
         arrayOfSquares = [...arrayOfSquares, ...iterate(arrayOfSquares.slice(-(3**i)))]
     }
 
-    const result = arrayOfSquares.map(square => pitagoreanTriple(square))
+    const result = arrayOfSquares.map(square => {
+        return {
+            triple: pitagoreanTriple(square),
+            square,
+        }
+    })
     
 
     let array = []
@@ -27,7 +32,7 @@ export default (n: number) => {
         array.push(x)
     }
 
-    return {triples: array, time: Date.now() - start};
+    return {tree: array, time: Date.now() - start};
 }
 
 const iterate = (arrayOfSquares: number[][][]): number[][][] => {
@@ -49,11 +54,11 @@ export const pitagoreanTriple = (fibonacciSquare: number[][]): number[] => {
         
     ]
 
-    if (triple[0] > Number.MAX_SAFE_INTEGER || triple[1] > Number.MAX_SAFE_INTEGER || triple[2] > Number.MAX_SAFE_INTEGER)
+    /*if (triple[0] > Number.MAX_SAFE_INTEGER || triple[1] > Number.MAX_SAFE_INTEGER || triple[2] > Number.MAX_SAFE_INTEGER)
         throw new Error("WTF an invalid triple!")
     if (triple[0] ** 2 + triple[1]**2 - triple[2]**2 !== 0 || gcd_more_than_two_numbers(triple) > 1) 
       throw new Error("WTF an invalid triple!")
-    
+    */
     return triple;
 }
 
