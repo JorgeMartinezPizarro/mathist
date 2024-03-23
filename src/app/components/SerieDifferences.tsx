@@ -44,7 +44,7 @@ export default function PrimesDifferences() {
       })
     }, [value, amount])
 
-  const LENGTH = 25;
+  const LENGTH = 50;
 
   return (
     <div className="main">
@@ -79,19 +79,15 @@ export default function PrimesDifferences() {
             disabled={loading}
             value={amount}
             onChange={(event) => {
-                setAmount(event.target.value)
+                if (event.target.value.length < 4)
+                  setAmount(parseInt(event.target.value))
             }}
         />
       <Button onClick={()=> {
-        if (amount > 1000) {
-            setError("The length cannot be bigger than " + 1000)
-            setNumber(false)
-        }
-        else
-            handleSubmit()
+        handleSubmit()
       }} variant="contained">Submit</Button>
       <hr />
-      Below the 10 x 10 first elements
+      Below the {LENGTH} x {LENGTH} first elements
       <hr />
       {loading && (
         <CircularProgress />
