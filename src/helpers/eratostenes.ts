@@ -11,19 +11,16 @@ const eratostenes = (LIMIT:number): number[] => {
     
     let arr: boolean[] = new Array(LIMIT).fill(true);
 
+    const primes: number[] = []
+
     for (var i = 2; i <= upperLimit; i++) { 
         if (arr[i]) { 
-            console.log(i, "Is prime!")
             for (var j = 2 * i; j < LIMIT; j += i) { 
                 arr[j] = false; 
             }
         }
     }
-
-    console.log(arr)
-
-    const primes: number[] = []
-
+    
     for (var i = 2; i <= LIMIT; i++) {
         if (arr[i]) {
             primes.push(i)
@@ -32,9 +29,3 @@ const eratostenes = (LIMIT:number): number[] => {
 
     return primes;
 }
-
-
-
-
-
-//[1 3 5 7 9 11 13 15 17]
