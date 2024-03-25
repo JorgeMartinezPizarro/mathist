@@ -1,10 +1,12 @@
-import pitagoreanTree from '@/helpers/pitagoreanTree'
 import pitagoreanTriple from '@/helpers/pitagoreanTriple'
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   
-  const { searchParams } = new URL(request.url)
-  const LIMIT = BigInt(searchParams.get('LIMIT') || "0")
+  const body = await request.json();
+
+  const number = body.number
+  
+  const LIMIT = BigInt(number || "0")
 
   const response = pitagoreanTriple(LIMIT)
   // https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-953187833

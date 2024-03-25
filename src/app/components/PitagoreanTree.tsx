@@ -29,7 +29,16 @@ export default () => {
     }
 
     const handleSend = () => {
-        fetch("/api/pitagoreanTriple?" + (new URLSearchParams( {LIMIT: number})).toString())
+        
+        const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({number: number.toString()}),
+          }
+
+        fetch("/api/pitagoreanTriple", options)
             .then(res => res.json())
             .then(res => {
                 setTriple(res)
@@ -37,7 +46,7 @@ export default () => {
             .catch(error => setError(error))
     }
 
-    const a = 15866
+    const a = 40000
     
     const M = "10**"+a+" - 1"
 
@@ -79,6 +88,7 @@ export default () => {
         The pithagorean triple generated:
         <hr />
         {triple.square && "<" + n(triple.triple[0]) + ", " + n(triple.triple[1]) + ", " + n(triple.triple[2]) + ">"}
+        <hr />
         <div />
         {<div>Tree of height {size} calculated in {tree.time} ms</div>}
         <div />
