@@ -9,13 +9,7 @@ const eratostenes = (LIMIT:number): number[] => {
 
     if (LIMIT < 1) return []
 
-    //const a = new Array(LIMIT).fill(true)
-
-    var b: BitArray = new BitArray(LIMIT);
-
-    for (var i=0;i<b.size;i++) {
-        b.set(i, 1)
-    }
+    var b: BitArray = new BitArray(LIMIT, 1);
 
     let upperLimit = Math.round(Math.sqrt(LIMIT))
     
@@ -23,13 +17,13 @@ const eratostenes = (LIMIT:number): number[] => {
 
     for (var i = 2; i <= upperLimit; i++) { 
         if (b.get(i) === 1) { 
-            for (var j = 2 * i; j < LIMIT; j += i) { 
+            for (var j = i * 2; j < LIMIT; j += i) { 
                 b.set(j, 0)
             }
         }
     }
 
-    for (var i = 2; i <= LIMIT; i++) {
+    for (var i = 2; i < LIMIT; i++) {
         if (b.get(i) === 1) {
             primes.push(i)
         }
