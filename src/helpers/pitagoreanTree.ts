@@ -1,14 +1,19 @@
 
 
-export default (n: number) => {
+export default (n: BigInt) => {
     
     const start = Date.now()
-    const initialFibonacciSquare = [[1,1],[3,2]]
 
-    let arrayOfSquares: number[][][] = [initialFibonacciSquare]
+    
+    const initialFibonacciSquare = [[BigInt(1),BigInt(1)],[BigInt(3),BigInt(2)]]
 
-    for (var i=0; i<n; i++) {
+    
+    let arrayOfSquares: BigInt[][][] = [initialFibonacciSquare]
+
+    for (var i =0; i<parseInt(n.toString()); i++) {
+        console.log(i)
         arrayOfSquares = [...arrayOfSquares, ...iterate(arrayOfSquares.slice(-(3**i)))]
+        
     }
 
     const result = arrayOfSquares.map(square => {
@@ -19,25 +24,22 @@ export default (n: number) => {
     })
     
 
-    let array = []
-    
-    for (var i = 0; i<n; i++) {
+    let array: BigInt = []
 
-        const sum = (3**i-1) / 2
-        
-        const x = result.slice(sum, sum + 3**i)
+    for (var i:BigInt = BigInt(0); i<n; i++) {
 
+        const sum = (BigInt(3)**BigInt(i)-BigInt(1)) / BigInt(2)
         
-        
+        const x: BigInt = result.slice(parseInt(sum), parseInt(sum + BigInt(3)**i))
         array.push(x)
     }
 
     return {tree: array, time: Date.now() - start};
 }
 
-const iterate = (arrayOfSquares: number[][][]): number[][][] => {
+const iterate = (arrayOfSquares: BigInt[][][]): BigInt[][][] => {
 
-    let nextArrayOfSquares = new Array;
+    let nextArrayOfSquares: BigInt[][][] = new Array;
     
     for (var i=0; i<arrayOfSquares.length;i++) {
         nextArrayOfSquares = [...nextArrayOfSquares, ...children(arrayOfSquares[i])]
@@ -46,23 +48,26 @@ const iterate = (arrayOfSquares: number[][][]): number[][][] => {
     return nextArrayOfSquares;
 }
 
-export const pitagoreanTriple = (fibonacciSquare: number[][]): number[] => {
-    const triple = [
+export const pitagoreanTriple = (fibonacciSquare: BigInt[][]): BigInt[] => {
+
+    
+    const triple: BitInt[] = [
         (fibonacciSquare[0][0] * fibonacciSquare[1][0]), 
-        (fibonacciSquare[0][1] * fibonacciSquare[1][1]) * 2, 
+        (fibonacciSquare[0][1] * fibonacciSquare[1][1]) * BigInt(2), 
         (fibonacciSquare[0][0] * fibonacciSquare[1][1]) + (fibonacciSquare[0][1] * fibonacciSquare[1][0]),
         
     ]
 
-    /*if (triple[0] > Number.MAX_SAFE_INTEGER || triple[1] > Number.MAX_SAFE_INTEGER || triple[2] > Number.MAX_SAFE_INTEGER)
-        throw new Error("WTF an invalid triple!")
-    if (triple[0] ** 2 + triple[1]**2 - triple[2]**2 !== 0 || gcd_more_than_two_numbers(triple) > 1) 
-      throw new Error("WTF an invalid triple!")
-    */
+    if (
+        triple[0] ** BigInt(2) + triple[1]** BigInt(2) - triple[2]** BigInt(2) !== BigInt(0) //|| 
+        //gcd_more_than_two_numbers(triple) > BigInt(1)
+    ) 
+      return [BigInt(0), BigInt(0), BigInt(0)]
+   
     return triple;
 }
 
-export const children = (fibonnaciSquare: number[][]): number[][][] => {
+export const children = (fibonnaciSquare: BigInt[][]): BigInt[][][] => {
     
     const childOne = [
         [
@@ -94,12 +99,12 @@ export const children = (fibonnaciSquare: number[][]): number[][][] => {
     return [childOne, childTwo, childThree]
 }
 
-function gcd (a: number, b: number): number {
-    if(b == 0){
+function gcd (a: BigInt, b: BigInt): BigInt {
+    if(b == BigInt(0)){
         return a;
     }
     return gcd(b, a%b);
 }
-function gcd_more_than_two_numbers (a: number[]): number {
+function gcd_more_than_two_numbers (a: BigInt[]): BigInt {
   return a.reduce(gcd)
 }

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react"
 
 export default () => {
 
-    const [number, setNumber] = useState(false)
+    const [number, setNumber] = useState([])
 
     const [value, setValue] = useState<string>("")
 
@@ -29,10 +29,12 @@ export default () => {
     const items = (number && number.map(nr => BigInt(nr).toString()))
 
     return <div>
-        
+        <p><a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <p>Enter a number below to obtain its factorization into primes</p>
+        <p>The length of the number can be max 16</p>
         <hr />
         <img height={200} src="/image3.png" />
+        <img height={150} src="/image7.png" />
         <hr />
         <TextField
             className="input"
