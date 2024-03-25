@@ -1,6 +1,9 @@
 import { Button, CircularProgress, TextField } from "@mui/material"
 import { useCallback, useState } from "react"
 
+
+import string from "@/helpers/string";
+
 export default () => {
     const [number, setNumber] = useState([2])
 
@@ -12,10 +15,20 @@ export default () => {
 
     const submitNumber = useCallback(() => {
         const a = Date.now();
-        const url = "/api/primes?"+ ( new URLSearchParams( {LIMIT: value} ) ).toString()
+        const url = "/api/primes"
+        const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({number: value.toString()}),
+        }
         setLoading(true)
-        fetch(url)
-            .then(res => res.json())
+        fetch(url, options)
+            .then(res => {
+                const t = res.json()
+                return t;
+            })
             .then(res => {
                 setLoading(false)
                 setNumber(res)
@@ -25,13 +38,12 @@ export default () => {
 
     }, [value])
 
-    const n = (value: string): string => new Intl.NumberFormat().format(parseInt(value))
-
+    
 
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        Eratostenes sieve of a given length
+        Eratostenes sieve of a given length. Max length is 10**8 - 1
         <hr />
         <div>
             <TextField
@@ -41,20 +53,22 @@ export default () => {
                 disabled={loading}
                 value={value}
                 onChange={(event => {
-                    if (event.target.value.length < 8)
+                    if (event.target.value.length < 9)
                         setValue(event.target.value)
                 })}
             />
             <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
+            {loading && <CircularProgress />}
         </div>
-        {loading && <CircularProgress />}
-        Total of primes smaller than {n(value)} is {n(number.length.toString())}
+        <hr />
+        
+        Total of primes smaller than {string(value)} is {string(number.length.toString())}
         <hr/>
         Duration {duration} ms
         <hr/>
-        Last teen primes of the sieve [{number.slice(-10).map(value => n(value.toString())).toString()}]
+        Last teen primes of the sieve [{number.slice(-10).map(value => string(value.toString())).toString()}]
         <hr />
-        Logarithmic approximation to the total of primes {n(Math.round(parseInt(value) / Math.log(parseInt(value))).toString())}
+        Logarithmic approximation to the total of primes {string(Math.round(parseInt(value) / Math.log(parseInt(value))).toString())}
     </div>
 
 }

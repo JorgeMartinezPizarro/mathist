@@ -8,15 +8,17 @@ const zero: BigInt = BigInt(0)
 
 const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
     
-    const arr = Array(num)
+    if (BigInt(2) % num === zero)
+        return [...factors, BigInt(2)]
 
-    for (var i: BigInt = BigInt(2); i**BigInt(2)<num;i=i+one) {
-        if (num % BigInt(i) == zero) {
-            return primesOf(num/i, [...factors, BigInt(i)])
+    for (var i: BigInt = BigInt(3); i**BigInt(2)<num;i=i+BigInt(2)) {
+        if (num % i === zero) {
+            return primesOf(num/i, [...factors, i])
         }
     }
     
     if (num === one)
         return factors
     return [...factors, num];
+
 }

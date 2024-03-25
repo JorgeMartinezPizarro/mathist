@@ -6,7 +6,7 @@ import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material
 export default function PrimesDifferences() {
   
   const [number, setNumber] = useState(false)
-  const [amount, setAmount] = useState(25)
+  const [amount, setAmount] = useState(100)
   const [duration, setDuration] = useState(0)
   
   const [loading, setLoading] = useState(false)
@@ -51,6 +51,7 @@ export default function PrimesDifferences() {
         <p>Select a serie S and a length N to obtain it's serie of differences N-times. </p>
         <p>Some of these series of series have regularities, where others not.</p>
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
+        <p>Max serie length is 10**3-1</p>
       {error && JSON.stringify(error, null, 2)}
       Calculated in {duration} ms
       <Autocomplete

@@ -1,28 +1,36 @@
+import BitArray from "@/helpers/BitArray"
+
 export default (LIMIT: number) => {
-    
+
     return eratostenes(LIMIT);
 }
 
 const eratostenes = (LIMIT:number): number[] => {
 
     if (LIMIT < 1) return []
-    
+
+    //const a = new Array(LIMIT).fill(true)
+
+    var b: BitArray = new BitArray(LIMIT);
+
+    for (var i=0;i<b.size;i++) {
+        b.set(i, 1)
+    }
+
     let upperLimit = Math.round(Math.sqrt(LIMIT))
     
-    let arr: boolean[] = new Array(LIMIT).fill(true);
-
     const primes: number[] = []
 
     for (var i = 2; i <= upperLimit; i++) { 
-        if (arr[i]) { 
+        if (b.get(i) === 1) { 
             for (var j = 2 * i; j < LIMIT; j += i) { 
-                arr[j] = false; 
+                b.set(j, 0)
             }
         }
     }
-    
+
     for (var i = 2; i <= LIMIT; i++) {
-        if (arr[i]) {
+        if (b.get(i) === 1) {
             primes.push(i)
         }
     }  

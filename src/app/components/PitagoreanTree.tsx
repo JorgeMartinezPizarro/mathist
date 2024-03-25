@@ -1,5 +1,6 @@
 'use client'
 
+import string from "@/helpers/string"
 import { TextField, Button, CircularProgress } from "@mui/material"
 import { useEffect, useState } from "react"
 
@@ -81,17 +82,18 @@ export default () => {
         <hr />
         The fibonacci-like square generated:
         <hr />
-        {triple.square && "|" + n(triple.square[0][0]) + ", " + n(triple.square[0][1]) + "|"}
+        {triple.square && "|" + string(triple.square[0][0]) + ", " + string(triple.square[0][1]) + "|"}
         <br />
-        {triple.square && "|" + n(triple.square[1][0]) + ", " + n(triple.square[1][1]) + "|"}
+        {triple.square && "|" + string(triple.square[1][0]) + ", " + string(triple.square[1][1]) + "|"}
         <hr />
         The pithagorean triple generated:
         <hr />
-        {triple.square && "<" + n(triple.triple[0]) + ", " + n(triple.triple[1]) + ", " + n(triple.triple[2]) + ">"}
+        {triple.square && "<" + string(triple.triple[0]) + ", " + string(triple.triple[1]) + ", " + string(triple.triple[2]) + ">"}
         <hr />
         <div />
         {<div>Tree of height {size} calculated in {tree.time} ms</div>}
-        <div />
+        <hr />
+
         <div>{
             tree.tree.map(serie => <ul key={serie.toString()}>{serie.map(triple => {
                 const x = "<" + triple.triple[0] + ", " + triple.triple[1] + ", " + triple.triple[2] + ">"

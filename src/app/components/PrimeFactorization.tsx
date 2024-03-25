@@ -31,11 +31,12 @@ export default () => {
     return <div>
         <p><a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <p>Enter a number below to obtain its factorization into primes</p>
-        <p>The length of the number can be max 16</p>
+        <p>The max number can be entered is 10**16 - 1</p>
         <hr />
         <img height={200} src="/image3.png" />
         <img height={150} src="/image7.png" />
         <hr />
+        <p>Try for 9684682148926909</p>
         <TextField
             className="input"
             label="Number"
@@ -43,7 +44,7 @@ export default () => {
             disabled={loading}
             value={value}
             onChange={(event => {
-                if (event.target.value.length < 17)
+                if (event.target.value.length <= 16)
                     setValue(event.target.value)
             })}
         />

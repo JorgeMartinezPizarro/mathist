@@ -1,11 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import zlib from "zlib"
  
 import eratostenes from '@/helpers/eratostenes'
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   
-  const { searchParams } = new URL(request.url)
-  const LIMIT = parseInt(searchParams.get('LIMIT') || "0")
+  const body = await request.json();
+
+  const LIMIT = parseInt(body.number)
   
-  return Response.json( eratostenes(LIMIT) )
+  const x = eratostenes(LIMIT)
+
+  
+  
+  
+  //const uncompressedString = JSON.stringify(x.toString())
+  //console.log("Original size: " + uncompressedString.length)
+  //var deflated = zlib.deflateSync(uncompressedString).toString('base64');
+  
+  //console.log("Compressed size: ", deflated.length)
+  
+
+
+
+  return Response.json( x )
 }
+
+
