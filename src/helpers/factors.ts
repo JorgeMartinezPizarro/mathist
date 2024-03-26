@@ -2,8 +2,7 @@ import eratostenes from "./eratostenes"
 
 export default (n: BigInt ): BigInt[] => {
     const m = Math.round(Math.sqrt(parseInt(n.toString())))
-    const a = eratostenes(m)
-    return primesOf(n, [], a)
+    return primesOf(n, [], eratostenes(m))
 }
 
 const one: BigInt = BigInt(1)

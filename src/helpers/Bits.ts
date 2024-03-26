@@ -1,4 +1,21 @@
-export default function BitArray(size, value){
+export default class Bits {
+  constructor(length: number, value) {
+      this.value = new BitArray(length, value);
+  }
+  get(n){
+      return this.value.get(n)
+  }
+  set(n, j){
+      this.value.set(n,j)
+  }
+  toString() {
+      return this.value.toString();
+  }
+
+}
+
+
+function BitArray(size, value){
     if(value === undefined) value = 0;
     this.size = size;
     this.field = new Array(~~((size - 1) / BitArray.ELEMENT_WIDTH) + 1);
@@ -20,11 +37,6 @@ export default function BitArray(size, value){
   // Read a bit (1/0)
   BitArray.prototype.get = function(position){
     return (this.field[~~(position/BitArray.ELEMENT_WIDTH)] & 1 << (position % BitArray.ELEMENT_WIDTH)) > 0 ? 1 : 0;
-  }
-  
-  // Iterate over each bit
-  BitArray.prototype.each = function(method){
-    for (var index = 0; index < this.size; index++) method(this.get(index), index);
   }
   
   // Returns the field as a string like "0101010100111100," etc.

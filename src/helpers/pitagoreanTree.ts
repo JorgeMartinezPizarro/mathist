@@ -3,15 +3,12 @@
 export default (n: BigInt) => {
     
     const start = Date.now()
-
     
     const initialFibonacciSquare = [[BigInt(1),BigInt(1)],[BigInt(3),BigInt(2)]]
 
-    
     let arrayOfSquares: BigInt[][][] = [initialFibonacciSquare]
 
     for (var i =0; i<parseInt(n.toString()); i++) {
-        console.log(i)
         arrayOfSquares = [...arrayOfSquares, ...iterate(arrayOfSquares.slice(-(3**i)))]
         
     }
@@ -24,7 +21,7 @@ export default (n: BigInt) => {
     })
     
 
-    let array: BigInt = []
+    let array: BigInt[] = []
 
     for (var i:BigInt = BigInt(0); i<n; i++) {
 
@@ -50,7 +47,6 @@ const iterate = (arrayOfSquares: BigInt[][][]): BigInt[][][] => {
 
 export const pitagoreanTriple = (fibonacciSquare: BigInt[][]): BigInt[] => {
 
-    
     const triple: BitInt[] = [
         (fibonacciSquare[0][0] * fibonacciSquare[1][0]), 
         (fibonacciSquare[0][1] * fibonacciSquare[1][1]) * BigInt(2), 
@@ -60,7 +56,7 @@ export const pitagoreanTriple = (fibonacciSquare: BigInt[][]): BigInt[] => {
 
     if (
         triple[0] ** BigInt(2) + triple[1]** BigInt(2) - triple[2]** BigInt(2) !== BigInt(0) //|| 
-        //gcd_more_than_two_numbers(triple) > BigInt(1)
+        //gcd_more_than_two_numbers(triple) > BigInt(1) Checking it for reeeeally big values turns into infinite loops according with js ...
     ) 
       return [BigInt(0), BigInt(0), BigInt(0)]
    

@@ -24,14 +24,11 @@ export default () => {
         }
         setLoading(true)
         fetch(url, options)
+            .then(res => res.json())
             .then(res => {
-                const t = res.json()
-                return t;
-            })
-            .then(res => {
+                setDuration(Date.now() - a)
                 setLoading(false)
                 setNumber(res)
-                setDuration(Date.now() - a)
             })
             .catch(err => setLoading(false))
 
@@ -66,7 +63,7 @@ export default () => {
         <hr/>
         Last teen primes of the sieve:
         <hr />
-        [{number.slice(-10).map(value => string(value.toString())).toString()}]
+        [{number.slice(-10).map(value => string(value)).join(", ")}]
         <hr />
         Logarithmic approximation to the total of primes {string(Math.round(parseInt(value) / Math.log(parseInt(value))).toString())}
     </div>

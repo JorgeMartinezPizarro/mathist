@@ -1,6 +1,6 @@
 import string from "@/helpers/string"
 import { TextField, Button, CircularProgress } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 
 export default () => {
 
@@ -30,14 +30,15 @@ export default () => {
     const items = (number && number.map(nr => BigInt(nr).toString()))
 
     return <div>
-        <p><a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <p>Enter a number below to obtain its factorization into primes</p>
+        <hr />
+        <p>2**82589933 - 1 is the biggest known prime, a prime with  24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a></p>
+        <hr />
         <p>The max number can be entered is 10**16 - 1</p>
+        
         <hr />
-        <img height={200} src="/image3.png" />
-        <img height={150} src="/image7.png" />
+        <p>Try for {string(BigInt("5931362056219057"))} or {string(BigInt("9684682148926909"))}, or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <hr />
-        <p>Try for {string(9684682148926909n)}</p>
         <TextField
             className="input"
             label="Number"
@@ -50,7 +51,7 @@ export default () => {
             })}
         />
         <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
-        {items && "[" + items.map(item => string(item)).join(", ") + "]"}
+        {items && "[" + items.map(item => string(BigInt(item))).join(", ") + "]"}
         {loading && <CircularProgress/>}
         <div>Done in {duration} ms</div>
     </div>
