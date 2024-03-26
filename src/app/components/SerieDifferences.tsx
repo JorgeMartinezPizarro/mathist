@@ -49,9 +49,13 @@ export default function PrimesDifferences() {
   return (
     <div className="main">
         <p>Select a serie S and a length N to obtain it's serie of differences N-times. </p>
+        <hr />
         <p>Some of these series of series have regularities, where others not.</p>
+        <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
+        <hr />
         <p>Max serie length is 10**3-1</p>
+        <hr />
       {error && JSON.stringify(error, null, 2)}
       Calculated in {duration} ms
       <Autocomplete

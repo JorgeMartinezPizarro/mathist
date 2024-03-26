@@ -1,3 +1,5 @@
+'use client'
+
 import string from "@/helpers/string"
 import { TextField, Button, CircularProgress } from "@mui/material"
 import { useCallback, useState } from "react"
@@ -32,12 +34,11 @@ export default () => {
     return <div>
         <p>Enter a number below to obtain its factorization into primes</p>
         <hr />
-        <p>2**82589933 - 1 is the biggest known prime, a prime with  24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a></p>
+        <p>2**82589933 - 1 is the biggest known prime, a prime with 24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a></p>
         <hr />
-        <p>The max number can be entered is 10**16 - 1</p>
-        
+        <p>The max number can be entered is 10**17 - 1</p>
         <hr />
-        <p>Try for {string(BigInt("5931362056219057"))} or {string(BigInt("9684682148926909"))}, or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
+        <p>Try with {string(BigInt("9225032392291621"))}, {string(BigInt("80497510791956303"))}, or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <hr />
         <TextField
             className="input"
@@ -46,7 +47,7 @@ export default () => {
             disabled={loading}
             value={value}
             onChange={(event => {
-                if (event.target.value.length <= 16)
+                if (event.target.value.length <= 17)
                     setValue(event.target.value)
             })}
         />
@@ -57,4 +58,3 @@ export default () => {
     </div>
 
 }
-

@@ -1,3 +1,5 @@
+'use client'
+
 import { Button, CircularProgress, TextField } from "@mui/material"
 import { useCallback, useState } from "react"
 
