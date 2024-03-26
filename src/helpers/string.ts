@@ -1,6 +1,6 @@
 export default (value: BigInt) => {
 
-    if (value.toString().length < 5) 
+    if (value.toString().length < 4) 
         return value.toString()
     else if (value.toString().length < 25) 
         return value.toString() + "(" + value.toString().length+ ")"

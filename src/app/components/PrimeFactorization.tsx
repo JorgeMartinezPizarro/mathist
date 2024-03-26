@@ -1,3 +1,4 @@
+import string from "@/helpers/string"
 import { TextField, Button, CircularProgress } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 
@@ -36,7 +37,7 @@ export default () => {
         <img height={200} src="/image3.png" />
         <img height={150} src="/image7.png" />
         <hr />
-        <p>Try for 9684682148926909</p>
+        <p>Try for {string(9684682148926909n)}</p>
         <TextField
             className="input"
             label="Number"
@@ -49,7 +50,7 @@ export default () => {
             })}
         />
         <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
-        {items && JSON.stringify(items, null, 2)}
+        {items && "[" + items.map(item => string(item)).join(", ") + "]"}
         {loading && <CircularProgress/>}
         <div>Done in {duration} ms</div>
     </div>
