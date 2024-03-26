@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
   
   
-  
+  // try it later to compress strings in case of limitations
   //const uncompressedString = JSON.stringify(x.toString())
   //console.log("Original size: " + uncompressedString.length)
   //var deflated = zlib.deflateSync(uncompressedString).toString('base64');

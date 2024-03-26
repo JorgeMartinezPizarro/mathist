@@ -11,8 +11,9 @@ const zero: BigInt = BigInt(0)
 
 const primesOf = (num: BigInt, factors: BigInt [] = [], primes: number[]): BigInt [] => {
     for (var i: BigInt = zero; i < BigInt(primes.length);i=i+BigInt(1)) {
-        if (num % BigInt(primes[parseInt(i.toString())]) === zero) {
-            return primesOf(num/BigInt(primes[i]), [...factors, BigInt(primes[i])], primes)
+        const x: BigInt = BigInt(primes[parseInt(i.toString())])
+        if (num % x === zero) {
+            return primesOf(num/x, [...factors, x], primes)
         }
     }
     
