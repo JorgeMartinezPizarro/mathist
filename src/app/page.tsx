@@ -23,8 +23,8 @@ export default function Home() {
         <TabList onChange={handleChange} aria-label="lab API tabs example" centered>
           <Tab label="Sieve" value="4" />
           <Tab label="Trees" value="2" />
-          <Tab label="Factorization" value="1" />
-          <Tab label="Differences" value="3" />
+          <Tab label="Factors" value="1" />
+          <Tab label="Series" value="3" />
           
         </TabList>
       </Box>

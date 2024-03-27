@@ -16,7 +16,6 @@ export default () => {
     const [loading, setLoading] = useState<boolean>(false)
 
     const submitNumber = useCallback(() => {
-        const a = Date.now();
         const url = "/api/primes"
         const options = {
             method: "POST",
@@ -29,9 +28,9 @@ export default () => {
         fetch(url, options)
             .then(res => res.json())
             .then(res => {
-                setDuration(Date.now() - a)
+                setDuration(res.time)
                 setLoading(false)
-                setNumber(res)
+                setNumber(res.primes)
             })
             .catch(err => setLoading(false))
 
@@ -62,7 +61,7 @@ export default () => {
         <hr />
         <p>Total of primes smaller than {string(value)} is {string(number.length.toString())}</p>
         <hr/>
-        <p>Duration {duration} ms</p>
+        <p>Duration {duration} μs</p>
         <hr/>
         <p>Last teen primes of the sieve:</p>
         <hr />
