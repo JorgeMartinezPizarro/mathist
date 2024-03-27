@@ -40,7 +40,7 @@ const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
         return primesOf(num/two, [...factors, two])
     }
     const x: BigInt = sqrt(num)
-    for (var i: BigInt = BigInt(3); i < x;i=i+two) {
+    for (var i: BigInt = BigInt(3); i <= x;i=i+two) {
         if (num % i === zero) {
             return primesOf(num/i, [...factors, i])
         }
