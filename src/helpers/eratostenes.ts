@@ -1,7 +1,6 @@
 import Bits from "@/helpers/Bits"
 
 export default (LIMIT: number) => {
-    console.log(LIMIT)
     return eratostenes(LIMIT);
 }
 

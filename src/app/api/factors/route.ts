@@ -3,7 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
  
 
 export async function GET(request: Request) {
-    const start = Date.now();
+    var hrTime = process.hrtime()
+    const start = hrTime[0] * 1000000 + hrTime[1] / 1000
 
     const { searchParams } = new URL(request.url)
     const n = BigInt(searchParams.get('LIMIT') || "0")
@@ -15,5 +16,8 @@ export async function GET(request: Request) {
 
     const b = a.map(n=> n.toString())
 
-    return Response.json({factors: b, time: Date.now() - start})
+    var hrTime = process.hrtime()
+    const t = hrTime[0] * 1000000 + hrTime[1] / 1000
+
+    return Response.json({factors: b, time: Math.round(t - start)})
 }

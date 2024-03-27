@@ -22,7 +22,7 @@ export default function Home() {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <TabList onChange={handleChange} aria-label="lab API tabs example" centered>
           <Tab label="Sieve" value="4" />
-          <Tab label="Trees" value="2" />
+          <Tab label="Tree" value="2" />
           <Tab label="Factors" value="1" />
           <Tab label="Series" value="3" />
           

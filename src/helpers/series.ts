@@ -7,7 +7,7 @@ let array: number[] = [];
   if (name === "primes") {
     const int = Math.floor(10 * LIMIT / Math.log(LIMIT))
     
-    aux = eratostenes(int**2) 
+    aux = eratostenes(int**2).primes
   }
   
   for (var i=0;i<LIMIT;i++) {

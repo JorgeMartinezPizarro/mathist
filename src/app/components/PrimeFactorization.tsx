@@ -58,7 +58,7 @@ export default () => {
         <hr />
         <p>{items && string(BigInt(value)) + " = " + items.map(item => string(BigInt(item))).join(" * ") + ""}</p>
         <hr />
-        <p>Done in {duration} ms</p>
+        <p>Done in {duration} μs</p>
         <hr />
     </div>
 

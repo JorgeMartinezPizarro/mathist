@@ -1,9 +1,11 @@
 
 import bigIntGCD from "bigint-gcd"
+import { setIsSubset } from "mathjs"
 
 export default (n: BigInt) => {
     
-    const start = Date.now()
+    var hrTime = process.hrtime()
+    const start = hrTime[0] * 1000000 + hrTime[1] / 1000
     
     const initialFibonacciSquare = [[BigInt(1),BigInt(1)],[BigInt(3),BigInt(2)]]
 
@@ -32,7 +34,10 @@ export default (n: BigInt) => {
         array.push(x)
     }
 
-    return {tree: array, time: Date.now() - start};
+    var hrTime = process.hrtime()
+    const a = hrTime[0] * 1000000 + hrTime[1] / 1000
+
+    return {tree: array, time: a - start};
 }
 
 const iterate = (arrayOfSquares: BigInt[][][]): BigInt[][][] => {

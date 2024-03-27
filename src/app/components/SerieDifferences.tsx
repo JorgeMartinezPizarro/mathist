@@ -15,7 +15,6 @@ export default function PrimesDifferences() {
 
     const handleSubmit = useCallback(() => {
         setLoading(true)
-        const start = Date.now()
         fetch("/api/serie?"+ ( new URLSearchParams( {LIMIT: amount, name: value.value} ) ).toString())
       .then(res => res.json())
       .then(res => {
@@ -31,7 +30,6 @@ export default function PrimesDifferences() {
           .then(res => {
             setNumber(res)
             setLoading(false)
-            setDuration(Date.now() - start)
           })
           .catch(err=> {
             setError(err)
@@ -56,8 +54,6 @@ export default function PrimesDifferences() {
         <hr />
         <p>Max serie length is 10**3-1</p>
         <hr />
-      {error && JSON.stringify(error, null, 2)}
-      Calculated in {duration} ms
       <Autocomplete
         disablePortal
         id="combo-box-demo"
@@ -91,12 +87,12 @@ export default function PrimesDifferences() {
       <Button onClick={()=> {
         handleSubmit()
       }} variant="contained">Submit</Button>
+ {loading && <CircularProgress />}
+{error && JSON.stringify(error, null, 2)}
       <hr />
       Below the {LENGTH} x {LENGTH} first elements
       <hr />
-      {loading && (
-        <CircularProgress />
-      )}
+      
       {number && (
         <table>
           <tbody>
