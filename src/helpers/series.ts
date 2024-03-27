@@ -18,6 +18,12 @@ let array: number[] = [];
     else if (name === "squares") {
       array.push(i**2)
     }
+    else if (name === "cubes") {
+      array.push(i**3)
+    }
+    else if (name === "triangulars") {
+      array.push(i*(i+1)/2)
+    }
     else if (name === "exponentials") {
       array.push(2**i)
     }

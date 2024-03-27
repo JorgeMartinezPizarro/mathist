@@ -6,16 +6,15 @@ import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material
 export default function PrimesDifferences() {
   
   const [number, setNumber] = useState(false)
-  const [amount, setAmount] = useState(100)
-  const [duration, setDuration] = useState(0)
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
+  const AMOUNT = 100
   const [value, setValue] = useState({label: "integers", value: "integers"})
 
     const handleSubmit = useCallback(() => {
         setLoading(true)
-        fetch("/api/serie?"+ ( new URLSearchParams( {LIMIT: amount, name: value.value} ) ).toString())
+        fetch("/api/serie?"+ ( new URLSearchParams( {LIMIT: AMOUNT, name: value.value} ) ).toString())
       .then(res => res.json())
       .then(res => {
         const options = {
@@ -40,9 +39,9 @@ export default function PrimesDifferences() {
         setError(err)
         setLoading(false)
       })
-    }, [value, amount])
+    }, [value])
 
-  const LENGTH = 50;
+  const LENGTH = 20;
 
   return (
     <div className="main">
@@ -52,8 +51,6 @@ export default function PrimesDifferences() {
         <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
         <hr />
-        <p>Max serie length is 10**3-1</p>
-        <hr />
       <Autocomplete
         disablePortal
         id="combo-box-demo"
@@ -61,7 +58,9 @@ export default function PrimesDifferences() {
         value={value}
         options={[
             {label: "integers", value:"integers"},
+            {label: "triangulars", value:"triangulars"},
             {label: "squares", value:"squares"},
+            {label: "cubes", value:"cubes"},
             {label: "exponentials", value:"exponentials"},
             {label: "primes", value:"primes"},
             {label: "fibonacci", value:"fibonacci"},
@@ -72,31 +71,18 @@ export default function PrimesDifferences() {
         sx={{ width: 300 }}
         renderInput={(params) => <TextField {...params} label="Serie" />}
       />
-      <TextField
-            className="input"
-            placeholder="Length of the serie"
-            label="Length of the serie"
-            type="number"
-            disabled={loading}
-            value={amount}
-            onChange={(event) => {
-                if (event.target.value.length < 4)
-                  setAmount(parseInt(event.target.value))
-            }}
-        />
       <Button onClick={()=> {
         handleSubmit()
       }} variant="contained">Submit</Button>
  {loading && <CircularProgress />}
 {error && JSON.stringify(error, null, 2)}
       <hr />
-      Below the {LENGTH} x {LENGTH} first elements
+      <p>Below the {LENGTH} first elements of the nth-differences up to {LENGTH}</p>
       <hr />
-      
       {number && (
         <table>
           <tbody>
-            {number.slice(0, LENGTH).map(row => <tr key={JSON.stringify(row)}>{row.slice(0, LENGTH).map((nr, idx) => <td key={idx}>{nr && BigInt(nr).toString()}</td>)}</tr>)}
+            {number.slice(0, LENGTH).map((row, i) => <tr key={JSON.stringify(row)}>{row.slice(0, LENGTH).map((nr, j) => <td className={i === j ? "red":""} key={j}>{nr && BigInt(nr).toString()}</td>)}</tr>)}
           </tbody>
         </table>
       )}

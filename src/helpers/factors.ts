@@ -36,6 +36,7 @@ const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
     if (isPrime(new BigNumber(num.toString()))) {
         return [...factors, num]
     }
+    
     if (num % two === zero) {
         return primesOf(num/two, [...factors, two])
     }
