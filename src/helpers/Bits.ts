@@ -11,10 +11,7 @@ export default class Bits {
   toString() {
       return this.value.toString();
   }
-
 }
-
-
 function BitArray(size, value){
     if(value === undefined) value = 0;
     this.size = size;

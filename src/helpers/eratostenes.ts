@@ -12,11 +12,11 @@ const eratostenes = (LIMIT:number): number[] => {
     
     let upperLimit = Math.round(Math.sqrt(LIMIT))
     
-    const primes: number[] = []
+    const primes: number[] = [2]
 
     bits.set(0, 0);
     bits.set(1, 0);
-
+    
     for (var i = 0; i <= upperLimit; i += 1) { 
         if (bits.get(i) === 1) { 
             for (var j = i * i; j <= LIMIT; j += i) { 
@@ -24,8 +24,9 @@ const eratostenes = (LIMIT:number): number[] => {
             }
         }
     }
-    
-    for (var i = 0; i < LIMIT; i++) {
+
+    // Iterate over odds (even are all not prime except 2)
+    for (var i = 3; i < LIMIT; i+=2) {
         if (bits.get(i) === 1) {
             primes.push(i)
         }

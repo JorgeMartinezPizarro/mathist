@@ -29,6 +29,8 @@ export default () => {
 
     }, [value])
 
+    const max = 18
+
     const items = (number && number.map(nr => BigInt(nr).toString()))
 
     return <div>
@@ -36,9 +38,9 @@ export default () => {
         <hr />
         <p>2**82589933 - 1 is the biggest known prime, a prime with 24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a></p>
         <hr />
-        <p>The max number can be entered is 10**17 - 1</p>
+        <p>The max number can be entered is 10**{max} - 1</p>
         <hr />
-        <p>Try with {string(BigInt("9225032392291621"))}, {string(BigInt("80497510791956303"))}, or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
+        <p>Try with {string(BigInt("80497510791956303"))} or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <hr />
         <TextField
             className="input"
@@ -47,14 +49,17 @@ export default () => {
             disabled={loading}
             value={value}
             onChange={(event => {
-                if (event.target.value.length <= 17)
+                if (event.target.value.length <= max)
                     setValue(event.target.value)
             })}
         />
         <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
-        {items && "[" + items.map(item => string(BigInt(item))).join(", ") + "]"}
         {loading && <CircularProgress/>}
-        <div>Done in {duration} ms</div>
+        <hr />
+        <p>{items && string(BigInt(value)) + " = " + items.map(item => string(BigInt(item))).join(" * ") + ""}</p>
+        <hr />
+        <p>Done in {duration} ms</p>
+        <hr />
     </div>
 
 }

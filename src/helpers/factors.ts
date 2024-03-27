@@ -1,5 +1,7 @@
 // Here some ideas to extrapolate number operations to BigInt
 // https://golb.hplar.ch/2018/09/javascript-bigint.html
+import {checkPrimeSync} from 'node:crypto';
+import {isPrime, BigNumber } from "mathjs"
 
 export default (n: BigInt ): BigInt[] => {
     return primesOf(n, [])
@@ -31,8 +33,14 @@ function sqrt(value: BigInt): BigInt {
 }
 
 const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
+    if (isPrime(new BigNumber(num.toString()))) {
+        return [...factors, num]
+    }
+    if (num % two === zero) {
+        return primesOf(num/two, [...factors, two])
+    }
     const x: BigInt = sqrt(num)
-    for (var i: BigInt = BigInt(2); i < x;i=i+one) {
+    for (var i: BigInt = BigInt(3); i < x;i=i+two) {
         if (num % i === zero) {
             return primesOf(num/i, [...factors, i])
         }
