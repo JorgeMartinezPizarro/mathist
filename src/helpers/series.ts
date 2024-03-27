@@ -24,6 +24,12 @@ let array: number[] = [];
     else if (name === "triangulars") {
       array.push(i*(i+1)/2)
     }
+    else if (name === "penthagonals") {
+      array.push(i*(3 * i -1)/2)
+    }
+    else if (name === "hexagonals") {
+      array.push(2 * i*(2 * i -1)/2)
+    }
     else if (name === "exponentials") {
       array.push(2**i)
     }

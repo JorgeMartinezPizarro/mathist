@@ -41,7 +41,7 @@ export default () => {
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        Eratostenes sieve of a given length. Max length is 10**{max} - 1
+        <p>Eratostenes sieve of a given length. Max length is 10**{max} - 1</p>
         <hr />
         <div>
             <TextField
@@ -65,9 +65,10 @@ export default () => {
         <hr/>
         <p>Last teen primes of the sieve:</p>
         <hr />
-        [{number.slice(-10).map(value => string(value)).join(", ")}]
+        <p>[{number.slice(-10).map(value => string(value)).join(", ")}]</p>
         <hr />
         <p>Logarithmic approximation to the total of primes {string(Math.round(parseInt(value) / Math.log(parseInt(value))).toString())}</p>
+        <hr />
     </div>
 
 }

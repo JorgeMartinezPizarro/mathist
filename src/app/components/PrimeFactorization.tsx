@@ -34,6 +34,7 @@ export default () => {
     const items = (number && number.map(nr => BigInt(nr).toString()))
 
     return <div>
+        <hr />
         <p>Enter a number below to obtain its factorization into primes</p>
         <hr />
         <p>2**82589933 - 1 is the biggest known prime, a prime with 24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a></p>

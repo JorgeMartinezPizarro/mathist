@@ -37,7 +37,7 @@ export default (n: BigInt) => {
     var hrTime = process.hrtime()
     const a = hrTime[0] * 1000000 + hrTime[1] / 1000
 
-    return {tree: array, time: a - start};
+    return {tree: array, time: Math.round(a - start)};
 }
 
 const iterate = (arrayOfSquares: BigInt[][][]): BigInt[][][] => {

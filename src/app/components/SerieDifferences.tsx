@@ -45,7 +45,8 @@ export default function PrimesDifferences() {
 
   return (
     <div className="main">
-        <p>Select a serie S and a length N to obtain it's serie of differences N-times. </p>
+        <hr />
+        <p>Select a serie S to obtain it's serie of differences. </p>
         <hr />
         <p>Some of these series of series have regularities, where others not.</p>
         <hr />
@@ -58,8 +59,10 @@ export default function PrimesDifferences() {
         value={value}
         options={[
             {label: "integers", value:"integers"},
-            {label: "triangulars", value:"triangulars"},
             {label: "squares", value:"squares"},
+            {label: "triangulars", value:"triangulars"},
+            {label: "penthagonals", value:"penthagonals"},
+            {label: "hexagonals", value:"hexagonals"},
             {label: "cubes", value:"cubes"},
             {label: "exponentials", value:"exponentials"},
             {label: "primes", value:"primes"},
@@ -74,10 +77,10 @@ export default function PrimesDifferences() {
       <Button onClick={()=> {
         handleSubmit()
       }} variant="contained">Submit</Button>
- {loading && <CircularProgress />}
-{error && JSON.stringify(error, null, 2)}
+      {loading && <CircularProgress />}
+      {error && JSON.stringify(error, null, 2)}
       <hr />
-      <p>Below the {LENGTH} first elements of the nth-differences up to {LENGTH}</p>
+      <p>Below the {LENGTH} first {value.label} and it's nth-differences up to {LENGTH}</p>
       <hr />
       {number && (
         <table>
