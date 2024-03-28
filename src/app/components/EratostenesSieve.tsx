@@ -4,7 +4,6 @@ import { Button, CircularProgress, TextField } from "@mui/material"
 import { useCallback, useState } from "react"
 
 import string from "@/helpers/string";
-import Bits from "@/helpers/Bits";
 
 export default () => {
     const [number, setNumber] = useState([2])
@@ -36,7 +35,7 @@ export default () => {
 
     }, [value])
 
-    const max = 8
+    const max = 8;
     
     return <div>
         <img src="/image6.png" height={200} />
@@ -59,7 +58,7 @@ export default () => {
             {loading && <CircularProgress />}
         </div>
         <hr />
-        <p>Total of primes smaller than {string(value)} is {string(number.length.toString())}</p>
+        <p>Total of primes smaller or equal {string(value)} is {string(number.length.toString())}</p>
         <hr/>
         <p>Duration {duration} μs</p>
         <hr/>
@@ -72,6 +71,3 @@ export default () => {
     </div>
 
 }
-
-//
-//{number && number.get(parseInt(value) - 1)}

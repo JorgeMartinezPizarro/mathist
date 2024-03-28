@@ -26,15 +26,11 @@ li {
 
 }
 
-.number
-{
-    overflow: hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
-    width:200px;
-    display:inline-block;
+.diagonal {
+  color: red;
 }
 
-.red {
-  color: red;
+.MuiAutocomplete-root {
+  margin: 0 auto;
+  display: inline-block
 }

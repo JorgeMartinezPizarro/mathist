@@ -1,11 +1,12 @@
 
 import bigIntGCD from "bigint-gcd"
 import { setIsSubset } from "mathjs"
+import getTimeMicro from "./getTimeMicro"
 
 export default (n: BigInt) => {
     
-    var hrTime = process.hrtime()
-    const start = hrTime[0] * 1000000 + hrTime[1] / 1000
+    
+    const start = getTimeMicro()
     
     const initialFibonacciSquare = [[BigInt(1),BigInt(1)],[BigInt(3),BigInt(2)]]
 
@@ -34,10 +35,7 @@ export default (n: BigInt) => {
         array.push(x)
     }
 
-    var hrTime = process.hrtime()
-    const a = hrTime[0] * 1000000 + hrTime[1] / 1000
-
-    return {tree: array, time: Math.round(a - start)};
+    return {tree: array, time: getTimeMicro() - start};
 }
 
 const iterate = (arrayOfSquares: BigInt[][][]): BigInt[][][] => {

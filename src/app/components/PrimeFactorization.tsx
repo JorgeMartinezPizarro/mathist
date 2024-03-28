@@ -29,7 +29,7 @@ export default () => {
 
     }, [value])
 
-    const max = 18
+    const max = 19
 
     const items = (number && number.map(nr => BigInt(nr).toString()))
 
@@ -41,7 +41,7 @@ export default () => {
         <hr />
         <p>The max number can be entered is 10**{max} - 1</p>
         <hr />
-        <p>Try with {string(BigInt("80497510791956303"))} or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
+        <p>Try with {string(BigInt("80497510791956303"))}, {string(BigInt("102598800232111471"))}, {string(BigInt("6373880214052476217"))} or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <hr />
         <TextField
             className="input"

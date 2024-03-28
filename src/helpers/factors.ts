@@ -1,15 +1,26 @@
 // Here some ideas to extrapolate number operations to BigInt
 // https://golb.hplar.ch/2018/09/javascript-bigint.html
-import {checkPrimeSync} from 'node:crypto';
 import {isPrime, BigNumber } from "mathjs"
+import {primeFactors} from 'prime-lib';
 
-export default (n: BigInt ): BigInt[] => {
-    return primesOf(n, [])
-}
+import getTimeMicro from './getTimeMicro';
 
-const two: BigInt = BigInt(2)
-const one: BigInt = BigInt(1)
 const zero: BigInt = BigInt(0)
+const one: BigInt = BigInt(1)
+const two: BigInt = BigInt(2)
+
+export default (n: BigInt ) => {
+
+    const start = getTimeMicro()
+    const integer = parseInt(n.toString())
+    const a = 9_007_199_254_740_991 ;
+
+    console.log(a-1)
+    return {
+        factors: integer <= 9007199254740991 ? primeFactors(integer) : primesOf(n), 
+        time: getTimeMicro() - start
+    }
+}
 
 // How to get sqrt of a BigInt, found under the link below
 // https://stackoverflow.com/a/53684036
@@ -40,6 +51,7 @@ const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
     if (num % two === zero) {
         return primesOf(num/two, [...factors, two])
     }
+
     const x: BigInt = sqrt(num)
     for (var i: BigInt = BigInt(3); i <= x;i=i+two) {
         if (num % i === zero) {
@@ -50,5 +62,7 @@ const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
     if (num === one)
         return factors
     return [...factors, num];
+
+    
 
 }

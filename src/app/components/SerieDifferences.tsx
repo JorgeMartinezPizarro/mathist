@@ -67,6 +67,7 @@ export default function PrimesDifferences() {
             {label: "exponentials", value:"exponentials"},
             {label: "primes", value:"primes"},
             {label: "fibonacci", value:"fibonacci"},
+            {label: "lucas", value:"lucas"},
         ]}
         onChange={(event, values) => {
             setValue(values)
@@ -85,7 +86,16 @@ export default function PrimesDifferences() {
       {number && (
         <table>
           <tbody>
-            {number.slice(0, LENGTH).map((row, i) => <tr key={JSON.stringify(row)}>{row.slice(0, LENGTH).map((nr, j) => <td className={i === j ? "red":""} key={j}>{nr && BigInt(nr).toString()}</td>)}</tr>)}
+            {number.slice(0, LENGTH).filter((el, id) => {
+              for (var idx = 0; idx<el.length; idx++)
+                if (el[idx] !== 0)
+                  return true
+              return false
+            }).map((row, i) => 
+              <tr key={JSON.stringify(row)}>{row.slice(0, LENGTH).map((nr, j) => 
+                <td className={i === j ? "diagonal" : ""} key={j}>{nr && BigInt(nr).toString()}</td>
+              )}</tr>
+            )}
           </tbody>
         </table>
       )}
