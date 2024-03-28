@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   
   const body = await request.json();
   const LIMIT = parseInt(body.number)
-  
+  BigInt.prototype.toJSON = function() { return this.toString() }
   return Response.json( eratostenes(LIMIT) )
 }
 

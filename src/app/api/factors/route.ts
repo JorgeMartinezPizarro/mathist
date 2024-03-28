@@ -5,6 +5,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const n = BigInt(searchParams.get('LIMIT') || "0")
 
-    //BigInt.prototype.toJSON = function() { return this.toString() }
+    BigInt.prototype.toJSON = function() { return this.toString() }
     return Response.json(factors(n))
 }
