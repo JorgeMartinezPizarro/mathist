@@ -8,7 +8,7 @@ export default function PrimesDifferences() {
   const [number, setNumber] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
-  const AMOUNT = 100
+  const AMOUNT = 39
   const [value, setValue] = useState({label: "integers", value: "integers"})
 
     const handleSubmit = useCallback(() => {

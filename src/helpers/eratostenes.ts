@@ -1,4 +1,4 @@
-import Bits from "@/helpers/BitArray"
+import Bits from "@/helpers/Bits"
 import getTimeMicro from "@/helpers/getTimeMicro";
 
 export default (LIMIT: number) => {

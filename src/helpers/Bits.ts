@@ -1,47 +1,35 @@
 export default class Bits {
-  constructor(length: number, value) {
-      this.value = new BitArray(length, value);
+    constructor(length: number) {
+        var buffer = new ArrayBuffer(length);
+        this.value = new BitView(buffer, 0, length);
+    }
+    get(n){
+        return this.value.getBit(n)
+    }
+    set(n, j){
+        this.value.setBit(n,j)
+    }
+    toString() {
+        return this.value.toString();
+    }
   }
-  get(n){
-      return this.value.get(n)
-  }
-  set(n, j){
-      this.value.set(n,j)
-  }
-  toString() {
-      return this.value.toString();
-  }
-}
-function BitArray(size, value){
-    if(value === undefined) value = 0;
-    this.size = size;
-    this.field = new Array(~~((size - 1) / BitArray.ELEMENT_WIDTH) + 1);
-    for(var i = 0; i < this.field.length; i++) 
-      this.field[i] = value == 0 ? 0 : (value << BitArray.ELEMENT_WIDTH) - 1;
-  }
+
+const BitView = function(buf) {
+    this.buffer = buf;
+    this.u8 = new Uint8Array(buf);
+  };
   
-  // will fail for values higher than 30
-  BitArray.ELEMENT_WIDTH = 24;
+  BitView.prototype.getBit = function(idx) {
+    var v = this.u8[idx >> 3];
+    var off = idx & 0x7;
+    return (v >> (7-off)) & 1;
+  };
   
-  // Set a bit (1/0)
-  BitArray.prototype.set = function(position, value){
-    if (value == 1)
-      this.field[~~(position/BitArray.ELEMENT_WIDTH)] |= 1 << (position % BitArray.ELEMENT_WIDTH);
-    else if(this.field[~~(position/BitArray.ELEMENT_WIDTH)] & 1 << (position % BitArray.ELEMENT_WIDTH))
-      this.field[~~(position/BitArray.ELEMENT_WIDTH)] ^= 1 << (position % BitArray.ELEMENT_WIDTH);
-  }
-  
-  // Read a bit (1/0)
-  BitArray.prototype.get = function(position){
-    return (this.field[~~(position/BitArray.ELEMENT_WIDTH)] & 1 << (position % BitArray.ELEMENT_WIDTH)) > 0 ? 1 : 0;
-  }
-  
-  // Returns the field as a string like "0101010100111100," etc.
-  BitArray.prototype.toString = function(){
-    var string = this.field.map(function(ea){
-      var binary = ea.toString(2);
-      binary = (new Array(BitArray.ELEMENT_WIDTH - binary.length + 1).join('0')) + binary;
-      return binary;
-    }).reverse().join('');
-    return string.split('').reverse().join('').slice(0,this.size);
-  }
+  BitView.prototype.setBit = function(idx, val) {
+    var off = idx & 0x7;
+    if (val) {
+      this.u8[idx >> 3] |= (0x80 >> off);
+    } else {
+      this.u8[idx >> 3] &= ~(0x80 >> off);
+    }
+  };
