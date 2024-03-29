@@ -2,34 +2,30 @@ import Bits from "@/helpers/Bits"
 import getTimeMicro from "@/helpers/getTimeMicro";
 
 export default (LIMIT: number) => {
-    return eratostenes(LIMIT);
+    return eratosthenes(LIMIT)
 }
 
-// Improve by getting an array of only odd numbers
-const eratostenes = (LIMIT:number) => {
-    const start = getTimeMicro()
-    
-    if (LIMIT < 0) 
-        throw new Error("Cannot get the sieve of negative numbers")
-    if (LIMIT <= 1) 
-        return {primes: [], time: 0}
+function eratosthenes(lastNumber: number) {
+  const start = getTimeMicro()
+  if (lastNumber < 0) 
+      throw new Error("Cannot get the sieve of negative numbers")
+  if (lastNumber <= 1) 
+      return {primes: [], time: 0}
 
-    const primes: number[] = [2]
-
-    var bits = new Bits(LIMIT);
-    let upperLimit = Math.round(Math.sqrt(LIMIT))
+  let upperLimit = Math.round(Math.sqrt(lastNumber))
+  var memorySize = (lastNumber - 1)/2;
+  const found = [2];
+  
+  var isPrime = new Bits(memorySize);
+  
+  for (var i = 3; i <= upperLimit; i += 2)
+    if (isPrime.get(i / 2) === 0)
+      for (var j = i*i; j <= lastNumber; j += 2*i)
+        isPrime.set(j / 2, 1)
+  
+  for (var i = 1; i <= memorySize; i++)
+    if (isPrime.get(i) === 0)
+      found.push(i*2+1)
     
-    bits.set(0, 1);
-    bits.set(1, 1);
-
-    for (var i = 0; i < upperLimit; i += 1)  
-        if (bits.get(i) === 0)
-            for (var j = i * i; j <= LIMIT; j += i)  
-                bits.set(j, 1)
-    
-    for (var i = 3; i <= LIMIT; i+=2) 
-        if (bits.get(i) === 0) 
-            primes.push(i)
-        
-    return {primes: primes, time: getTimeMicro() - start};
+  return {primes: found, time: getTimeMicro() - start};
 }

@@ -47,7 +47,7 @@ export default () => {
 
     }, [value])
 
-    const max = 8;
+    const max = 9;
     
     return <div>
         <img src="/image6.png" height={200} />

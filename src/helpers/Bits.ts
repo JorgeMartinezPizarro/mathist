@@ -33,3 +33,6 @@ const BitView = function(buf) {
       this.u8[idx >> 3] &= ~(0x80 >> off);
     }
   };
+  BitView.prototype.toString = function() {
+    return this.u8.toString()
+  }
