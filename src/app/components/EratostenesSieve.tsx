@@ -12,6 +12,8 @@ export default () => {
 
     const [duration, setDuration] = useState(0)
 
+    const [length, setLength] = useState(0)
+
     const [loading, setLoading] = useState<boolean>(false)
     
     const [error, setError] = useState(false)
@@ -35,6 +37,7 @@ export default () => {
                     setError(res.error)
                 } else {
                     setDuration(res.time)
+                    setLength(res.length)
                     setLoading(false)
                     setNumber(res.primes)
                 }
@@ -72,7 +75,7 @@ export default () => {
         </div>
         <p>{error && <Alert severity="error">{error}</Alert>}</p>
         <hr />
-        <p>Total of primes smaller or equal {string(value)} is {string(number.length.toString())}</p>
+        <p>Total of primes smaller or equal {string(value)} is {string(length.toString())}</p>
         <hr/>
         <p>Duration {duration} μs</p>
         <hr/>

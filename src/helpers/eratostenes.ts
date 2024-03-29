@@ -23,9 +23,10 @@ function eratosthenes(lastNumber: number) {
       for (var j = i*i; j <= lastNumber; j += 2*i)
         isPrime.set(j / 2, 1)
   
-  for (var i = 1; i <= memorySize; i++)
-    if (isPrime.get(i) === 0)
-      found.push(i*2+1)
+  for (var i = 1; i <memorySize; i++)
+    if (isPrime.get(i) === 0) 
+        found.push(i*2+1)
+           
     
-  return {primes: found, time: getTimeMicro() - start};
+  return {primes: found.slice(-10), time: getTimeMicro() - start, length: found.length};
 }
