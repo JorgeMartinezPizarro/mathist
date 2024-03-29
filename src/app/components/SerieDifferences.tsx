@@ -5,7 +5,7 @@ import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material
 
 export default function PrimesDifferences() {
   
-  const [number, setNumber] = useState(false)
+  const [number, setNumber] = useState<BigInt[][]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const AMOUNT = 39
@@ -87,9 +87,10 @@ export default function PrimesDifferences() {
         <table>
           <tbody>
             {number.slice(0, LENGTH).filter((el, id) => {
-              for (var idx = 0; idx<el.length; idx++)
-                if (el[idx] !== 0)
+              for (var idx = 0; idx<el.length; idx++) {
+                if (BigInt(el[idx].toString()) !== BigInt(0))
                   return true
+              }
               return false
             }).map((row, i) => 
               <tr key={JSON.stringify(row)}>{row.slice(0, LENGTH).map((nr, j) => 
