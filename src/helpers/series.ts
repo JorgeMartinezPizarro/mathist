@@ -1,4 +1,5 @@
 import eratostenes from "./eratostenes";
+import factorial from "./factorial";
 
 export default (LIMIT: number, name: string) => {
 let array: number[] = [];
@@ -12,7 +13,10 @@ let array: number[] = [];
   
   for (var i=0;i<LIMIT;i++) {
 
-    if (name === "integers") {
+    if (name === "factorials") {
+      array.push(factorial(i))
+    }
+    else if (name === "integers") {
       array.push(i)
     }
     else if (name === "squares") {
@@ -48,7 +52,7 @@ let array: number[] = [];
       else array.push(array[i-1] + array[i-2])
     }
     else {
-      array.push(1)
+      throw new Error("The serie " + name + " does not exist!")
     }
   }
 

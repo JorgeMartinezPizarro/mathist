@@ -12,12 +12,9 @@ const two: BigInt = BigInt(2)
 export default (n: BigInt ) => {
 
     const start = getTimeMicro()
-    const integer = parseInt(n.toString())
-    const a = 9_007_199_254_740_991 ;
-
-    console.log(a-1)
+    
     return {
-        factors: integer <= 9007199254740991 ? primeFactors(integer) : primesOf(n), 
+        factors: BigInt(n.toString()) <= BigInt("9007199254740991") ? primeFactors(parseInt(n.toString())) : primesOf(n), 
         time: getTimeMicro() - start
     }
 }

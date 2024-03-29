@@ -1,37 +1,49 @@
 'use client'
 
 import string from "@/helpers/string"
-import { TextField, Button, CircularProgress } from "@mui/material"
+import { TextField, Button, CircularProgress, Alert } from "@mui/material"
 import { useCallback, useState } from "react"
 
 export default () => {
 
-    const [number, setNumber] = useState([])
+    const [number, setNumber] = useState<number[]>([])
 
     const [value, setValue] = useState<string>("")
 
     const [duration, setDuration] = useState(0)
 
     const [loading, setLoading] = useState<boolean>(false)
+    
+    const [error, setError] = useState(false)
 
     const submitNumber = useCallback(() => {
         
         const url = "/api/factors?"+ ( new URLSearchParams( {LIMIT: value} ) ).toString()
         setLoading(true)
+        setError(false)
         fetch(url)
             .then(res => res.json())
             .then(res => {
-                setLoading(false)
-                setNumber(res.factors)
-                setDuration(res.time)
+                if (!res.error) {
+                    setLoading(false)
+                    setNumber(res.factors)
+                    setDuration(res.time)
+                }
+                else {
+                    setLoading(false)
+                    setError(res.error)
+                }
             })
-            .catch(err => setLoading(false))
+            .catch(err => {
+                setLoading(false)
+                setError(err)
+            })
 
     }, [value])
 
     const max = 19
 
-    const items = (number && number.map(nr => BigInt(nr).toString()))
+    //const items = (number && number.map(nr => BigInt(nr).toString()))
 
     return <div>
         <hr />
@@ -41,7 +53,7 @@ export default () => {
         <hr />
         <p>The max number can be entered is 10**{max} - 1</p>
         <hr />
-        <p>Try with {string(BigInt("6821097032944489"))}, {string(BigInt("80497510791956303"))}, {string(BigInt("102598800232111471"))} or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
+        <p>Try with {string(BigInt("6821097032944489"))}, {string(BigInt("80497510791956303"))}, {string(BigInt("102598800232111471"))}, {string(BigInt("5112599469399894959"))} or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <hr />
         <TextField
             className="input"
@@ -56,8 +68,9 @@ export default () => {
         />
         <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
         {loading && <CircularProgress/>}
+        <p>{error && <Alert severity="error">{error}</Alert>}</p>
         <hr />
-        <p>{items && string(BigInt(value)) + " = " + items.map(item => string(BigInt(item))).join(" * ") + ""}</p>
+        <p>{number && string(BigInt(value)) + " = " + number.map(item => string(BigInt(item))).join(" * ") + ""}</p>
         <hr />
         <p>Done in {duration} μs</p>
         <hr />

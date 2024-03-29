@@ -6,5 +6,9 @@ export async function GET(request: Request) {
     const n = BigInt(searchParams.get('LIMIT') || "0")
 
     BigInt.prototype.toJSON = function() { return this.toString() }
-    return Response.json(factors(n))
+    try {
+        return Response.json(factors(n))
+    } catch (e) {
+        return Response.json({ error: 'Error getting the factors of ' + n + '  ...' }, { status: 400 });
+      }
 }

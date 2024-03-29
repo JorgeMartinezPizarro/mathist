@@ -1,8 +1,13 @@
 export default (n: number) => {
-    return factorial(n)
+    return factorial(BigInt(n))
 }
 
-const factorial = (n: number): number => {
-    if (n == 1) return 1;
-    else return n * factorial(n-1)
+const factorial = (n: BigInt): BigInt => {
+    let x = BigInt(1);
+
+    for (var i = BigInt(2); i<=n;i++) {
+        x *= i
+    }
+
+    return x;
 }

@@ -6,7 +6,6 @@ import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material
 export default function PrimesDifferences() {
   
   const [number, setNumber] = useState(false)
-  
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const AMOUNT = 100
@@ -68,6 +67,7 @@ export default function PrimesDifferences() {
             {label: "primes", value:"primes"},
             {label: "fibonacci", value:"fibonacci"},
             {label: "lucas", value:"lucas"},
+            {label: "factorials", value:"factorials"},
         ]}
         onChange={(event, values) => {
             setValue(values)
