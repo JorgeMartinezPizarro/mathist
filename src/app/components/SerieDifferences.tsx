@@ -51,7 +51,7 @@ export default function PrimesDifferences() {
         <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
         <hr />
-      <div style={{verticalAlign: "middle", marginTop: "-16px"}}>
+      <div className="form-container">
         <Autocomplete
           disablePortal
           id="combo-box-demo"
