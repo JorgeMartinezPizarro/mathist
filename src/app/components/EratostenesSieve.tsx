@@ -83,8 +83,5 @@ export default () => {
         <hr />
         <p>[{number.slice(-10).map(value => string(BigInt(value))).join(", ")}]</p>
         <hr />
-        <p>Logarithmic approximation to the total of primes {string(Math.round(parseInt(value) / Math.log(parseInt(value))).toString())}</p>
-        <hr />
     </div>
-
 }
