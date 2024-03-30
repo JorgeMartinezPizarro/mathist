@@ -4,7 +4,7 @@ import { Button, CircularProgress, TextField, Alert  } from "@mui/material"
 import { useCallback, useState } from "react"
 import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
-import Primes from "./Primes"
+
 
 export default () => {
     const [number, setNumber] = useState<number[]|boolean>([2])
@@ -17,7 +17,29 @@ export default () => {
 
     const [loading, setLoading] = useState<boolean>(false)
     
-    const [error, setError] = useState(false)
+    const [error, setError] = useState<string|boolean>(false)
+
+    const downloadCSV = async () => {
+        const limit = parseInt(value)
+        if (limit > 10**10) {
+          setError("Invalid length " + limit + ", max allowed is 10**10")
+          return
+        }
+        else {
+          setError("")
+          const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
+          const x = await fetch(url)
+          let primes = await x.json()
+          const csvContent = "data:text/csv;charset=utf-8," + primes            
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "primes-to-" + limit + ".csv");
+          document.body.appendChild(link);
+          link.click();        
+          document.body.removeChild(link);
+        }
+    };
 
     const submitNumber = useCallback(() => {
         const url = "/api/primes?LIMIT="+value.toString()+"&amount="+10
@@ -51,7 +73,7 @@ export default () => {
     }, [value])
 
     const max = 9;
-    console.log(length)
+    
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
@@ -72,7 +94,8 @@ export default () => {
                 })}
             />
             <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">GENERATE</Button>
-            <Primes limit={parseInt(value)}/>
+            <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
+            {error && <Alert severity="error">{error}</Alert>}
             {loading && <CircularProgress />}
             
         </div>

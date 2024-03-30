@@ -1,34 +1,38 @@
 import Bits from "@/helpers/Bits"
 import getTimeMicro from "@/helpers/getTimeMicro";
 
-export default (LIMIT: number, amount: number, split: boolean) => {
-  if (split) {
-      const found = eratosthenes(LIMIT, amount).primes
-      const rows = 1048576
-      const columns = 16384
-      const a: [][] = []
-      let b: [] = []
-      for (var i = 0; i<found.length;i++) {
-          b.push(found[i])
-          if (b.length === columns || i===found.length-1) {
-              a.push(b)
-              b = []
-              if (a.length === rows) {
-                break;
-              }
-          }
-      }
-      return a
+export default (LIMIT: number, amount: number, excel: boolean) => {
+  if (excel) {
+    return convertToExcel(LIMIT)  
   } 
   return eratosthenes(LIMIT, amount)
+}
+
+function convertToExcel(LIMIT: number) {
+    const found = eratosthenes(LIMIT, LIMIT).primes
+    const rows = 1048576
+    const columns = 16384
+    const a: [][] = []
+    let b: [] = []
+    for (var i = 0; i<found.length;i++) {
+        b.push(found[i])
+        if (b.length === columns || i===found.length-1) {
+            a.push(b)
+            b = []
+            if (a.length === rows) {
+              break;
+            }
+        }
+    }
+    return a.map(sprimes => sprimes.join(',')).join('\r\n');
 }
 
 // enhanced eratosthenes sieve starting with only odd numbers
 // it works for 100m in 500ms, for 1b in 8 seconds, found no faster way in the internet.
 // it would work for up to 8b but it takes 1 minute
 // with over 2.2b it generates false primes, need to review why.
-function eratosthenes(lastNumber: number, amount: number) {
-  let start = getTimeMicro()
+function eratosthenes(lastNumber: number, amount: number = 10) {
+  let elapsed = getTimeMicro()
   
   if (lastNumber > 2**31)
     throw new Error("Cannot allocate that much memory, " + 2**31 + " is the max number allowed")
@@ -54,8 +58,8 @@ function eratosthenes(lastNumber: number, amount: number) {
     if (isPrime.get(i) === 0) {
       found.push(i*2+1)
     }
-  
-    start = getTimeMicro() - start
-      
-  return {primes: found.slice(-amount), time: start, length: found.length};
+
+  elapsed = getTimeMicro() - elapsed
+
+  return {primes: found.slice(-amount), time: elapsed, length: found.length};
 }
