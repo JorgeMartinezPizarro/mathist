@@ -9,7 +9,7 @@ import string from "@/helpers/string";
 export default () => {
     const [number, setNumber] = useState<number[]|boolean>([2])
 
-    const [value, setValue] = useState<string>("1")
+    const [value, setValue] = useState<string>("2")
 
     const [duration, setDuration] = useState(0)
 
@@ -34,7 +34,7 @@ export default () => {
           const encodedUri = encodeURI(csvContent);
           const link = document.createElement("a");
           link.setAttribute("href", encodedUri);
-          link.setAttribute("download", "primes-to-" + limit + ".csv");
+          link.setAttribute("download", "primes-to-" + limit.toString() + ".csv");
           document.body.appendChild(link);
           link.click();        
           document.body.removeChild(link);
