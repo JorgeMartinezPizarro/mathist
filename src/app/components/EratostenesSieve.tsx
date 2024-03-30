@@ -52,7 +52,6 @@ export default () => {
         <p>Eratostenes sieve of a given length. Max length is 10**{max} - 1</p>
         <hr />
         <div>
-            <Primes limit={parseInt(value)}/>
             <TextField
                 className="input"
                 label="Number"
@@ -65,6 +64,7 @@ export default () => {
                 })}
             />
             <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
+            <Primes limit={parseInt(value)}/>
             {loading && <CircularProgress />}
             
         </div>
