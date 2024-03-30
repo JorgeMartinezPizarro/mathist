@@ -43,8 +43,6 @@ export default () => {
 
     const max = 19
 
-    //const items = (number && number.map(nr => BigInt(nr).toString()))
-
     return <div>
         <hr />
         <p>Enter a number below to obtain its factorization into primes</p>
@@ -66,7 +64,7 @@ export default () => {
                     setValue(event.target.value)
             })}
         />
-        <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
+        <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">FACTORIZE</Button>
         {loading && <CircularProgress/>}
         <p>{error && <Alert severity="error">{error}</Alert>}</p>
         <hr />

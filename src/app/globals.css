@@ -33,6 +33,9 @@ li {
 button {
   margin: 4px!important;
 }
+button.oddButton {
+  margin-top: 34px!important;
+}
 .MuiAutocomplete-root {
   margin: 0 auto;
   display: inline-block

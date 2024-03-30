@@ -77,7 +77,7 @@ export default () => {
                     setNumber(BigInt(event.target.value.toString()).toString())
             })}
         />
-        <Button onClick={handleSend} variant="contained">Submit</Button>
+        <Button onClick={handleSend} variant="contained">GENERATE</Button>
         {loading && <CircularProgress/>}
         <p>{error && <Alert severity="error">{error}</Alert>}</p>
         <hr />

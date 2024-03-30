@@ -65,7 +65,7 @@ export default () => {
                         setValue(event.target.value)
                 })}
             />
-            <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">GET</Button>
+            <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">GENERATE</Button>
             <Primes limit={parseInt(value)}/>
             {loading && <CircularProgress />}
             

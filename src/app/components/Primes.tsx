@@ -13,31 +13,11 @@ const UserList = ({limit}) => {
         }
         else {
           setError("")
-          const url = "/api/primes?LIMIT="+limit+"&amount="+limit
+          const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&split=true"
           const x = await fetch(url)
           let primes = await x.json()
-          primes = primes.primes
-          const m = 26**3 -1
-          const t = m**2
-          const rows = 1048576
-          const columns = 16384
-          const a: [][] = []
-          let b: [] = []
-          for (var i = 0; i<primes.length;i++) {
-             b.push(primes[i])
-             if (b.length === columns) {
-              a.push(b)
-              b = []
-             }
-             if (a.length === rows) {
-              break;
-             }
-          }
-
-          console.log("The file contains " + primes.length + " primes from a max of " + rows * columns )
-          
           const csvContent = "data:text/csv;charset=utf-8," +
-          a.map(primes => primes.join(",")).join("\r\n")
+          primes.map(sprimes => sprimes.join(",")).join("\r\n")
           const encodedUri = encodeURI(csvContent);
           const link = document.createElement("a");
           link.setAttribute("href", encodedUri);
@@ -50,7 +30,7 @@ const UserList = ({limit}) => {
     };
 
   return (<>
-    <Button onClick={downloadCSV} variant="contained">CSV</Button>
+    <Button onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
     {error && <Alert severity="error">{error}</Alert>}
   </>);
 };

@@ -51,33 +51,37 @@ export default function PrimesDifferences() {
         <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
         <hr />
-      <Autocomplete
-        disablePortal
-        id="combo-box-demo"
-        isOptionEqualToValue={(option, value) => option.value === value.value && option.label === value.label}
-        value={value}
-        options={[
-            {label: "integers", value:"integers"},
-            {label: "squares", value:"squares"},
-            {label: "triangulars", value:"triangulars"},
-            {label: "penthagonals", value:"penthagonals"},
-            {label: "hexagonals", value:"hexagonals"},
-            {label: "cubes", value:"cubes"},
-            {label: "exponentials", value:"exponentials"},
-            {label: "primes", value:"primes"},
-            {label: "fibonacci", value:"fibonacci"},
-            {label: "lucas", value:"lucas"},
-            {label: "factorials", value:"factorials"},
-        ]}
-        onChange={(event, values) => {
-            setValue(values)
-        }}
-        sx={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} label="Serie" />}
-      />
-      <Button onClick={()=> {
-        handleSubmit()
-      }} variant="contained">Submit</Button>
+      <div style={{verticalAlign: "middle", marginTop: "-16px"}}>
+        <Autocomplete
+          disablePortal
+          id="combo-box-demo"
+          isOptionEqualToValue={(option, value) => option.value === value.value && option.label === value.label}
+          value={value}
+          options={[
+              {label: "integers", value:"integers"},
+              {label: "squares", value:"squares"},
+              {label: "triangulars", value:"triangulars"},
+              {label: "penthagonals", value:"penthagonals"},
+              {label: "hexagonals", value:"hexagonals"},
+              {label: "cubes", value:"cubes"},
+              {label: "exponentials", value:"exponentials"},
+              {label: "primes", value:"primes"},
+              {label: "fibonacci", value:"fibonacci"},
+              {label: "lucas", value:"lucas"},
+              {label: "factorials", value:"factorials"},
+          ]}
+          onChange={(event, values) => {
+              setValue(values)
+          }}
+          sx={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label="Serie" />}
+        />
+        <span >
+          <Button className='oddButton' onClick={()=> {
+            handleSubmit()
+          }} variant="contained">GENERATE</Button>
+        </span>
+      </div>
       {loading && <CircularProgress />}
       {error && JSON.stringify(error, null, 2)}
       <hr />
