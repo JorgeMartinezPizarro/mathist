@@ -4,6 +4,7 @@ import { Button, CircularProgress, TextField, Alert  } from "@mui/material"
 import { useCallback, useState } from "react"
 
 import string from "@/helpers/string";
+import Primes from "./Primes"
 
 export default () => {
     const [number, setNumber] = useState([2])
@@ -19,17 +20,10 @@ export default () => {
     const [error, setError] = useState(false)
 
     const submitNumber = useCallback(() => {
-        const url = "/api/primes"
-        const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify({number: value.toString()}),
-        }
+        const url = "/api/primes?LIMIT="+value.toString()+"&amount="+10
         setLoading(true)
         setError(false)
-        fetch(url, options)
+        fetch(url)
             .then(res => res.json())
             .then(res => {
                 if (res.error) {
@@ -58,6 +52,7 @@ export default () => {
         <p>Eratostenes sieve of a given length. Max length is 10**{max} - 1</p>
         <hr />
         <div>
+            <Primes limit={parseInt(value)}/>
             <TextField
                 className="input"
                 label="Number"
