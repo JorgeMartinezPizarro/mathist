@@ -51,6 +51,8 @@ export default () => {
         <hr />
         <p>Eratostenes sieve of a given length. Max length is 10**{max} - 1</p>
         <hr />
+        <p>The generated CSV file can be up to 478MB (max allowed is 512MB)</p>
+        <hr />
         <div>
             <TextField
                 className="input"
@@ -63,7 +65,7 @@ export default () => {
                         setValue(event.target.value)
                 })}
             />
-            <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">Submit</Button>
+            <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">GET</Button>
             <Primes limit={parseInt(value)}/>
             {loading && <CircularProgress />}
             
