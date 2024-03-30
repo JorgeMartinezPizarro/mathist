@@ -10,6 +10,6 @@ export async function POST(request: Request) {
   try {
     return Response.json(pitagoreanTriple(LIMIT))
   } catch (e) {
-    return Response.json({ error: 'The generated triple does not satisfy the equations, something went wrong ...' }, { status: 400 });
+    return Response.json({ error: e.toString(), status: 400 });
   }
 }

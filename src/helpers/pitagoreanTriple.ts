@@ -2,6 +2,9 @@ import getTimeMicro from "./getTimeMicro"
 import { childrenAt, pitagoreanTriple } from "./pitagoreanTree"
 
 export default (n: BigInt) => {
+    if (BigInt(n.toString()) < BigInt(0)) {
+        throw new Error("Invalid value, must be a not negative integer value!")
+    }
     const start = getTimeMicro()
 
     const x = n.toString(3)

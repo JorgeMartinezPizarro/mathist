@@ -12,6 +12,15 @@ const two: BigInt = BigInt(2)
 export default (n: BigInt ) => {
 
     const start = getTimeMicro()
+
+    if (n === one || n === zero) {
+        return {
+            factors: [n],
+            time: getTimeMicro()-start,
+        }
+    } else if (n < zero) {
+        throw new Error("It works only with positive integers!")
+    }
     
     return {
         factors: BigInt(n.toString()) <= BigInt("9007199254740991") ? primeFactors(parseInt(n.toString())) : primesOf(n), 
@@ -41,6 +50,9 @@ function sqrt(value: BigInt): BigInt {
 }
 
 const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
+    if (num < one) {
+        return []
+    }
     if (isPrime(new BigNumber(num.toString()))) {
         return [...factors, num]
     }

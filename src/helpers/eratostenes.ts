@@ -37,7 +37,7 @@ function eratosthenes(lastNumber: number, amount: number) {
       throw new Error("Cannot get the sieve of negative numbers")
 
   if (lastNumber <= 1) 
-      return {primes: [], time: 0}
+      return {primes: [], time: 0, length: 0}
 
   let upperLimit = Math.round(Math.sqrt(lastNumber))
   var memorySize = (lastNumber - 1)/2;

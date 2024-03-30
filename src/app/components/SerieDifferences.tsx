@@ -5,7 +5,7 @@ import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material
 
 export default function PrimesDifferences() {
   
-  const [number, setNumber] = useState<BigInt[][]>([])
+  const [number, setNumber] = useState<BigInt[][]|boolean>(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const AMOUNT = 39
@@ -54,6 +54,7 @@ export default function PrimesDifferences() {
       <div className="form-container">
         <Autocomplete
           disablePortal
+          disableClearable
           id="combo-box-demo"
           isOptionEqualToValue={(option, value) => option.value === value.value && option.label === value.label}
           value={value}
@@ -71,7 +72,9 @@ export default function PrimesDifferences() {
               {label: "factorials", value:"factorials"},
           ]}
           onChange={(event, values) => {
-              setValue(values)
+              
+            setValue(values)
+            setNumber(false)
           }}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Serie" />}
@@ -84,10 +87,11 @@ export default function PrimesDifferences() {
       </div>
       {loading && <CircularProgress />}
       {error && JSON.stringify(error, null, 2)}
-      <hr />
-      <p>Below the {LENGTH} first {value.label} and it's nth-differences up to {LENGTH}</p>
-      <hr />
-      {number && (
+      
+      {number && (<>
+        <hr />
+        <p>Below the {LENGTH} first {value.label} and it's nth-differences up to {LENGTH}</p>
+        <hr />
         <table>
           <tbody>
             {number.slice(0, LENGTH).filter((el, id) => {
@@ -103,7 +107,7 @@ export default function PrimesDifferences() {
             )}
           </tbody>
         </table>
-      )}
+      </>)}
     </div>
   );
 }

@@ -2,12 +2,12 @@
 
 import { Button, CircularProgress, TextField, Alert  } from "@mui/material"
 import { useCallback, useState } from "react"
-
+import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
 import Primes from "./Primes"
 
 export default () => {
-    const [number, setNumber] = useState([2])
+    const [number, setNumber] = useState<number[]|boolean>([2])
 
     const [value, setValue] = useState<string>("1")
 
@@ -23,12 +23,16 @@ export default () => {
         const url = "/api/primes?LIMIT="+value.toString()+"&amount="+10
         setLoading(true)
         setError(false)
+        setNumber([])
+        setLength(0)
         fetch(url)
             .then(res => res.json())
             .then(res => {
                 if (res.error) {
                     setLoading(false)
                     setError(res.error)
+                    setLength(0)
+                    setNumber([])
                 } else {
                     setDuration(res.time)
                     setLength(res.length)
@@ -40,18 +44,18 @@ export default () => {
             .catch(err => {
                 setLoading(false)
                 setError(err)
+                setLength(0)
+                setNumber([])
             })
 
     }, [value])
 
     const max = 9;
-    
+    console.log(length)
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        <p>Eratostenes sieve of a given length. Max length is 10**{max} - 1</p>
-        <hr />
-        <p>The generated CSV file can be up to 478MB (max allowed is 512MB)</p>
+        <p>Eratostenes sieve of a given length. Max length is 10**{max} - 1. The generated CSV file can be up to 478MB (max allowed is 512MB)</p>
         <hr />
         <div>
             <TextField
@@ -61,8 +65,10 @@ export default () => {
                 disabled={loading}
                 value={value}
                 onChange={(event => {
-                    if (event.target.value.length <= max)
+                    if (event.target.value.length <= max && parseInt(event.target.value) > 0) {
                         setValue(event.target.value)
+                        setNumber(false)
+                    }
                 })}
             />
             <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">GENERATE</Button>
@@ -70,15 +76,17 @@ export default () => {
             {loading && <CircularProgress />}
             
         </div>
-        <p>{error && <Alert severity="error">{error}</Alert>}</p>
-        <hr />
-        <p>Total of primes smaller or equal {string(value)} is {string(length.toString())}</p>
-        <hr/>
-        <p>Duration {duration} μs</p>
-        <hr/>
-        <p>Last teen primes of the sieve:</p>
-        <hr />
-        <p>[{number.slice(-10).map(value => string(BigInt(value))).join(", ")}]</p>
-        <hr />
+        {error && <p><Alert severity="error">{error}</Alert></p>}
+        {!error && number && !loading && (<>
+            <hr />
+            <p>Total of primes smaller or equal {string(BigInt(value))} is {string(BigInt(length))}</p>
+            <hr/>
+            <p>Duration {d(duration)}</p>
+            <hr/>
+            <p>Last teen primes of the sieve:</p>
+            <hr />
+            <p>[{number && number.slice(-10).map(value => string(BigInt(value))).join(", ")}]</p>
+            <hr />
+        </>)}
     </div>
 }

@@ -9,6 +9,6 @@ export async function GET(request: Request) {
     try {
         return Response.json(factors(n))
     } catch (e) {
-        return Response.json({ error: 'Error getting the factors of ' + n + '  ...' }, { status: 400 });
+        return Response.json({ error: e.toString() }, { status: 400 });
       }
 }
