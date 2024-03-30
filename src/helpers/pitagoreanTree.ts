@@ -35,7 +35,7 @@ export default (n: BigInt) => {
         array.push(x)
     }
 
-    return {tree: array, time: getTimeMicro() - start};
+    return {squares: arrayOfSquares, tree: array, time: getTimeMicro() - start};
 }
 
 const iterate = (arrayOfSquares: BigInt[][][]): BigInt[][][] => {

@@ -21,7 +21,7 @@ const UserList = ({limit}) => {
           const encodedUri = encodeURI(csvContent);
           const link = document.createElement("a");
           link.setAttribute("href", encodedUri);
-          link.setAttribute("download", "user_list.csv");
+          link.setAttribute("download", "primes-to-" + limit + ".csv");
           document.body.appendChild(link);
           link.click();
         }

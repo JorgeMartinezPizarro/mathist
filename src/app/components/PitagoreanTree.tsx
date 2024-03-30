@@ -121,16 +121,13 @@ export default () => {
             <hr />
         </>}
         <div />
-        <p>Tree of height {size} calculated in {duration(tree.time)}</p>
-        <hr />
-
-        <div>{
-            tree.tree.map(serie => <ul key={serie.toString()}>{serie.map(triple => {
+        <p>
+            {tree.tree.map(serie => <ul key={serie.toString()}>{serie.map(triple => {
                 const x = "<" + triple.triple[0] + ", " + triple.triple[1] + ", " + triple.triple[2] + ">"
                 return <li key={x}>{x}</li>
-            })}</ul>)
-        }</div>
-        
-        
+            })}</ul>)}          
+        </p>
+        <hr />
+        <p>Tree of height {size} calculated in {duration(tree.time)}</p>
     </div>
 }
