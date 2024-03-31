@@ -13,7 +13,7 @@ export default function PrimesDifferences() {
 
     const handleSubmit = useCallback(() => {
         setLoading(true)
-        fetch("/api/serie?"+ ( new URLSearchParams( {LIMIT: AMOUNT, name: value.value} ) ).toString())
+        fetch("/api/serie?LIMIT=" + AMOUNT + "&name=" + value.value)
       .then(res => res.json())
       .then(res => {
         const options = {

@@ -7,7 +7,7 @@ export default (LIMIT: number, name: string): BigInt[] => {
   
   if (name === "primes") {
     const int = Math.floor( 2 * LIMIT * Math.log(LIMIT))
-    aux = eratostenes(int).primes
+    aux = eratostenes(int, int).primes
   }
   
   for (var i=0;i<LIMIT;i++) {

@@ -1,7 +1,7 @@
 import Bits from "@/helpers/Bits"
 import getTimeMicro from "@/helpers/getTimeMicro";
 
-export default (LIMIT: number, amount: number, excel: boolean) => {
+export default (LIMIT: number, amount: number = 10, excel: boolean = false) => {
   if (excel) {
     return convertToExcel(LIMIT)  
   } 
