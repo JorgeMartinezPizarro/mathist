@@ -2,12 +2,13 @@
 
 import { Button, CircularProgress, TextField, Alert  } from "@mui/material"
 import { useCallback, useState } from "react"
+
 import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
-
+import {MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE} from "@/helpers/Constants"
 
 export default () => {
-    const [number, setNumber] = useState<number[]|boolean>([2])
+    const [number, setNumber] = useState<number[][]|boolean>([[2]])
 
     const [value, setValue] = useState<string>("2")
 
@@ -21,23 +22,25 @@ export default () => {
 
     const downloadCSV = async () => {
         const limit = parseInt(value)
-        if (limit > 10**10) {
-          setError("Invalid length " + limit + ", max allowed is 10**10")
-          return
-        }
-        else {
-          setError("")
-          const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
-          const x = await fetch(url)
-          let primes = await x.json()
-          const csvContent = "data:text/csv;charset=utf-8," + primes            
-          const encodedUri = encodeURI(csvContent);
-          const link = document.createElement("a");
-          link.setAttribute("href", encodedUri);
-          link.setAttribute("download", "primes-to-" + limit.toString() + ".csv");
-          document.body.appendChild(link);
-          link.click();        
-          document.body.removeChild(link);
+        setError("")
+        setLoading(true)
+        try {
+            const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
+            const response = await fetch(url)
+            const filename = await response.json()
+            if (filename.error) {
+                throw new Error(filename.error)
+            }
+            const link = document.createElement("a");
+            link.setAttribute("href", "/files/" + filename);
+            link.setAttribute("download", "primes-to-" + limit.toString() + ".csv");
+            document.body.appendChild(link);
+            link.click();        
+            setLoading(false)
+            document.body.removeChild(link);
+        } catch (e) {
+            setError(e.toString())
+            setLoading(false)
         }
     };
 
@@ -72,12 +75,12 @@ export default () => {
 
     }, [value])
 
-    const max = 9;
-    
+    const primes = number.length ? number[number.length - 1 ].slice(0, 10).reverse() : false
+
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        <p>Eratostenes sieve of a given length. Max length is 10**{max} - 1. The generated CSV file can be up to 478MB (max allowed is 512MB)</p>
+        <p>Eratosthenes sieve of a number, with a max of {string(BigInt(MAX_LENGTH_FOR_SIEVE))}. Download file can get up to 2GB</p>
         <hr />
         <div>
             <TextField
@@ -87,7 +90,7 @@ export default () => {
                 disabled={loading}
                 value={value}
                 onChange={(event => {
-                    if (event.target.value.length <= max && parseInt(event.target.value) > 0) {
+                    if (event.target.value.length <= MAX_DIGITS_SIEVE && parseInt(event.target.value) > 0) {
                         setValue(event.target.value)
                         setNumber(false)
                     }
@@ -100,7 +103,7 @@ export default () => {
             
         </div>
         {error && <p><Alert severity="error">{error}</Alert></p>}
-        {!error && number && !loading && (<>
+        {!error && primes && !loading && (<>
             <hr />
             <p>Total of primes smaller or equal {string(BigInt(value))} is {string(BigInt(length))}</p>
             <hr/>
@@ -108,7 +111,7 @@ export default () => {
             <hr/>
             <p>Last teen primes of the sieve:</p>
             <hr />
-            <p>[{number && number.slice(-10).map(value => string(BigInt(value))).join(", ")}]</p>
+            <p>[{primes.map(value => string(BigInt(value))).join(", ")}]</p>
             <hr />
         </>)}
     </div>

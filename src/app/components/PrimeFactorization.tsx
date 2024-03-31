@@ -4,6 +4,7 @@ import string from "@/helpers/string"
 import {default as d} from "@/helpers/duration"
 import { TextField, Button, CircularProgress, Alert } from "@mui/material"
 import { useCallback, useState } from "react"
+import { MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
 
 export default () => {
 
@@ -43,7 +44,7 @@ export default () => {
 
     }, [value])
 
-    const max = 19
+    const max = MAX_DIGITS_FACTORIZATION
     
     return <div>
         <hr />

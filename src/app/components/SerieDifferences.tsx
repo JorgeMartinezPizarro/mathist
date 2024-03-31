@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material"
+import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 
 export default function PrimesDifferences() {
   
@@ -13,7 +14,7 @@ export default function PrimesDifferences() {
 
     const handleSubmit = useCallback(() => {
         setLoading(true)
-        fetch("/api/serie?LIMIT=" + AMOUNT + "&name=" + value.value)
+        fetch("/api/serie?LIMIT=" + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + "&name=" + value.value)
       .then(res => res.json())
       .then(res => {
         const options = {
@@ -40,7 +41,7 @@ export default function PrimesDifferences() {
       })
     }, [value])
 
-  const LENGTH = 20;
+  const LENGTH = MAX_SERIES_DIFFERENCES_SIZE;
 
   return (
     <div className="main">

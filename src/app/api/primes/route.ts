@@ -18,6 +18,6 @@ export async function GET(request: Request) {
   try {
     return Response.json( eratostenes(LIMIT, amount, excel) )
   } catch (e) {
-    return Response.json({ error: e.toString()  }, { status: 400 });
+    return Response.json({ error: e.toString()  }, { status: 500 });
   }
 }

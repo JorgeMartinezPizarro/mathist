@@ -1,5 +1,6 @@
 'use client'
 
+import { MAX_DIGITS_TRIPLE } from "@/helpers/Constants"
 import duration from "@/helpers/duration"
 import string from "@/helpers/string"
 import { TextField, Button, CircularProgress, Alert } from "@mui/material"
@@ -49,7 +50,7 @@ export default () => {
             })
     }
 
-    const a = 60000
+    const a = MAX_DIGITS_TRIPLE
     
     const M = "10**"+a+" - 1"
 
@@ -93,7 +94,7 @@ export default () => {
         {loading && <CircularProgress/>}
         <p>{error && <Alert severity="error">{error}</Alert>}</p>
         <hr />
-        <p>More detail about what are we computing here, in the video: <a href="https://www.youtube.com/watch?v=94mV7Fmbx88" >https://www.youtube.com/watch?v=94mV7Fmbx88</a></p>
+        <p>More detail about what are we computing here, in the video: <a href="https://www.youtube.com/watch?v=94mV7Fmbx88" >https://www.youtube.com/watch?v=94mV7Fmbx88</a>. A visualization tool for the triples: <a href="https://www.geogebra.org/calculator/hd2hcvas">https://www.geogebra.org/calculator/hd2hcvas</a></p>
         { !error && <>
             
             {triple.square && triple.square.length === 2 && triple.square[0].length === 2  && triple.square[1].length === 2 && <>
