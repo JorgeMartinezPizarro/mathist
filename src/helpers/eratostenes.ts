@@ -73,7 +73,7 @@ function eratosthenes(lastNumber: number, amount: number = 10) {
   let elapsed = getTimeMicro()
   
   if (lastNumber > 2**32)
-    throw new Error("Cannot allocate enough memory, " + MAX_LENGTH_FOR_SIEVE + " is the max number allowed")
+    throw new Error("Cannot allocate enough memory for the sieve, " + MAX_LENGTH_FOR_SIEVE + " is the max number allowed")
   
   if (lastNumber < 0) 
       throw new Error("Cannot get the sieve of negative numbers")
@@ -98,7 +98,7 @@ function eratosthenes(lastNumber: number, amount: number = 10) {
   
   let count = 0
   let numberOfPrimes = 1
-  console.log("GENERATING PRIMES")
+  
   let partialPrimes = Array()
   const t = MAX_NODE_ARRAY_LENGTH
   for (var i = memorySize; i >= 1; i-- ) {
@@ -111,8 +111,6 @@ function eratosthenes(lastNumber: number, amount: number = 10) {
               partialPrimes.push(2)
           }
           if (partialPrimes.length === t || i===1 || count === amount - 1) {
-            
-            console.log("Adding primes one more time")
             found.push(partialPrimes)
             partialPrimes = Array()
             if (found.length === t) {
@@ -128,9 +126,6 @@ function eratosthenes(lastNumber: number, amount: number = 10) {
     }
   }
 
-  // MAX of primes allowed in Array() is 125813764
-  console.log("GENERATED PRIMES")
-  console.log(found)
   elapsed = getTimeMicro() - elapsed;
   return {primes: found, time: elapsed, length: numberOfPrimes};
 }
