@@ -5,7 +5,7 @@ import { useCallback, useState } from "react"
 
 import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
-import {MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE} from "@/helpers/Constants"
+import {MAX_DIGITS_SIEVE, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE} from "@/helpers/Constants"
 
 export default () => {
     const [number, setNumber] = useState<number[][]|boolean>([[2]])
@@ -36,8 +36,8 @@ export default () => {
                 throw new Error(error)
             }
             const link = document.createElement("a");
-            link.setAttribute("href", "/files/" + filename);
-            link.setAttribute("download", "primes-to-" + limit.toString() + ".csv");
+            link.href = "/files/" + filename;
+            link.download = "primes-to-" + limit.toString() + ".csv";
             document.body.appendChild(link);
             link.click();        
             document.body.removeChild(link);
@@ -51,7 +51,7 @@ export default () => {
     };
 
     const submitNumber = useCallback(() => {
-        const url = "/api/primes?LIMIT="+value.toString()+"&amount="+10
+        const url = "/api/primes?LIMIT="+value.toString()+"&amount="+MAX_DISPLAY_SIEVE
         setLoading(true)
         setError(false)
         setNumber([])
@@ -82,7 +82,7 @@ export default () => {
 
     }, [value])
 
-    const primes = number && number.length ? number.slice(-1)[0].slice(0, 10).reverse() : false
+    const primes = number && number.length ? number.slice(-1)[0].slice(0, MAX_DISPLAY_SIEVE).reverse() : false
 
     return <div>
         <img src="/image6.png" height={200} />
