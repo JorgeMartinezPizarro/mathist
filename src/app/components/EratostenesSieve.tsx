@@ -31,10 +31,12 @@ export default () => {
         try {
             const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
             const response = await fetch(url)
-            const {filename, time, error} = await response.json()
+            const {filename, time, error, length: l} = await response.json()
             if (error) {
                 throw new Error(error)
             }
+            setLength(l)
+            console.log(length + " primes found")
             const link = document.createElement("a");
             link.href = "/files/" + filename;
             link.download = "primes-to-" + limit.toString() + ".csv";
@@ -110,7 +112,7 @@ export default () => {
             
         </div>
         {error && <p><Alert severity="error">{error}</Alert></p>}
-        {!error && durationFull !== 0 && <p>Prepared download in {d(durationFull)}</p>} 
+        {!error && durationFull !== 0 && <p>Prepared download of {length} primes in {d(durationFull)}</p>}
         {!error && primes && !loading && (<>
             <hr />
             <p>Total of primes smaller or equal {string(BigInt(value))} is {string(BigInt(length))}</p>
@@ -119,7 +121,7 @@ export default () => {
             <hr/>
             <p>Last teen primes of the sieve:</p>
             <hr />
-            <p>[{primes.map(value => string(BigInt(value))).join(", ")}]</p>
+            <p>[{primes.map((prime: string) => string(BigInt(prime))).join(", ")}]</p>
             <hr />
         </>)}
     </div>

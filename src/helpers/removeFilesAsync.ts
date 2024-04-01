@@ -13,7 +13,12 @@ export default async (directory: string, extensions: string[], seconds: number) 
         const stats = await fs.stat(filePath);
         const birthTime = Math.floor(stats.birthtimeMs / 1000);
         if (currentTimeInSeconds - birthTime > seconds) {
-          await fs.rm(filePath);
+          try {
+            await fs.rm(filePath);
+          }
+          catch (e) {
+            console.log("Error removing " + filePath)
+          }
         }
     }
   }
