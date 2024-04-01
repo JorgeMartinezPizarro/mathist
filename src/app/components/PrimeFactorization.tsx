@@ -13,7 +13,7 @@ export default () => {
     const [value, setValue] = useState<string>("2")
 
     const [duration, setDuration] = useState(0)
-
+    
     const [loading, setLoading] = useState<boolean>(false)
     
     const [error, setError] = useState(false)
@@ -58,7 +58,7 @@ export default () => {
             <TextField
                 className="input"
                 label="Number"
-                type="string"
+                type="number"
                 disabled={loading}
                 value={value}
                 onChange={(event => {

@@ -14,6 +14,8 @@ export default () => {
 
     const [duration, setDuration] = useState(0)
 
+    const [durationFull, setDurationFull] = useState(0)
+
     const [length, setLength] = useState(0)
 
     const [loading, setLoading] = useState<boolean>(false)
@@ -24,21 +26,25 @@ export default () => {
         const limit = parseInt(value)
         setError("")
         setLoading(true)
+        setNumber([])
+        setDurationFull(0)
         try {
             const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
             const response = await fetch(url)
-            const filename = await response.json()
-            if (filename.error) {
-                throw new Error(filename.error)
+            const {filename, time, error} = await response.json()
+            if (error) {
+                throw new Error(error)
             }
             const link = document.createElement("a");
             link.setAttribute("href", "/files/" + filename);
             link.setAttribute("download", "primes-to-" + limit.toString() + ".csv");
             document.body.appendChild(link);
             link.click();        
-            setLoading(false)
             document.body.removeChild(link);
+            setLoading(false)
+            setDurationFull(time)
         } catch (e) {
+            setDurationFull(0)
             setError(e.toString())
             setLoading(false)
         }
@@ -50,6 +56,7 @@ export default () => {
         setError(false)
         setNumber([])
         setLength(0)
+        setDurationFull(0)
         fetch(url)
             .then(res => res.json())
             .then(res => {
@@ -75,12 +82,12 @@ export default () => {
 
     }, [value])
 
-    const primes = number.length ? number[number.length - 1 ].slice(0, 10).reverse() : false
+    const primes = number && number.length ? number.slice(-1)[0].slice(0, 10).reverse() : false
 
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        <p>Eratosthenes sieve of a number, with a max of {string(BigInt(MAX_LENGTH_FOR_SIEVE))}. Download file can get up to 2GB</p>
+        <p>Eratosthenes sieve of a number, with a max of {string(BigInt(MAX_LENGTH_FOR_SIEVE))}. Download file can get up to 2GB. It takes around 1 minute to generate.</p>
         <hr />
         <div>
             <TextField
@@ -103,6 +110,7 @@ export default () => {
             
         </div>
         {error && <p><Alert severity="error">{error}</Alert></p>}
+        {!error && durationFull !== 0 && <p>Prepared download in {d(durationFull)}</p>} 
         {!error && primes && !loading && (<>
             <hr />
             <p>Total of primes smaller or equal {string(BigInt(value))} is {string(BigInt(length))}</p>
