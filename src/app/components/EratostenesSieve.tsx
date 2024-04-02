@@ -5,10 +5,10 @@ import { useCallback, useState } from "react"
 
 import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
-import {MAX_DIGITS_SIEVE, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE} from "@/helpers/Constants"
+import {MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
 
 export default () => {
-    const [number, setNumber] = useState<number[][]|boolean>([[2]])
+    const [primes, setPrimes] = useState<number[]>([2])
 
     const [value, setValue] = useState<string>("2")
 
@@ -16,7 +16,7 @@ export default () => {
 
     const [durationFull, setDurationFull] = useState(0)
 
-    const [length, setLength] = useState(0)
+    const [length, setLength] = useState(1)
 
     const [loading, setLoading] = useState<boolean>(false)
     
@@ -24,9 +24,11 @@ export default () => {
 
     const downloadCSV = async () => {
         const limit = parseInt(value)
-        setError("")
+        setError(false)
         setLoading(true)
-        setNumber([])
+        setDuration(0)
+        setPrimes([])
+        setLength(0)
         setDurationFull(0)
         try {
             const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
@@ -53,10 +55,10 @@ export default () => {
     };
 
     const submitNumber = useCallback(() => {
-        const url = "/api/primes?LIMIT="+value.toString()+"&amount="+MAX_DISPLAY_SIEVE
+        const url = "/api/primes?LIMIT="+value.toString()
         setLoading(true)
         setError(false)
-        setNumber([])
+        setPrimes([])
         setLength(0)
         setDurationFull(0)
         fetch(url)
@@ -66,12 +68,12 @@ export default () => {
                     setLoading(false)
                     setError(res.error)
                     setLength(0)
-                    setNumber([])
+                    setPrimes([])
                 } else {
                     setDuration(res.time)
                     setLength(res.length)
                     setLoading(false)
-                    setNumber(res.primes)
+                    setPrimes(res.primes)
                 }
                 
             })
@@ -79,17 +81,15 @@ export default () => {
                 setLoading(false)
                 setError(err)
                 setLength(0)
-                setNumber([])
+                setPrimes([])
             })
 
     }, [value])
 
-    const primes = number && number.length ? number.slice(-1)[0].slice(0, MAX_DISPLAY_SIEVE).reverse() : false
-
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        <p>Eratosthenes sieve of a number up to {string(BigInt(MAX_LENGTH_FOR_SIEVE))}. File can get up to 2GB and takes around 1 minute to generate.</p>
+        <p>Recommended max value for sieve {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}. File can get up to 2GB and takes around 1 minute to generate.</p>
         <hr />
         <div>
             <TextField
@@ -101,7 +101,9 @@ export default () => {
                 onChange={(event => {
                     if (event.target.value.length <= MAX_DIGITS_SIEVE && parseInt(event.target.value) > 0) {
                         setValue(event.target.value)
-                        setNumber(false)
+                        setPrimes([])
+                        setDurationFull(0)
+                        setLength(0)
                     }
                 })}
             />
@@ -115,7 +117,7 @@ export default () => {
         {!error && durationFull !== 0 && <>
             <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>
         </>}
-        {!error && primes && !loading && (<>
+        {!error && (primes.length > 0) && !loading && (<>
             <hr />
             <p>Total of primes smaller or equal {string(BigInt(value))} is {string(BigInt(length))}</p>
             <hr/>
@@ -123,7 +125,7 @@ export default () => {
             <hr/>
             <p>Last teen primes of the sieve:</p>
             <hr />
-            <p>[{primes.map((prime: string) => string(BigInt(prime))).join(", ")}]</p>
+            <p>[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>
             <hr />
         </>)}
     </div>
