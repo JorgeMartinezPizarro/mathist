@@ -4,8 +4,7 @@ import Bits from "@/helpers/Bits"
 import removeFilesAsync from "@/helpers/removeFilesAsync"
 import id from "@/helpers/id"
 import getTimeMicro from "@/helpers/getTimeMicro";
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_LENGTH_FOR_SIEVE, MAX_NODE_ARRAY_LENGTH, MAX_PRIME_LIST_NODE_MEMORY_SIZE, MAX_SIEVE_VALUE_MEMORY_CRASH} from "./Constants";
-import { isPrime } from "mathjs";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_LENGTH_FOR_SIEVE, MAX_NODE_ARRAY_LENGTH, MAX_PRIME_LIST_NODE_MEMORY_SIZE} from "./Constants";
 
 export default (LIMIT: number, amount: number = 10, excel: boolean = false) => {
   if (excel) {
@@ -48,13 +47,12 @@ function convertToExcel(LIMIT: number) {
     try {
       fsS.appendFileSync(path, a[i].join(',') + "\r\n");
     } catch (e) {
-      throw new Error("Error writting primes to file")
     }
   }
   
-  // Remove files older than 20 minutes to avoid disk full
+  // Remove files older than 30 minutes to avoid disk full
   try {
-    removeFilesAsync('./public/files/', ["csv"], 60 * 20);
+    removeFilesAsync('./public/files/', ["csv"], 60 * 30);
   } catch (e) {
     
   }
@@ -71,70 +69,77 @@ function convertToExcel(LIMIT: number) {
 // 433358501 is the maximun of numbers allowed before memory crash
 
 function eratosthenes(lastNumber: number, amount: number = 10) {
-  
   let elapsed = getTimeMicro()
 
-  if (lastNumber > MAX_SIEVE_VALUE_MEMORY_CRASH) {
-    throw new Error("Longer sieves will get to a OOM Excepcion, " + MAX_SIEVE_VALUE_MEMORY_CRASH)
-  }
-
-  if (lastNumber > MAX_LENGTH_FOR_SIEVE)
-    throw new Error("Cannot allocate enough memory for the sieve, " + MAX_LENGTH_FOR_SIEVE + " is the max number allowed")
-  
   if (lastNumber < 0) 
       throw new Error("Cannot get the sieve of negative numbers")
 
   if (lastNumber === 1) 
       return {primes: [], time: getTimeMicro() - elapsed, length: 0}
   
-  if (lastNumber === 2) {
+  if (lastNumber === 2) 
     return {primes: [[2]], time: getTimeMicro() - elapsed, length: 1}
-  }
+  
 
   let upperLimit = Math.round(Math.sqrt(lastNumber))
-  var memorySize = Math.round((lastNumber - 1)/2);
+  let memorySize = Math.round(lastNumber / 2);
   let found = new Array()
   let count = 0
   let numberOfPrimes = 1
   let partialPrimes = Array()  
-  var sieve = new Bits(memorySize);
+  let sieve = new Bits(0)
+
+
+
+  try {
+    sieve = new Bits(memorySize);
+  } catch (e) {
+    throw new Error("Error initializating variables for the sieve! " + e.toString())
+  }
+  sieve.set(memorySize-1, 1) 
+  if (sieve.get(memorySize-1) !== 1) {
+    throw new Error("The sieve is buggy with memory size " + memorySize)
+  }
+  sieve.set(memorySize-1, 0)
   
   // Hard process crossing odd composite numbers
   for (var i = 3; i <= upperLimit; i += 2) {
-    if (sieve.get(i / 2) === 0) {
+    if (sieve.get((i -1) / 2) === 0) {
       for (var j = i*i; j <= lastNumber; j += 2*i) {
-        sieve.set(j / 2, 1)
+        sieve.set((j-1)/2, 1)
       }
     }
   }  
-  
-  // Generate a matrix of primes from the sieve, to allocate more primes than MAX_NODE_ARRAY_LENGTH
+
+  // Convert the sieve to a matrix of primes
   for (var i = memorySize; i >= 1; i-- ) {
-    if (sieve.get(i) === 0 && i*2+1 <= lastNumber) {
+    if (i * 2 + 1 <= lastNumber && sieve.get(i) === 0) {
       if (count < amount) {
-        const MAX = found.length
         try {
+          // the number is definetively prime, so push it!
           partialPrimes.push(i*2+1)
           if (i===1 || count === amount - 1) {
               partialPrimes.push(2)
           }
           if (partialPrimes.length === MAX_NODE_ARRAY_LENGTH || i===1 || count === amount - 1) {
+            if (partialPrimes.length === MAX_NODE_ARRAY_LENGTH)
+              console.log("Using a new array cause the length exceed the max: " + MAX_NODE_ARRAY_LENGTH)
             found.push(partialPrimes)
             partialPrimes = Array()
-            // More than MAX_NODE_ARRAY_LENGTH * MAX_NODE_ARRAY_LENGTH elements do not fit 
-            if (found.length === MAX_NODE_ARRAY_LENGTH) {
-              throw new Error("No way to create a matrix bigger than " + MAX_NODE_ARRAY_LENGTH + " x " + MAX_NODE_ARRAY_LENGTH)
-            }
           }
           count++
         } catch (e) {
-          throw new Error("Error push in array with length " + MAX + " at primes below " + lastNumber + " last prime generated is " + (1 + 2*i))
+          throw new Error("Error push " + count + "th time in array at primes below " + lastNumber + " last prime generated is " + (1 + 2*i))
+        }
+        // LIMITS BEYOND THE COMPUTATION!
+        if (found.length === MAX_NODE_ARRAY_LENGTH) {
+          throw new Error("No way to create a matrix bigger than " + MAX_NODE_ARRAY_LENGTH + " x " + MAX_NODE_ARRAY_LENGTH)
+        }
+        if (count === MAX_PRIME_LIST_NODE_MEMORY_SIZE) {
+          throw new Error("More primes in the matrix will throw an OOM Exception, " + MAX_PRIME_LIST_NODE_MEMORY_SIZE)
         }
       }
-      numberOfPrimes++;
-      if (numberOfPrimes === MAX_PRIME_LIST_NODE_MEMORY_SIZE) {
-        throw new Error("More primes in the matrix will throw an OOM Exception, " + MAX_PRIME_LIST_NODE_MEMORY_SIZE)
-      }
+      numberOfPrimes++;    
     }
   }
 

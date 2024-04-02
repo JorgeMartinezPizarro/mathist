@@ -89,7 +89,7 @@ export default () => {
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        <p>Eratosthenes sieve of a number, with a max of {string(BigInt(MAX_LENGTH_FOR_SIEVE))}. Download file can get up to 2GB. It takes around 1 minute to generate.</p>
+        <p>Eratosthenes sieve of a number up to {string(BigInt(MAX_LENGTH_FOR_SIEVE))}. File can get up to 2GB and takes around 1 minute to generate.</p>
         <hr />
         <div>
             <TextField
@@ -112,7 +112,9 @@ export default () => {
             
         </div>
         {error && <p><Alert severity="error">{error}</Alert></p>}
-        {!error && durationFull !== 0 && <p>Prepared download of {length} primes in {d(durationFull)}</p>}
+        {!error && durationFull !== 0 && <>
+            <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>
+        </>}
         {!error && primes && !loading && (<>
             <hr />
             <p>Total of primes smaller or equal {string(BigInt(value))} is {string(BigInt(length))}</p>

@@ -1,6 +1,6 @@
 export default class Bits {
     constructor(length: number) {
-        this.value = new BitView(new ArrayBuffer(length), 0, length);
+        this.value = new BitView(length);
     }
     get(n){
         return this.value.getBit(n)
@@ -13,7 +13,8 @@ export default class Bits {
     }
   }
 
-const BitView = function(buf) {
+const BitView = function(length) {
+  const buf = new ArrayBuffer(length)
   this.buffer = buf;
   this.u8 = new Uint8Array(buf);
 };
