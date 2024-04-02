@@ -7,7 +7,7 @@ import getTimeMicro from "@/helpers/getTimeMicro";
 import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_DISPLAY_SIEVE, MAX_NODE_ARRAY_LENGTH} from "./Constants";
 import duration from "./duration";
 
-export default (LIMIT: number, amount: number = 10, excel: boolean = false) => {
+export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) => {
   if (excel) {
     return primesToExcel(LIMIT)  
   } 
@@ -89,7 +89,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
   let numberOfPrimes = 1
   let sieve = eratosthenes(lastNumber)
 
-  console.log("Sieved, now generate primes!")
+  console.log("Sieved, now generate " + amount + " primes!")
 
   const e = getTimeMicro()
   // Basically push primes until get an amount

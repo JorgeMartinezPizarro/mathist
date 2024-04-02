@@ -1,10 +1,9 @@
 import string from "./string";
 
-// Up to 12b max atm
+// Up to 14b MAX 
 const MAX_COLUMNS = 2 ** 31 // 2b
 const MAX_ROWS = 7
-// Solution for up to 3 * (2**31-1) values, can be improved to (2**31-1) * (2**31-1)
-// TODO: implement a generic solution by using N x N
+
 export default class Bits {
   private value: BitView[] = new BitView(0)
   public length: number = 0
@@ -18,14 +17,11 @@ export default class Bits {
       }
       for (var i = MAX_ROWS - 1; i >= 0; i--) {
         if (length > i * MAX_COLUMNS) {
-          if (i > this.row) {
-            this.row = i
-            console.log((i+1) + "th Y coordinate")
-          }          
           array.push(new BitView(MAX_COLUMNS))
         }
       }
       this.value = array
+      this.row = this.value.length
     } catch (e) {
       throw new Error("Error initializing the Bits class. " + e.toString().replaceAll("Error: ", ""))
     }
