@@ -1,30 +1,27 @@
+import { MAX_NODE_ARRAY_LENGTH } from "./Constants";
 import string from "./string";
 
-// Up to 14b MAX 
-const MAX_COLUMNS = 2 ** 31 // 2b
-const MAX_ROWS = 7
+// Up to 68b MAX, posible sieve for up to 136b, not bad at all!
+export const MAX_COLUMNS = MAX_NODE_ARRAY_LENGTH // 2.1b values
+export const MAX_ROWS = 2 ** 5
 
 export default class Bits {
-  private value: BitView[] = new BitView(0)
+  private value: BitView[] = new Array(0)
   public length: number = 0
   private row: number = 0
   constructor(length: number) {
     this.length = length
     const array = new Array(0)
-    try {
-      if (length > MAX_ROWS * MAX_COLUMNS) {
-        throw new Error("Implemented for a max value of: " + string(BigInt(MAX_ROWS * MAX_COLUMNS)))
-      }
-      for (var i = MAX_ROWS - 1; i >= 0; i--) {
-        if (length > i * MAX_COLUMNS) {
-          array.push(new BitView(MAX_COLUMNS))
-        }
-      }
-      this.value = array
-      this.row = this.value.length
-    } catch (e) {
-      throw new Error("Error initializing the Bits class. " + e.toString().replaceAll("Error: ", ""))
+    if (length > MAX_ROWS * MAX_COLUMNS) {
+      throw new Error("Max value Bits(" + string(BigInt(MAX_ROWS * MAX_COLUMNS))+ ")")
     }
+    for (var i = MAX_ROWS - 1; i >= 0; i--) {
+      if (length > i * MAX_COLUMNS) {
+        array.push(new BitView(MAX_COLUMNS))
+      }
+    }
+    this.value = array
+    this.row = this.value.length
   }
   get(n: number){
     // TODO: GENERALIZE GET
@@ -49,7 +46,6 @@ export default class Bits {
         }
       }
   }
-
   toString() {
     return this.value.toString()
   }

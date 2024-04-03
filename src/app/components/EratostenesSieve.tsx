@@ -1,7 +1,7 @@
 'use client'
 
 import { Button, CircularProgress, TextField, Alert  } from "@mui/material"
-import { useCallback, useState } from "react"
+import { useState } from "react"
 
 import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
@@ -32,64 +32,57 @@ export default () => {
         setDurationFull(0)
         try {
             const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
-            const response = await fetch(url)
+            const response = await fetch(url);
             const {filename, time, error, length: l} = await response.json()
             if (error) {
-                throw new Error(error)
+                throw new Error(error.toString())
             }
-            setLength(l)
-            console.log(length + " primes found")
             const link = document.createElement("a");
             link.href = "/files/" + filename;
             link.download = "primes-to-" + limit.toString() + ".csv";
             document.body.appendChild(link);
-            link.click();        
+            // TODO: ENABLE IT!
+            //link.click();        
             document.body.removeChild(link);
+            setLength(l)
             setLoading(false)
             setDurationFull(time)
-        } catch (e) {
+        } catch (error) {
             setDurationFull(0)
-            setError(e.toString())
+            setError(error.toString())
             setLoading(false)
         }
     };
 
-    const submitNumber = useCallback(() => {
+    const submitNumber = async () => {
         const url = "/api/primes?LIMIT="+value.toString()
         setLoading(true)
         setError(false)
         setPrimes([])
         setLength(0)
         setDurationFull(0)
-        fetch(url)
-            .then(res => res.json())
-            .then(res => {
-                if (res.error) {
-                    setLoading(false)
-                    setError(res.error)
-                    setLength(0)
-                    setPrimes([])
-                } else {
-                    setDuration(res.time)
-                    setLength(res.length)
-                    setLoading(false)
-                    setPrimes(res.primes)
-                }
-                
-            })
-            .catch(err => {
-                setLoading(false)
-                setError(err)
-                setLength(0)
-                setPrimes([])
-            })
-
-    }, [value])
+        try {
+            const response = await fetch(url)
+            const {primes, time, length, error} = await response.json()
+            if (error) {
+                throw new Error(error.toString())
+            }
+            setDuration(time)
+            setLength(length)
+            setLoading(false)
+            setPrimes(primes)
+        } catch(error) {
+            setLoading(false)
+            setError(error.toString())
+            setLength(0)
+            setPrimes([])
+        }
+    }
 
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        <p>Recommended max value for sieve {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}. File can get up to 2GB and takes around 1 minute to generate.</p>
+        <p>Sieve of a length with max value {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}. File can get up to 516MB and takes up to a 1 minute to generate.</p>
         <hr />
         <div>
             <TextField
@@ -115,7 +108,7 @@ export default () => {
         </div>
         {error && <p><Alert severity="error">{error}</Alert></p>}
         {!error && durationFull !== 0 && <>
-            <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>
+            {length > 0 && <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>}
         </>}
         {!error && (primes.length > 0) && !loading && (<>
             <hr />

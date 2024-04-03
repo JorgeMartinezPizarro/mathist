@@ -1,11 +1,11 @@
-import fsS from "fs"
+import fs from "fs"
 
-import Bits from "@/helpers/Bits"
 import removeFilesAsync from "@/helpers/removeFilesAsync"
-import id from "@/helpers/id"
 import getTimeMicro from "@/helpers/getTimeMicro";
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_DISPLAY_SIEVE, MAX_NODE_ARRAY_LENGTH} from "./Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_NODE_ARRAY_LENGTH} from "./Constants";
 import duration from "./duration";
+import toHuman from "./toHuman"
+import eratosthenes from "./sieve"
 
 export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) => {
   if (excel) {
@@ -17,27 +17,40 @@ export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolea
 // Create excel file with primes up to LIMIT
 function primesToExcel(LIMIT: number) {
 
-  const elapsed = getTimeMicro();
-  const sieve = eratosthenes(LIMIT);
-  const filename = id() + ".csv"
-  const path = "./public/files/" + filename
-    
-  let line = new Array(2);
-  let rows = 0;
-  let length = 1
-
-  console.log("start writting primes to file")
-  // write primes in sieve to a CSV file
-  fsS.writeFileSync(path, "")
+  console.log("/////////////////////////////////////////////")
+  console.log("Let's sieve for less or equal than " + LIMIT)
   
-  for (var i =1;i<sieve.length;i++) {
+  const root = "./public/files/"
+  const elapsed = getTimeMicro();
+  const filename = "primes-to-" + LIMIT + ".csv"
+  const path = root + filename
+
+  try {
+    removeFilesAsync('./public/files/', ["csv"], 60 * 10);
+  } catch (e) {
+    console.log("WARNING: an error ocurred deleting cache files from ./public/files/")
+  }
+
+  let e = getTimeMicro();
+  const sieve = eratosthenes(LIMIT);
+  let line = new Array();
+  line.push(2)
+  let rows = 0;
+  let length = 1;
+  
+  console.log("Sieved in " + duration(getTimeMicro() - e) + " start writting primes to file")
+  e = getTimeMicro()
+  
+  // write primes in sieve to a CSV file
+  fs.writeFileSync(path, "")
+  for (var i = 1;i < sieve.length;i++) {
     if (i * 2 + 1 <= LIMIT && sieve.get(i) === 0) {
       line.push( 2 * i + 1)
       length++
     }
     if (line.length === EXCEL_MAX_COLS || i === sieve.length-1) {
       try {
-        fsS.appendFileSync(path, line.join(',') + "\r\n");
+        fs.appendFileSync(path, line.join(',') + "\r\n");
       } catch (e) {
         throw new Error("Error writting primes to file " + path)
       }
@@ -49,27 +62,25 @@ function primesToExcel(LIMIT: number) {
       line = new Array()
     }
   }
-  console.log("finish writting primes to file")
+
+  var stats = fs.statSync(path)
+  var fileSizeInBytes = stats.size;
+
+  console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
   
-  // Remove files older than 30 minutes to avoid disk full
-  try {
-    removeFilesAsync('./public/files/', ["csv"], 60 * 30);
-  } catch (e) {
-    console.log("WARNING: an error ocurred deleting cache files from ./public/files/")
-  }
+  console.log("Total duration " + duration(getTimeMicro() - elapsed))
   
   return {filename, time: getTimeMicro() - elapsed, length};
 }
 
 // Enhanced eratosthenes sieve starting with only odd numbers
-// It create a matrix of primes to tackle the max value MAX_NODE_ARRAY_LENGTH, going up to MAX_NODE_ARRAY_LENGTH**2
 // it works for 100m in 500ms, for 1b in 6s, 4b in 32s, 8b 1m, 
 // beyond it, there is no way to allocate the sieve in js, unless using the matrix trick for the sieve
 function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
-  let elapsed = getTimeMicro()
+  const elapsed = getTimeMicro()
 
-  if (amount > MAX_NODE_ARRAY_LENGTH ) {
-    throw new Error("Such a big array of primes may not fit in memory")
+  if (amount > MAX_NODE_ARRAY_LENGTH) {
+    throw new Error("Such a big array of primes may not fit in memory, max " + MAX_NODE_ARRAY_LENGTH)
   }
   if (lastNumber < 0) {
     throw new Error("Cannot get the sieve of negative numbers")
@@ -81,17 +92,17 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
     return {primes: [[2]], time: getTimeMicro() - elapsed, length: 1}
   }
   
-  console.log("Let's sieve")
-
+  console.log("/////////////////////////////////////////////")
+  console.log("Let's sieve for less or equal than " + lastNumber)
   let memorySize = Math.round(lastNumber / 2);
   let arrayOfPrimes = Array()  
   let count = 0
   let numberOfPrimes = 1
   let sieve = eratosthenes(lastNumber)
+  
+  console.log("Sieved in " + duration(getTimeMicro() - elapsed) + ", now generate " + amount + " primes!")
 
-  console.log("Sieved, now generate " + amount + " primes!")
-
-  const e = getTimeMicro()
+  let e = getTimeMicro()
   // Basically push primes until get an amount
   for (var i = memorySize; i >= 1; i-- ) {
     if (i * 2 + 1 <= lastNumber && sieve.get(i) === 0) {
@@ -106,30 +117,13 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
           throw new Error("Error push " + count + "th time in array at primes below " + lastNumber + " last prime generated is " + (1 + 2*i))
         }
       }
-      numberOfPrimes++;    
+      numberOfPrimes++;
     }
   }
-
+  
   console.log("Primes obtained and counted in " + duration(getTimeMicro() - e))
 
-  return {primes: arrayOfPrimes.reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes};
-}
+  console.log("Total duration " + duration(getTimeMicro() - elapsed))
 
-const eratosthenes = (lastNumber: number) => {
-  
-  // Initialization
-  let upperLimit = Math.round(Math.sqrt(lastNumber))
-  let memorySize = Math.round(lastNumber / 2);
-  let sieve = new Bits(memorySize);
-  
-  // Hard process crossing all odd composite numbers
-  for (var i = 3; i <= upperLimit; i += 2) {
-    if (sieve.get((i -1) / 2) === 0) {
-      for (var j = i*i; j <= lastNumber; j += 2*i) {
-        sieve.set((j-1)/2, 1)
-      }
-    }
-  }  
-  
-  return sieve;
+  return {primes: arrayOfPrimes.reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes};
 }
