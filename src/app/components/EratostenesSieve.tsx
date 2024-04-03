@@ -41,15 +41,14 @@ export default () => {
             link.href = "/files/" + filename;
             link.download = "primes-to-" + limit.toString() + ".csv";
             document.body.appendChild(link);
-            // TODO: ENABLE IT!
-            //link.click();        
+            link.click();        
             document.body.removeChild(link);
             setLength(l)
             setLoading(false)
             setDurationFull(time)
         } catch (error) {
             setDurationFull(0)
-            setError(error.toString())
+            setError(error.toString().replaceAll("Error: ", ""))
             setLoading(false)
         }
     };
@@ -73,7 +72,7 @@ export default () => {
             setPrimes(primes)
         } catch(error) {
             setLoading(false)
-            setError(error.toString())
+            setError(error.toString().replaceAll("Error: ", ""))
             setLength(0)
             setPrimes([])
         }
