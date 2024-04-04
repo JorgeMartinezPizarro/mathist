@@ -1,11 +1,24 @@
 export default (microseconds: number) => {
-    if (microseconds > 60 * 10**6) {
-        return Math.floor(microseconds  / 60000000) + " m " + Math.floor((microseconds - Math.floor(microseconds  / 60000000) * 60000000) / 1000000) + " s";
-    } else if (microseconds > 10**6) {
-        return Math.floor(microseconds / 10**6) + " s"
+    
+    const millisecond = 1000            // a millisecond in microseconds
+    const second = 1000 * millisecond   // a second in microseconds 
+    const minute = 60 * second          // a minute in microseconds
+    const hour = 60 * minute            // an hour in microseconds
+    
+    if (microseconds > hour) {
+        // hours
+        return Math.floor(microseconds  / hour) + " h " + Math.floor((microseconds - Math.floor(microseconds  / hour) * hour) / minute) + " s";
+    } else if (microseconds > minute) {
+        // minutes
+        return Math.floor(microseconds  / minute) + " m " + Math.floor((microseconds - Math.floor(microseconds  / minute) * minute) / second) + " s";
+    } else if (microseconds > second) {
+        // seconds
+        return Math.floor(microseconds / second) + " s"
     } else if (microseconds > 10**3) {
-        return Math.floor(microseconds / 1000) + " ms"
+        // milliseconds
+        return Math.floor(microseconds / millisecond) + " ms"
     }
+    // microseconds
     return microseconds + " μs"
   
 }

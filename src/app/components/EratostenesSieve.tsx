@@ -5,7 +5,7 @@ import { useState } from "react"
 
 import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
-import {MAX_ALLOCATABLE_MATRIX, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
+import {MAX_ALLOCATABLE_MATRIX_30GB, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
 import toHuman from "@/helpers/toHuman";
 
 export default () => {
@@ -82,16 +82,19 @@ export default () => {
     return <div>
         <img src="/image6.png" height={200} />
         <hr />
-        <p>Sieve of a length with max value {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}. File can get up to 516MB and takes up to a 1 minute to generate.</p>
+        <p>Sieve of a length with max value {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))} uses {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM. File can get up to 516MB and takes up to a 30 s to generate.</p>
         <hr />
-        <p>Max real is {string(BigInt(MAX_ALLOCATABLE_MATRIX))}, {toHuman(MAX_ALLOCATABLE_MATRIX / 16)} tested with following results:</p>
+        <p>Stress max is {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM. Tested with the following results:</p>
         <hr />
-        <a href="https://mather.ideniox.com/primes/primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
-        <a href="https://mather.ideniox.com/primes/primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
-        <a href="https://mather.ideniox.com/primes/primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
-        <a href="https://mather.ideniox.com/primes/primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
-        <a href="https://mather.ideniox.com/primes/primes-to-10m.csv">primes-to-10m.csv</a>,&nbsp;
-        <a href="https://mather.ideniox.com/primes/primes-to-1m.csv">primes-to-1m.csv</a>
+        <hr />
+        <p>
+            <a href="https://mather.ideniox.com/primes/primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-10m.csv">primes-to-10m.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-100b.csv">primes-to-100b.csv</a>
+        </p>
         <hr />
         <div>
             <TextField

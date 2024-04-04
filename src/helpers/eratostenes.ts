@@ -2,29 +2,26 @@ import fs from "fs"
 
 import removeFilesAsync from "@/helpers/removeFilesAsync"
 import getTimeMicro from "@/helpers/getTimeMicro";
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_ALLOCATABLE_30GB} from "./Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_6GB, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_ALLOCATABLE_MATRIX_30GB} from "./Constants";
 import duration from "./duration";
 import toHuman from "./toHuman"
 import eratosthenes from "./sieve"
 
-export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false, domain: string = "localhost") => {
+export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) => {
   
-  // Limit checks!
-
+  // LIMIT CHECKS
   // Healthy mather
   if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
     //throw new Error("Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + " < provided length " + LIMIT + " requires RAM " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16));
   } 
   // Save localhost up to 6GB RAM
-  if (LIMIT > MAX_ALLOCATABLE_MATRIX && domain === "http://localhost:3000") {
-    throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_MATRIX / 16)+ " that is " + MAX_ALLOCATABLE_MATRIX)
+  if (LIMIT > MAX_ALLOCATABLE_MATRIX_6GB) {
+    //throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_MATRIX_6GB / 16)+ " that is " + MAX_ALLOCATABLE_MATRIX_6GB)
   }
   // Save server to 30GB RAM
-  if (LIMIT > MAX_ALLOCATABLE_30GB && domain === "https://maths.ideniox.com") {
-    throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_30GB / 16) + " that is " + MAX_ALLOCATABLE_30GB)
+  if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
+    throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " that is " + MAX_ALLOCATABLE_MATRIX_30GB)
   }
-
-  console.log(domain)
 
   if (excel) {
     return primesToExcel(LIMIT)
@@ -44,8 +41,8 @@ function primesToExcel(LIMIT: number) {
   const path = root + filename
 
   try {
-    // remove files older than 2h
-    removeFilesAsync('./public/files/', ["csv"], 60 * 60 * 2);
+    // remove files older than 8h
+    removeFilesAsync('./public/files/', ["csv"], 60 * 60 * 8);
   } catch (e) {
     console.log("WARNING: an error ocurred deleting cache files from " + root)
   }
@@ -62,7 +59,12 @@ function primesToExcel(LIMIT: number) {
   
   // write primes in sieve to a CSV file
   fs.writeFileSync(path, "")
-  for (var i = 1;i < sieve.length;i++) {
+
+  if (sieve.length === 0) {
+    fs.appendFileSync(path, "2")
+  }
+
+  for (var i = 1; i < sieve.length; i++) {
     if (i * 2 + 1 <= LIMIT && sieve.get(i) === 0) {
       line.push( 2 * i + 1)
       length++
@@ -126,7 +128,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
     if (i * 2 + 1 <= lastNumber && sieve.get(i) === 0) {
       if (count < amount) {
         try {
-          arrayOfPrimes.push(i*2+1)
+          arrayOfPrimes.push(i * 2 + 1)
           if (i===1 || count === amount - 1 && arrayOfPrimes.length < amount) {
             arrayOfPrimes.push(2);
           }

@@ -1,11 +1,11 @@
-import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX } from "./Constants";
+import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_6GB } from "./Constants";
 import string from "./string";
 import toHuman from "./toHuman";
 
 // Up to 54b, posible sieve for up to 107b, not bad at all
 // Tested with 100b, it works in 75m. 
 export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY                        // 2.1b values
-export const MAX_ROWS = MAX_ALLOCATABLE_MATRIX / MAX_ALLOCATABLE_ARRAY; // 50
+export const MAX_ROWS = MAX_ALLOCATABLE_MATRIX_6GB / MAX_ALLOCATABLE_ARRAY; // 50
 // 107374182400
 export default class Bits {
   private value: BitView[] = new Array(0)
@@ -24,8 +24,9 @@ export default class Bits {
       }
     } catch (e) {
       // use toHuman to show up what this sizes means
-      throw new Error("Bits(" + length+ ") too big " + toHuman(length/8) + ", max allowed Bits(" + MAX_ALLOCATABLE_MATRIX / 2 + "), " + toHuman(MAX_ALLOCATABLE_MATRIX/16) + ", " + e.toString().replaceAll("Error: ", ""))
+      throw new Error("Bits(" + length + ") fails at " + toHuman(count * MAX_COLUMNS / 8) + " RAM, " + e.toString().replaceAll("Error: ", ""))
     }
+    console.log("Allocated Bits(" + length+ ") of size " + toHuman(length / 8))
     this.value = array
     this.row = this.value.length
   }
@@ -60,12 +61,12 @@ const BitView = function(length: number) {
   try {
     this.buffer = new ArrayBuffer(length);
   } catch(e) {
-    throw new Error("Invalid length for ArrayBuffer(" + length + ")")
+    throw new Error("ArrayBuffer((" + length + ")")
   }
   try {
     this.u8 = new Uint8Array(this.buffer);
   } catch(e) {
-    throw new Error("Invalid length for Uint8Array(" + length + ")")
+    throw new Error("Uint8Array(" + length + ")")
   }
 };
   

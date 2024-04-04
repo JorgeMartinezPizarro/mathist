@@ -7,11 +7,11 @@ export async function GET(request: Request) {
   const LIMIT = parseInt(searchParams.get('LIMIT') || "0")
   const amount = parseInt(searchParams.get('amount') || MAX_DISPLAY_SIEVE.toString())
   const excel = searchParams.get('excel') ? true : false
-  const domain = new URL(request.url).href
+  
   BigInt.prototype.toJSON = function() { return this.toString() }
   
   try {
-    return Response.json( eratostenes(LIMIT, amount, excel, domain) )
+    return Response.json( eratostenes(LIMIT, amount, excel) )
   } catch (e) {
     return Response.json({ error: "Error in eratosthenes(" + LIMIT + "), " + e.toString().replaceAll("Error: ", "")  }, { status: 500 });
   }
