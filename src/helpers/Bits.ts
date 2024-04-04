@@ -15,8 +15,8 @@ export default class Bits {
     this.length = length
     const array = new Array(0)
     let count = 0
-    if (length < MAX_COLUMNS * MAX_ROWS) {
-      throw new Error("Value for Bits " + MAX_COLUMNS * MAX_ROWS)
+    if (length > MAX_ALLOCATABLE_MATRIX_30GB) {
+      throw new Error("Value for Bits " + MAX_ALLOCATABLE_MATRIX_30GB)
     }
     try {
       for (var i = MAX_ROWS - 1; i >= 0; i--) {
