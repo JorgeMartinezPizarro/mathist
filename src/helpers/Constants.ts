@@ -1,6 +1,7 @@
 // Node limits
 export const MAX_ALLOCATABLE_ARRAY = 2 ** 31;               // 2b
-export const MAX_ALLOCATABLE_MATRIX = (2 ** 32) * (5 ** 2); // 107b 
+export const MAX_ALLOCATABLE_MATRIX = (2 ** 32) * (5 ** 2); // 107b it takes 6GB RAM
+export const MAX_ALLOCATABLE_30GB = (2 ** 32) * (5 ** 3);   // 535b it takes 30GB RAM
 
 // Excel limits
 export const EXCEL_MAX_ROWS = 1048576;                      // FIX VALUE FROM EXCEL SPEC 

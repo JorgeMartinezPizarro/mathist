@@ -84,9 +84,15 @@ export default () => {
         <hr />
         <p>Sieve of a length with max value {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}. File can get up to 516MB and takes up to a 1 minute to generate.</p>
         <hr />
-        <p>
-            Max real is {string(BigInt(MAX_ALLOCATABLE_MATRIX))}, {toHuman(MAX_ALLOCATABLE_MATRIX / 16)} tested with following results: 
-        </p>
+        <p>Max real is {string(BigInt(MAX_ALLOCATABLE_MATRIX))}, {toHuman(MAX_ALLOCATABLE_MATRIX / 16)} tested with following results:</p>
+        <hr />
+        <a href="https://mather.ideniox.com/primes/primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
+        <a href="https://mather.ideniox.com/primes/primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
+        <a href="https://mather.ideniox.com/primes/primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
+        <a href="https://mather.ideniox.com/primes/primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
+        <a href="https://mather.ideniox.com/primes/primes-to-10m.csv">primes-to-10m.csv</a>,&nbsp;
+        <a href="https://mather.ideniox.com/primes/primes-to-1m.csv">primes-to-1m.csv</a>
+        <hr />
         <div>
             <TextField
                 className="input"

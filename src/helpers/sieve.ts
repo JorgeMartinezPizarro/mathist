@@ -4,13 +4,6 @@ import toHuman from "./toHuman";
 
 export default (lastNumber: number) => {
   
-    // MAX_LENGTH_FOR_SIEVE_HEALTY takes 20 seconds and 516MB, enough for the web 
-    if (lastNumber > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
-      //throw new Error("Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY+ " < provided length " + lastNumber);
-    } 
-    if (lastNumber > MAX_ALLOCATABLE_MATRIX) {
-      //throw new Error("Required RAM " + toHuman(lastNumber / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_MATRIX))
-    }
     try {
         // Initialization
         const memorySize = Math.round(lastNumber / 2);

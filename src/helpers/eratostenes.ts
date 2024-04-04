@@ -2,12 +2,28 @@ import fs from "fs"
 
 import removeFilesAsync from "@/helpers/removeFilesAsync"
 import getTimeMicro from "@/helpers/getTimeMicro";
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE} from "./Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_ALLOCATABLE_30GB} from "./Constants";
 import duration from "./duration";
 import toHuman from "./toHuman"
 import eratosthenes from "./sieve"
 
-export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) => {
+export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false, domain: string = "localhost") => {
+  
+  // Limit checks!
+
+  // Healthy mather
+  if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY && domain === "mather.ideniox.com") { 
+    throw new Error("Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + " < provided length " + LIMIT + " requires RAM " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16));
+  } 
+  // Save localhost up to 6GB RAM
+  if (LIMIT > MAX_ALLOCATABLE_MATRIX && domain === "localhost") {
+    throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_MATRIX / 16)+ " that is " + MAX_ALLOCATABLE_MATRIX)
+  }
+  // Save server to 30GB RAM
+  if (LIMIT > MAX_ALLOCATABLE_30GB && domain === "maths.ideniox.com") {
+    throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_30GB / 16) + " that is " + MAX_ALLOCATABLE_30GB)
+  }
+  console.log(domain)
   if (excel) {
     return primesToExcel(LIMIT)  
   } 
