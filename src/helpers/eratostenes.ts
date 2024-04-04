@@ -2,7 +2,7 @@ import fs from "fs"
 
 import removeFilesAsync from "@/helpers/removeFilesAsync"
 import getTimeMicro from "@/helpers/getTimeMicro";
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_NODE_ARRAY_LENGTH} from "./Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE} from "./Constants";
 import duration from "./duration";
 import toHuman from "./toHuman"
 import eratosthenes from "./sieve"
@@ -26,9 +26,10 @@ function primesToExcel(LIMIT: number) {
   const path = root + filename
 
   try {
-    removeFilesAsync('./public/files/', ["csv"], 60 * 10);
+    // remove files older than 2h
+    removeFilesAsync('./public/files/', ["csv"], 60 * 60 * 2);
   } catch (e) {
-    console.log("WARNING: an error ocurred deleting cache files from ./public/files/")
+    console.log("WARNING: an error ocurred deleting cache files from " + root)
   }
 
   let e = getTimeMicro();
@@ -38,7 +39,7 @@ function primesToExcel(LIMIT: number) {
   let rows = 0;
   let length = 1;
   
-  console.log("Sieved in " + duration(getTimeMicro() - e) + " start writting primes to file")
+  console.log("Sieved in " + duration(getTimeMicro() - e) + " start writting primes to " + path)
   e = getTimeMicro()
   
   // write primes in sieve to a CSV file
@@ -67,7 +68,6 @@ function primesToExcel(LIMIT: number) {
   var fileSizeInBytes = stats.size;
 
   console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
-  
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
   
   return {filename, time: getTimeMicro() - elapsed, length};
@@ -79,8 +79,8 @@ function primesToExcel(LIMIT: number) {
 function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
   const elapsed = getTimeMicro()
 
-  if (amount > MAX_NODE_ARRAY_LENGTH) {
-    throw new Error("Such a big array of primes may not fit in memory, max " + MAX_NODE_ARRAY_LENGTH)
+  if (amount > MAX_ALLOCATABLE_ARRAY) {
+    throw new Error("Such a big array of primes may not fit in memory, max " + MAX_ALLOCATABLE_ARRAY)
   }
   if (lastNumber < 0) {
     throw new Error("Cannot get the sieve of negative numbers")

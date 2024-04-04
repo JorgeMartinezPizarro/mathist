@@ -1,10 +1,12 @@
-import { MAX_NODE_ARRAY_LENGTH } from "./Constants";
+import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX } from "./Constants";
 import string from "./string";
+import toHuman from "./toHuman";
 
-// Up to 68b MAX, posible sieve for up to 136b, not bad at all!
-export const MAX_COLUMNS = MAX_NODE_ARRAY_LENGTH // 2.1b values
-export const MAX_ROWS = 2 ** 5
-
+// Up to 54b, posible sieve for up to 107b, not bad at all
+// Tested with 100b, it works in 75m. 
+export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY                        // 2.1b values
+export const MAX_ROWS = MAX_ALLOCATABLE_MATRIX / MAX_ALLOCATABLE_ARRAY; // 50
+// 107374182400
 export default class Bits {
   private value: BitView[] = new Array(0)
   public length: number = 0
@@ -12,21 +14,24 @@ export default class Bits {
   constructor(length: number) {
     this.length = length
     const array = new Array(0)
-    if (length > MAX_ROWS * MAX_COLUMNS) {
-      throw new Error("Max value Bits(" + string(BigInt(MAX_ROWS * MAX_COLUMNS))+ ")")
-    }
-    for (var i = MAX_ROWS - 1; i >= 0; i--) {
-      if (length > i * MAX_COLUMNS) {
-        array.push(new BitView(MAX_COLUMNS))
+    let count = 0
+    try {
+      for (var i = MAX_ROWS - 1; i >= 0; i--) {
+        if (length > i * MAX_COLUMNS) {
+          count++
+          array.push(new BitView(MAX_COLUMNS))
+        }
       }
+    } catch (e) {
+      // use toHuman to show up what this sizes means
+      throw new Error("Bits(" + length+ ") too big " + toHuman(length/8) + ", max allowed Bits(" + MAX_ALLOCATABLE_MATRIX / 2 + "), " + toHuman(MAX_ALLOCATABLE_MATRIX/16) + ", " + e.toString().replaceAll("Error: ", ""))
     }
     this.value = array
     this.row = this.value.length
   }
   get(n: number){
-    // TODO: GENERALIZE GET
     if (n >= this.length) {
-      throw new Error("Error max value for get.")
+      throw new Error("Out of founds Bits.get(" + n + ")")
     }
     for (var i = this.row; i >= 0; i--){
       if (n > i * MAX_COLUMNS) {
@@ -37,7 +42,7 @@ export default class Bits {
   set(n: number, j: number){
     // TODO: GENERALIZE SET
       if (n >= this.length) {
-        throw new Error("Error max value for set.")
+        throw new Error("Out of founds Bits.set(" + n + ", " + j + " )")
       }
       for (var i = this.row; i >= 0; i--){ 
         if (n > i * MAX_COLUMNS) {
@@ -52,17 +57,15 @@ export default class Bits {
 }
 
 const BitView = function(length: number) {
-  let buffer = new ArrayBuffer(0)
   try {
-    buffer = new ArrayBuffer(length)
-    this.buffer = buffer;
+    this.buffer = new ArrayBuffer(length);
   } catch(e) {
-    throw new Error("Invalid length for ArrayBuffer")
+    throw new Error("Invalid length for ArrayBuffer(" + length + ")")
   }
   try {
-    this.u8 = new Uint8Array(buffer);
+    this.u8 = new Uint8Array(this.buffer);
   } catch(e) {
-    throw new Error("Invalid length for Uint8Array")
+    throw new Error("Invalid length for Uint8Array(" + length + ")")
   }
 };
   

@@ -13,6 +13,6 @@ export async function GET(request: Request) {
   try {
     return Response.json( eratostenes(LIMIT, amount, excel) )
   } catch (e) {
-    return Response.json({ error: "Failed eratosthenes(" + LIMIT + "), " + e.toString().replaceAll("Error: ", "")  }, { status: 500 });
+    return Response.json({ error: "Error in eratosthenes(" + LIMIT + "), " + e.toString().replaceAll("Error: ", "")  }, { status: 500 });
   }
 }

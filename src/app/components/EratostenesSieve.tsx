@@ -5,7 +5,8 @@ import { useState } from "react"
 
 import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
-import {MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
+import {MAX_ALLOCATABLE_MATRIX, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
+import toHuman from "@/helpers/toHuman";
 
 export default () => {
     const [primes, setPrimes] = useState<number[]>([2])
@@ -53,7 +54,7 @@ export default () => {
         }
     };
 
-    const submitNumber = async () => {
+    const generateSieve = async () => {
         const url = "/api/primes?LIMIT="+value.toString()
         setLoading(true)
         setError(false)
@@ -83,6 +84,9 @@ export default () => {
         <hr />
         <p>Sieve of a length with max value {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}. File can get up to 516MB and takes up to a 1 minute to generate.</p>
         <hr />
+        <p>
+            Max real is {string(BigInt(MAX_ALLOCATABLE_MATRIX))}, {toHuman(MAX_ALLOCATABLE_MATRIX / 16)} tested with following results: 
+        </p>
         <div>
             <TextField
                 className="input"
@@ -99,7 +103,7 @@ export default () => {
                     }
                 })}
             />
-            <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">GENERATE</Button>
+            <Button type="submit" disabled={loading} onClick={generateSieve} variant="contained">GENERATE</Button>
             <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
             {error && <Alert severity="error">{error}</Alert>}
             {loading && <CircularProgress />}
