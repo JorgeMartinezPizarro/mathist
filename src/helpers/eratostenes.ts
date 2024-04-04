@@ -93,9 +93,7 @@ function primesToExcel(LIMIT: number) {
   return {filename, time: getTimeMicro() - elapsed, length};
 }
 
-// Enhanced eratosthenes sieve starting with only odd numbers
-// it works for 100m in 500ms, for 1b in 6s, 4b in 32s, 8b 1m, 
-// beyond it, there is no way to allocate the sieve in js, unless using the matrix trick for the sieve
+// Count primes and return count and last amount primes
 function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
   const elapsed = getTimeMicro()
 
