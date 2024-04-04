@@ -25,7 +25,7 @@ export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolea
   }
   console.log(domain)
   if (excel) {
-    return primesToExcel(LIMIT)  
+    return primesToExcel(LIMIT)
   } 
   return primes(LIMIT, amount)
 }

@@ -20,7 +20,9 @@ export default (lastNumber: number) => {
         }
         return sieve;
     } catch (e) {
-      throw new Error("sieve(" + lastNumber + "), " + e.toString().replaceAll("Error: ", ""));
+      const error = "sieve(" + lastNumber + "), " + e.toString().replaceAll("Error: ", "");
+      console.log(error)
+      throw new Error(error);
     }
 
     
