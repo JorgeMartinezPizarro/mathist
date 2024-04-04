@@ -12,18 +12,20 @@ export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolea
   // Limit checks!
 
   // Healthy mather
-  if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY && domain === "mather.ideniox.com") { 
+  if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY && domain === "https://mather.ideniox.com") { 
     throw new Error("Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + " < provided length " + LIMIT + " requires RAM " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16));
   } 
   // Save localhost up to 6GB RAM
-  if (LIMIT > MAX_ALLOCATABLE_MATRIX && domain === "localhost") {
+  if (LIMIT > MAX_ALLOCATABLE_MATRIX && domain === "http://localhost:3000") {
     throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_MATRIX / 16)+ " that is " + MAX_ALLOCATABLE_MATRIX)
   }
   // Save server to 30GB RAM
-  if (LIMIT > MAX_ALLOCATABLE_30GB && domain === "maths.ideniox.com") {
+  if (LIMIT > MAX_ALLOCATABLE_30GB && domain === "https://maths.ideniox.com") {
     throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_30GB / 16) + " that is " + MAX_ALLOCATABLE_30GB)
   }
+
   console.log(domain)
+  
   if (excel) {
     return primesToExcel(LIMIT)
   } 
