@@ -1,4 +1,5 @@
 import Bits from "./Bits";
+import toHuman from "./toHuman";
 
 // Enhanced eratosthenes sieve starting with only odd numbers
 // it works for 100m in 500ms, for 1b in 8s, 4b in 32s, 8b 1m, 100b in 44m.
@@ -10,6 +11,7 @@ export default (lastNumber: number) => {
   }
 
   try {
+      
       // Initialization
       const memorySize = Math.round(lastNumber / 2);
       const sieve = new Bits(memorySize);
@@ -23,6 +25,7 @@ export default (lastNumber: number) => {
               }
           }
       }
+
       return sieve;
   } catch (e) {
     const error = "sieve(" + lastNumber + "), " + e.toString().replaceAll("Error: ", "");

@@ -2,25 +2,21 @@ import fs from "fs"
 
 import removeFilesAsync from "@/helpers/removeFilesAsync"
 import getTimeMicro from "@/helpers/getTimeMicro";
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_6GB, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_ALLOCATABLE_MATRIX_30GB} from "./Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_ALLOCATABLE_MATRIX_30GB} from "./Constants";
 import duration from "./duration";
 import toHuman from "./toHuman"
 import eratosthenes from "./sieve"
 
 export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) => {
   
-  // LIMIT CHECKS
-  // Healthy mather
+  // LIMIT CHECKS it would be great to know the original domain or available disk - RAM
+  // 1b Up to 64MB RAM 516MB disk, natural limit for the web, it takes 20s to compute
   if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
-    //throw new Error("Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + " < provided length " + LIMIT + " requires RAM " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16));
+    //throw new Error("max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk");
   } 
-  // Save localhost up to 6GB RAM
-  if (LIMIT > MAX_ALLOCATABLE_MATRIX_6GB) {
-    //throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_MATRIX_6GB / 16)+ " that is " + MAX_ALLOCATABLE_MATRIX_6GB)
-  }
-  // Save server to 30GB RAM
+  // 500b Up to 30GB RAM 240GB disk ( x500), common sense limit, it takes 6h to compute
   if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
-    throw new Error("Required RAM " + toHuman(LIMIT / 16) + ", max accepted is " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " that is " + MAX_ALLOCATABLE_MATRIX_30GB)
+    throw new Error("max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk");
   }
 
   if (excel) {
@@ -32,17 +28,25 @@ export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolea
 // Create excel file with primes up to LIMIT
 function primesToExcel(LIMIT: number) {
 
-  console.log("/////////////////////////////////////////////")
+  console.log("//////////////////////////////////////////////////////////////////////////////////////////")
+  console.log("Requesting excel file primes-to-" + LIMIT + ".csv")
   console.log("Let's sieve for less or equal than " + LIMIT)
   
-  const root = "./public/files/"
-  const elapsed = getTimeMicro();
+  const elapsed = getTimeMicro()
+  const root = "./public/files/"  
   const filename = "primes-to-" + LIMIT + ".csv"
   const path = root + filename
 
   try {
-    // remove files older than 8h
-    removeFilesAsync('./public/files/', ["csv"], 60 * 60 * 8);
+    if (fs.existsSync(path)) {
+      return {
+        filename,
+        length: -1,
+        time: getTimeMicro() - elapsed
+      }
+    }
+    // DO NOT remove files older than 8h
+    //removeFilesAsync('./public/files/', ["csv"], 60 * 60 * 8);
   } catch (e) {
     console.log("WARNING: an error ocurred deleting cache files from " + root)
   }
@@ -54,7 +58,7 @@ function primesToExcel(LIMIT: number) {
   let rows = 0;
   let length = 1;
   
-  console.log("Sieved in " + duration(getTimeMicro() - e) + " start writting primes to " + path)
+  console.log("Sieved in " + duration(getTimeMicro() - e) + ", start writting primes to file")
   e = getTimeMicro()
   
   // write primes in sieve to a CSV file
@@ -104,13 +108,26 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
     throw new Error("Cannot get the sieve of negative numbers")
   }
   if (lastNumber === 1) {
+    console.log("//////////////////////////////////////////////////////////////////////////////////////////")
+    console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
+    console.log("Let's sieve for less or equal than " + lastNumber)
+    console.log("Sieved in " + duration(0) + ", now count and generate " + amount + " primes")
+    console.log("Primes obtained and counted in " + duration(0))
+    console.log("Total duration " +  duration(getTimeMicro() - elapsed))
     return {primes: [], time: getTimeMicro() - elapsed, length: 0}
   }  
   if (lastNumber === 2) {
+    console.log("//////////////////////////////////////////////////////////////////////////////////////////")
+    console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
+    console.log("Let's sieve for less or equal than " + lastNumber)
+    console.log("Sieved in " + duration(0) + ", now count and generate " + amount + " primes")
+    console.log("Primes obtained and counted in " + duration(0))
+    console.log("Total duration " +  duration(getTimeMicro() - elapsed))
     return {primes: [[2]], time: getTimeMicro() - elapsed, length: 1}
-  }
+  } 
   
-  console.log("/////////////////////////////////////////////")
+  console.log("//////////////////////////////////////////////////////////////////////////////////////////")
+  console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
   console.log("Let's sieve for less or equal than " + lastNumber)
   let memorySize = Math.round(lastNumber / 2);
   let arrayOfPrimes = Array()  
@@ -118,7 +135,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
   let numberOfPrimes = 1
   let sieve = eratosthenes(lastNumber)
   
-  console.log("Sieved in " + duration(getTimeMicro() - elapsed) + ", now generate " + amount + " primes!")
+  console.log("Sieved in " + duration(getTimeMicro() - elapsed) + ", now count and generate " + amount + " primes")
 
   let e = getTimeMicro()
   // Basically push primes until get an amount

@@ -1,6 +1,9 @@
 export default function toHuman(bytes: number) {
-    if (!+bytes) return '0 Bytes'
-  
+    
+    if (!+bytes) {
+      return '0 Bytes'
+    }
+    
     const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   

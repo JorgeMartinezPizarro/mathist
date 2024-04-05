@@ -1,8 +1,7 @@
-import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_30GB, MAX_ALLOCATABLE_MATRIX_6GB } from "./Constants";
-import string from "./string";
+import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_30GB } from "./Constants";
 import toHuman from "./toHuman";
 
-// Up to 250b, posible sieve for up to 500b, not bad at all
+// Up to 250b, posible sieve for up to 500b, not bad at all 30GB RAM needed 
 // Tested with 100b, it works in 75m. 
 export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY                        // 2.1b values
 export const MAX_ROWS = MAX_ALLOCATABLE_MATRIX_30GB / MAX_ALLOCATABLE_ARRAY; // 250
@@ -27,9 +26,9 @@ export default class Bits {
       }
     } catch (e) {
       // use toHuman to show up what this sizes means
-      throw new Error("Bits(" + length + ") fails at " + toHuman(count * MAX_COLUMNS / 8) + " RAM, " + e.toString().replaceAll("Error: ", ""))
+      throw new Error("Bits(" + length + ") fails allocating " + toHuman(count * MAX_COLUMNS / 8) + " of "  + toHuman(length / 8) + " RAM, " + e.toString().replaceAll("Error: ", ""))
     }
-    console.log("Allocated Bits(" + length + ") of size " + toHuman(length / 8))
+    console.log("Allocated Bits(" + length + ") of size " + (length < 8 ? length + " bits" : toHuman(length / 8)))
     this.value = array
     this.row = this.value.length
   }

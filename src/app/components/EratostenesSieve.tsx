@@ -33,8 +33,9 @@ export default () => {
         setDurationFull(0)
         try {
             const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
-            const response = await fetch(url);
-            const {filename, time, error, length: l} = await response.json()
+            const promise = await fetch(url)
+            const response = await promise.json()
+            const {filename, time, error, length: l} = response
             if (error) {
                 throw new Error(error.toString())
             }
@@ -49,7 +50,10 @@ export default () => {
             setDurationFull(time)
         } catch (error) {
             setDurationFull(0)
-            setError(error.toString().replaceAll("Error: ", ""))
+            if (error.toString().indexOf("Failed to fetch") !== -1)
+                setError("Error generating excel, server disconnected")
+            else
+                setError(error.toString().replaceAll("Error: ", ""))
             setLoading(false)
         }
     };
@@ -62,18 +66,24 @@ export default () => {
         setLength(0)
         setDurationFull(0)
         try {
-            const response = await fetch(url)
-            const {primes, time, length, error} = await response.json()
+            const promise = await fetch(url)
+            const response = await promise.json()
+            const {primes, time, length, error} = response
+            
             if (error) {
                 throw new Error(error.toString())
             }
+
             setDuration(time)
             setLength(length)
             setLoading(false)
             setPrimes(primes)
         } catch(error) {
             setLoading(false)
-            setError(error.toString().replaceAll("Error: ", ""))
+            if (error.toString().indexOf("Failed to fetch") !== -1)
+                setError("Error generating excel, server disconnected")
+            else 
+                setError(error.toString().replaceAll("Error: ", ""))
             setLength(0)
             setPrimes([])
         }
@@ -81,21 +91,21 @@ export default () => {
 
     return <div>
         <img src="/image6.png" height={200} />
-        <hr />
-        <p>Sieve of a length with max value {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))} uses {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM. File can get up to 516MB and takes up to a 30 s to generate.</p>
-        <hr />
-        <p>Stress max is {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM. Tested with the following results:</p>
-        <hr />
-        <hr />
+        <hr/>
+        <p>Sieve max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
+        <hr/>
+        <p>Server max is {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 240GB of primes in around 6 hours.</p>
+        <hr/>
         <p>
-            <a href="https://mather.ideniox.com/primes/primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/primes/primes-to-10m.csv">primes-to-10m.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/primes/primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/primes/primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/primes/primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/primes/primes-to-100b.csv">primes-to-100b.csv</a>
+            <a href="https://mather.ideniox.com/primes/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-10m.csv" download="primes-to-10m.csv">primes-to-10m.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-100m.csv" download="primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-1b.csv" download="primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-10b.csv" download="primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-500b.csv" download="primes-to-500b.csv">primes-to-500b.csv</a>
         </p>
-        <hr />
+        <hr/>
         <div>
             <TextField
                 className="input"
@@ -114,22 +124,24 @@ export default () => {
             />
             <Button type="submit" disabled={loading} onClick={generateSieve} variant="contained">GENERATE</Button>
             <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
-            {error && <Alert severity="error">{error}</Alert>}
             {loading && <CircularProgress />}
             
         </div>
         {error && <p><Alert severity="error">{error}</Alert></p>}
+        <hr/>
         {!error && durationFull !== 0 && <>
             {length > 0 && <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>}
+            
+            {length  === -1 && <p>Getting from cache in {d(durationFull)}</p>}
         </>}
         {!error && (primes.length > 0) && !loading && (<>
-            <hr />
-            <p>Total of primes smaller or equal {string(BigInt(value))} is {string(BigInt(length))}</p>
+            <hr/>
+            <p>Total of primes smaller or equal than {string(BigInt(value))} is {string(BigInt(length))}</p>
             <hr/>
             <p>Duration {d(duration)}</p>
             <hr/>
             <p>Last teen primes of the sieve:</p>
-            <hr />
+            <hr/>
             <p>[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>
             <hr />
         </>)}
