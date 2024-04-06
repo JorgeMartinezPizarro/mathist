@@ -92,7 +92,7 @@ export default () => {
     return <div>
         <img src="/image6.png" height={200} />
         <hr/>
-        <p>Sieve max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
+        <p>Sieve of a given length, max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
         <hr/>
         <p>Server max is {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 240GB of primes in around 6 hours.</p>
         <hr/>
@@ -102,14 +102,14 @@ export default () => {
             <a href="https://mather.ideniox.com/primes/primes-to-100m.csv" download="primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
             <a href="https://mather.ideniox.com/primes/primes-to-1b.csv" download="primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
             <a href="https://mather.ideniox.com/primes/primes-to-10b.csv" download="primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/primes/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
+            <a href="https://mather.ideniox.com/primes/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>
             <a href="https://mather.ideniox.com/primes/primes-to-500b.csv" download="primes-to-500b.csv">primes-to-500b.csv</a>
         </p>
         <hr/>
-        <div>
+        <>
             <TextField
                 className="input"
-                label="Number"
+                label="Length"
                 type="number"
                 disabled={loading}
                 value={value}
@@ -126,17 +126,16 @@ export default () => {
             <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
             {loading && <CircularProgress />}
             
-        </div>
+        </>
         {error && <p><Alert severity="error">{error}</Alert></p>}
         <hr/>
         {!error && durationFull !== 0 && <>
             {length > 0 && <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>}
-            
             {length  === -1 && <p>Getting from cache in {d(durationFull)}</p>}
+            <hr/>
         </>}
         {!error && (primes.length > 0) && !loading && (<>
-            <hr/>
-            <p>Total of primes smaller or equal than {string(BigInt(value))} is {string(BigInt(length))}</p>
+             <p>Total of primes smaller or equal than {string(BigInt(value))} is {string(BigInt(length))}</p>
             <hr/>
             <p>Duration {d(duration)}</p>
             <hr/>

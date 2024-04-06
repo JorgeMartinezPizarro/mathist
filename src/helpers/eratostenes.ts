@@ -9,14 +9,16 @@ import eratosthenes from "./sieve"
 
 export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) => {
   
-  // LIMIT CHECKS it would be great to know the original domain or available disk - RAM
+  // LIMIT CHECKS 
+  // TODO: use ENVIRONMENT variable for check or not.
   // 1b Up to 64MB RAM 516MB disk, natural limit for the web, it takes 20s to compute
   if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
-    //throw new Error("max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk");
+    // SKIP IT FOR HARD TESTINGs
+    //throw new Error("max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk.");
   } 
   // 500b Up to 30GB RAM 240GB disk ( x500), common sense limit, it takes 6h to compute
   if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
-    throw new Error("max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk");
+    throw new Error("max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk.");
   }
 
   if (excel) {

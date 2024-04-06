@@ -17,7 +17,7 @@ export default function Home() {
     setValue(newValue)
   }
 
-  return <div>
+  return <>
     <TabContext value={value}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <TabList onChange={handleChange} aria-label="lab API tabs example" centered>
@@ -32,5 +32,5 @@ export default function Home() {
       <TabPanel value="2"><PitagoreanTree /></TabPanel>
       <TabPanel value="3"><SerieDifferences /></TabPanel>
     </TabContext>
-  </div>  
+  </>
 }
