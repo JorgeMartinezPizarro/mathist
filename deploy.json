@@ -1,0 +1,14 @@
+{
+    "apps": [
+        {
+            "name": "mathist",
+            "script": "./node_modules/next/dist/bin/next",
+            "instances": 4,
+            "exec_mode": "cluster",
+            "args": "dev",
+            "env": {
+                "PORT": "3000"
+            }
+        }
+    ]
+}

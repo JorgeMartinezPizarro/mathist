@@ -7,7 +7,7 @@ export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY                        // 2.1b 
 export const MAX_ROWS = MAX_ALLOCATABLE_MATRIX_30GB / MAX_ALLOCATABLE_ARRAY; // 250
 // 107374182400
 export default class Bits {
-  private value: BitView[] = new Array(0)
+  private array: BitView[] = new Array(0)
   public length: number = 0
   private row: number = 0
   constructor(length: number) {
@@ -29,8 +29,8 @@ export default class Bits {
       throw new Error("Bits(" + length + ") fails allocating " + toHuman(count * MAX_COLUMNS / 8) + " of "  + toHuman(length / 8) + " RAM, " + e.toString().replaceAll("Error: ", ""))
     }
     console.log("Allocated Bits(" + length + ") of size " + (length < 8 ? length + " bits" : toHuman(length / 8)))
-    this.value = array
-    this.row = this.value.length
+    this.array = array
+    this.row = this.array.length
   }
   get(n: number){
     if (n >= this.length) {
@@ -38,7 +38,7 @@ export default class Bits {
     }
     for (var i = this.row; i >= 0; i--){
       if (n > i * MAX_COLUMNS) {
-        return this.value[i].getBit(n - i * MAX_COLUMNS);
+        return this.array[i].getBit(n - i * MAX_COLUMNS);
       }
     }
   }
@@ -49,13 +49,13 @@ export default class Bits {
       }
       for (var i = this.row; i >= 0; i--){ 
         if (n > i * MAX_COLUMNS) {
-          this.value[i].setBit(n - i * MAX_COLUMNS, j)
+          this.array[i].setBit(n - i * MAX_COLUMNS, j)
           break;
         }
       }
   }
   toString() {
-    return this.value.toString()
+    return this.array.toString()
   }
 }
 
