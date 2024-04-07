@@ -80,12 +80,13 @@ function primesToExcel(LIMIT: number) {
         fs.appendFileSync(path, line.join(',') + "\r\n");
       } catch (e) {
         console.log("Error writting to file " + path + " " + e.toString())
-        throw new Error("Error writting primes to file " + path)
+        throw new Error("Error writting to file " + path + " " + e.toString())
       }
       rows++;
       // Absurd max value, no disk can handle it!
       if (rows === EXCEL_MAX_ROWS) {
-        throw new Error("Max excel file " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS)) + " cells"
+        console.log("Max excel file " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS) + " cells")
+        throw new Error("Max excel file " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS) + " cells");
       }
       line = new Array()
     }
