@@ -3,8 +3,7 @@
         {
             "name": "mathist",
             "script": "./node_modules/next/dist/bin/next",
-            "instances": 4,
-            "exec_mode": "cluster",
+            "instances": 15,
             "args": "dev",
             "env": {
                 "PORT": "3000"

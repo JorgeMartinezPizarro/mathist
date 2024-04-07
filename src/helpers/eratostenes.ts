@@ -79,6 +79,7 @@ function primesToExcel(LIMIT: number) {
       try {
         fs.appendFileSync(path, line.join(',') + "\r\n");
       } catch (e) {
+        console.log("Error writting to file " + path + " " + e.toString())
         throw new Error("Error writting primes to file " + path)
       }
       rows++;
