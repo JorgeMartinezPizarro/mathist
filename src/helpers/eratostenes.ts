@@ -83,10 +83,10 @@ function primesToExcel(LIMIT: number) {
         throw new Error("Error writting to file " + path + " " + e.toString())
       }
       rows++;
-      // Absurd max value, no disk can handle it!
+      // Max excel file size
       if (rows === EXCEL_MAX_ROWS) {
-        console.log("Max excel file " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS) + " cells")
-        throw new Error("Max excel file " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS) + " cells");
+        console.log("Max excel file " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS) + " cells. Last Prime found " + line.slice(-1) + " in " + duration(getTimeMicro() - elapsed))
+        throw new Error("Max excel file " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS) + " cells. Las prime found " + line.slice(-1));
       }
       line = new Array()
     }
