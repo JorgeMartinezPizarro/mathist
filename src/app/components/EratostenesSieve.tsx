@@ -102,8 +102,7 @@ export default () => {
             <a href="https://mather.ideniox.com/primes/primes-to-100m.csv" download="primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
             <a href="https://mather.ideniox.com/primes/primes-to-1b.csv" download="primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
             <a href="https://mather.ideniox.com/primes/primes-to-10b.csv" download="primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/primes/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/primes/primes-to-500b.csv" download="primes-to-500b.csv">primes-to-500b.csv</a>
+            <a href="https://mather.ideniox.com/primes/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>
         </p>
         <hr/>
         <>
