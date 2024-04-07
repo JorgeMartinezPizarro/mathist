@@ -79,13 +79,13 @@ function primesToExcel(LIMIT: number) {
       try {
         fs.appendFileSync(path, line.join(',') + "\r\n");
       } catch (e) {
-        console.log("Error writting to file " + path + " " + e.toString())
-        throw new Error("Error writting to file " + path + " " + e.toString())
+        console.log("Error writting to file " + path + ", " + e.toString())
+        throw new Error("Error writting to file " + path + ", " + e.toString())
       }
       rows++;
       // Max excel file size
       if (rows === EXCEL_MAX_ROWS) {
-        console.log("Warning. The file cannot be open with Excel. Max cells count " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS))
+        console.log("Warning. The file cannot be open with Excel. Max cells count " + (EXCEL_MAX_ROWS* EXCEL_MAX_COLS) + ", last prime fit into Excel " + line.slice(-1))
       }
       line = new Array()
     }
