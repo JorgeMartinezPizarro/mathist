@@ -16,7 +16,7 @@ export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolea
     // SKIP IT FOR HARD TESTINGs
     //throw new Error("max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk.");
   } 
-  // 500b Up to 30GB RAM 240GB disk ( x500), common sense limit, it takes 6h to compute
+  // 500b Up to 30GB RAM 240GB disk ( x500), common sense limit, it takes 10h to compute
   if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
     throw new Error("max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk.");
   }

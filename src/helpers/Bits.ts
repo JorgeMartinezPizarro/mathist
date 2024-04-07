@@ -1,11 +1,10 @@
 import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_30GB } from "./Constants";
 import toHuman from "./toHuman";
 
-// Up to 250b, posible sieve for up to 500b, not bad at all 30GB RAM needed 
-// Tested with 100b, it works in 75m. 
-export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY                        // 2.1b values
-export const MAX_ROWS = MAX_ALLOCATABLE_MATRIX_30GB / MAX_ALLOCATABLE_ARRAY; // 250
-// 107374182400
+// Up to 500b, posible sieve for up to 1t, requires 59GB RAM
+export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY                             // 2b columns
+export const MAX_ROWS = MAX_ALLOCATABLE_MATRIX_30GB / MAX_ALLOCATABLE_ARRAY; // 250 rows
+
 export default class Bits {
   private array: BitView[] = new Array(0)
   public length: number = 0
