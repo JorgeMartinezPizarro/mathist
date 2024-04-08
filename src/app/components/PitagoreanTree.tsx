@@ -61,7 +61,6 @@ const PitagoreanTree = () => {
                     setTriple(res)
                     setLoading(false)
                 }
-                
             })
             .catch(error => {
                 setLoading(false)
