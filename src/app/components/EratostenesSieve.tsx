@@ -7,8 +7,9 @@ import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
 import {MAX_ALLOCATABLE_MATRIX_30GB, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
 import toHuman from "@/helpers/toHuman";
+import Image from "next/image";
 
-export default () => {
+const EratostenesSieve = () => {
     const [primes, setPrimes] = useState<number[]>([2])
 
     const [value, setValue] = useState<string>("2")
@@ -49,11 +50,14 @@ export default () => {
             setLoading(false)
             setDurationFull(time)
         } catch (error) {
+            let message
+            if (error instanceof Error) message = error.message
+            else message = String(error)
             setDurationFull(0)
-            if (error.toString().indexOf("Failed to fetch") !== -1)
+            if (message.indexOf("Failed to fetch") !== -1)
                 setError("Error generating excel, server disconnected")
             else
-                setError(error.toString().replaceAll("Error: ", ""))
+                setError(message.replaceAll("Error: ", ""))
             setLoading(false)
         }
     };
@@ -80,17 +84,20 @@ export default () => {
             setPrimes(primes)
         } catch(error) {
             setLoading(false)
-            if (error.toString().indexOf("Failed to fetch") !== -1)
+            let message
+            if (error instanceof Error) message = error.message
+            else message = String(error)
+            if (message.indexOf("Failed to fetch") !== -1)
                 setError("Error generating excel, server disconnected")
             else 
-                setError(error.toString().replaceAll("Error: ", ""))
+                setError(message.replaceAll("Error: ", ""))
             setLength(0)
             setPrimes([])
         }
     }
 
     return <div>
-        <img src="/image6.png" height={200} />
+        <Image src="/image6.png" height={200} width={0} alt=""/>
         <hr/>
         <p>Eratosthenes sieve of a given length, max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
         <hr/>
@@ -146,3 +153,5 @@ export default () => {
         </>)}
     </div>
 }
+
+export default EratostenesSieve;

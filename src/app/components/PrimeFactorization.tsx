@@ -6,7 +6,7 @@ import { TextField, Button, CircularProgress, Alert } from "@mui/material"
 import { useCallback, useState } from "react"
 import { MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
 
-export default () => {
+const PrimeFactorization = () => {
 
     const [number, setNumber] = useState<number[]>([2])
 
@@ -92,3 +92,5 @@ export default () => {
     </div>
 
 }
+
+export default PrimeFactorization;

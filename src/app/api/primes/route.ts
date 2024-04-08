@@ -8,11 +8,12 @@ export async function GET(request: Request) {
   const amount = parseInt(searchParams.get('amount') || MAX_DISPLAY_SIEVE.toString())
   const excel = searchParams.get('excel') ? true : false
   
-  BigInt.prototype.toJSON = function() { return this.toString() }
-  
   try {
     return Response.json( eratostenes(LIMIT, amount, excel) )
-  } catch (e) {
-    return Response.json({ error: "Error in eratosthenes(" + LIMIT + "), " + e.toString().replaceAll("Error: ", "")  }, { status: 500 });
+  } catch (error) {
+    let message
+    if (error instanceof Error) message = error.message
+    else message = String(error)
+    return Response.json({ error: message }, { status: 400 });
   }
 }

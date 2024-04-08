@@ -1,6 +1,6 @@
 // Here some ideas to extrapolate number operations to BigInt
 // https://golb.hplar.ch/2018/09/javascript-bigint.html
-import {isPrime, BigNumber } from "mathjs"
+import {isPrime, bignumber } from "mathjs"
 import {primeFactors} from 'prime-lib';
 
 import getTimeMicro from './getTimeMicro';
@@ -9,7 +9,7 @@ const zero: BigInt = BigInt(0)
 const one: BigInt = BigInt(1)
 const two: BigInt = BigInt(2)
 
-export default (n: BigInt ) => {
+export default function factors(n: BigInt ) {
 
     const start = getTimeMicro()
 
@@ -38,9 +38,9 @@ function sqrt(value: BigInt): BigInt {
         return value;
     }
 
-    function newtonIteration(n, x0) {
-        const x1 = ((n / x0) + x0) >> one;
-        if (x0 === x1 || x0 === (x1 - one)) {
+    function newtonIteration(n: BigInt, x0: BigInt): BigInt {
+        const x1: BigInt = BigInt(n.toString()) / BigInt(x0.toString()) + BigInt(x0.toString()) >> BigInt(one.toString());
+        if (x0 === x1 || x0 === BigInt((BigInt(x1.toString()) - BigInt(one.toString())).toString())) {
             return x0;
         }
         return newtonIteration(n, x1);
@@ -53,18 +53,19 @@ const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
     if (num < one) {
         return []
     }
-    if (isPrime(new BigNumber(num.toString()))) {
+    if (isPrime(bignumber(num.toString()))) {
         return [...factors, num]
     }
     
-    if (num % two === zero) {
-        return primesOf(num/two, [...factors, two])
+    if (BigInt(num.toString()) % BigInt(two.toString()) === zero) {
+        return primesOf(BigInt(num.toString())/BigInt(two.toString()), [...factors, two])
     }
 
     const x: BigInt = sqrt(num)
-    for (var i: BigInt = BigInt(3); i <= x;i=i+two) {
-        if (num % i === zero) {
-            return primesOf(num/i, [...factors, i])
+    
+    for (var i: bigint = BigInt(3); i <= BigInt(x.toString()); i += BigInt(2)) {
+        if (BigInt(num.toString()) % BigInt(i.toString()) === zero) {
+            return primesOf(BigInt(num.toString())/BigInt(i.toString()), [...factors, i])
         }
     }
     

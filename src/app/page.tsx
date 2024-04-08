@@ -2,6 +2,6 @@
 
 import { redirect } from 'next/navigation'
 
-export default () => {
-    redirect("/sieve", "replace");
+export default function Page() {
+    redirect("/sieve");
 }

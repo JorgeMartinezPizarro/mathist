@@ -23,65 +23,71 @@ export default class Bits {
           array.push(new BitView(MAX_COLUMNS))
         }
       }
-    } catch (e) {
+    } catch (error) {
+      let message
+      if (error instanceof Error) message = error.message
+      else message = String(error)
       // use toHuman to show up what this sizes means
-      throw new Error("Bits(" + length + ") fails allocating " + toHuman(count * MAX_COLUMNS / 8) + " of "  + toHuman(length / 8) + " RAM, " + e.toString().replaceAll("Error: ", ""))
+      throw new Error("Bits(" + length + ") fails allocating " + toHuman(count * MAX_COLUMNS / 8) + " of "  + toHuman(length / 8) + " RAM, " + message.replaceAll("Error: ", ""))
     }
     console.log("Allocated Bits(" + length + ") of size " + (length < 8 ? length + " bits" : toHuman(length / 8)))
     this.array = array
     this.row = this.array.length
   }
-  get(n: number){
+  get(n: number): boolean {
     if (n >= this.length) {
       throw new Error("Out of founds Bits.get(" + n + ")")
     }
     for (var i = this.row; i >= 0; i--){
       if (n > i * MAX_COLUMNS) {
-        return this.array[i].getBit(n - i * MAX_COLUMNS);
+        return this.array[i].getBit(n - i * MAX_COLUMNS) === 1;
       }
     }
+    return false;
   }
-  set(n: number, j: number){
-    // TODO: GENERALIZE SET
-      if (n >= this.length) {
-        throw new Error("Out of founds Bits.set(" + n + ", " + j + " )")
+  set(n: number, j: boolean){
+    if (n >= this.length) {
+      throw new Error("Out of founds Bits.set(" + n + ", " + j + " )")
+    }
+    for (var i = this.row; i >= 0; i--){ 
+      if (n > i * MAX_COLUMNS) {
+        this.array[i].setBit(n - i * MAX_COLUMNS, j)
+        break;
       }
-      for (var i = this.row; i >= 0; i--){ 
-        if (n > i * MAX_COLUMNS) {
-          this.array[i].setBit(n - i * MAX_COLUMNS, j)
-          break;
-        }
-      }
+    }
   }
   toString() {
     return this.array.toString()
   }
 }
 
-const BitView = function(length: number) {
-  try {
-    this.buffer = new ArrayBuffer(length);
-  } catch(e) {
-    throw new Error("ArrayBuffer(" + length + ")")
+class BitView {
+  buffer: ArrayBuffer
+  u8: Uint8Array
+  constructor(length: number) {
+    try {
+      this.buffer = new ArrayBuffer(length);
+    } catch(e) {
+      throw new Error("ArrayBuffer(" + length + ")")
+    }
+    try {
+      this.u8 = new Uint8Array(this.buffer);
+    } catch(e) {
+      throw new Error("Uint8Array(" + length + ")")
+    }
   }
-  try {
-    this.u8 = new Uint8Array(this.buffer);
-  } catch(e) {
-    throw new Error("Uint8Array(" + length + ")")
+  getBit(idx: number) {
+    var v = this.u8[idx >> 3];
+    var off = idx & 0x7;
+    return (v >> (7-off)) & 1;
   }
-};
-  
-BitView.prototype.getBit = function(idx) {
-  var v = this.u8[idx >> 3];
-  var off = idx & 0x7;
-  return (v >> (7-off)) & 1;
-};
 
-BitView.prototype.setBit = function(idx, val) {
-  var off = idx & 0x7;
-  if (val) {
-    this.u8[idx >> 3] |= (0x80 >> off);
-  } else {
-    this.u8[idx >> 3] &= ~(0x80 >> off);
+  setBit(idx: number, val: boolean) {
+    var off = idx & 0x7;
+    if (val) {
+      this.u8[idx >> 3] |= (0x80 >> off);
+    } else {
+      this.u8[idx >> 3] &= ~(0x80 >> off);
+    }
   }
 }

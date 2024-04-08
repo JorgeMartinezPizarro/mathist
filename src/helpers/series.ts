@@ -1,7 +1,7 @@
 import eratostenes from "./eratostenes";
 import factorial from "./factorial";
 
-export default (LIMIT: number, name: string): BigInt[] => {
+export default function series(LIMIT: number, name: string): BigInt[] {
   let array: BigInt[] = [];
   let aux: number[] = [];
   

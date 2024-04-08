@@ -1,4 +1,4 @@
-export default (microseconds: number) => {
+export default function duration(microseconds: number) {
     
     const millisecond = 1000            // a millisecond in microseconds
     const second = 1000 * millisecond   // a second in microseconds 
@@ -7,7 +7,7 @@ export default (microseconds: number) => {
     
     if (microseconds > hour) {
         // hours
-        return Math.floor(microseconds  / hour) + " h " + Math.floor((microseconds - Math.floor(microseconds  / hour) * hour) / minute) + " s";
+        return Math.floor(microseconds  / hour) + " h " + Math.floor((microseconds - Math.floor(microseconds  / hour) * hour) / minute) + " m";
     } else if (microseconds > minute) {
         // minutes
         return Math.floor(microseconds  / minute) + " m " + Math.floor((microseconds - Math.floor(microseconds  / minute) * minute) / second) + " s";

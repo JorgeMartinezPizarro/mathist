@@ -1,23 +1,20 @@
-
-import bigIntGCD from "bigint-gcd"
-import { setIsSubset } from "mathjs"
+import { TreeElement } from "@/app/components/PitagoreanTree"
 import getTimeMicro from "./getTimeMicro"
 
-export default (n: BigInt) => {
+export default function pitagoreanTree(n: bigint) {
     
     
     const start = getTimeMicro()
     
     const initialFibonacciSquare = [[BigInt(1),BigInt(1)],[BigInt(3),BigInt(2)]]
 
-    let arrayOfSquares: BigInt[][][] = [initialFibonacciSquare]
+    let arrayOfSquares: bigint[][][] = [initialFibonacciSquare]
 
     for (var i =0; i<parseInt(n.toString()); i++) {
         arrayOfSquares = [...arrayOfSquares, ...iterate(arrayOfSquares.slice(-(3**i)))]
-        
     }
 
-    const result = arrayOfSquares.map(square => {
+    const result: TreeElement[] = arrayOfSquares.map(square => {
         return {
             triple: pitagoreanTriple(square),
             square,
@@ -25,22 +22,20 @@ export default (n: BigInt) => {
     })
     
 
-    let array: BigInt[] = []
+    let array: TreeElement[][] = []
 
-    for (var i:BigInt = BigInt(0); i<n; i++) {
-
-        const sum = (BigInt(3)**BigInt(i)-BigInt(1)) / BigInt(2)
-        
-        const x: BigInt = result.slice(parseInt(sum), parseInt(sum + BigInt(3)**i))
+    for (var j: bigint = BigInt(0); j < n; j += BigInt(1)) {
+        const sum: bigint = ( BigInt("3")**j - BigInt(1) ) / BigInt(2)
+        const x: TreeElement[] = result.slice(parseInt(sum.toString()), parseInt((sum + BigInt(3)**j).toString()))
         array.push(x)
     }
 
-    return {squares: arrayOfSquares, tree: array, time: getTimeMicro() - start};
+    return {tree: array, time: getTimeMicro() - start};
 }
 
-const iterate = (arrayOfSquares: BigInt[][][]): BigInt[][][] => {
+const iterate = (arrayOfSquares: bigint[][][]): bigint[][][] => {
 
-    let nextArrayOfSquares: BigInt[][][] = new Array;
+    let nextArrayOfSquares: bigint[][][] = new Array;
     
     for (var i=0; i<arrayOfSquares.length;i++) {
         nextArrayOfSquares = [...nextArrayOfSquares, ...children(arrayOfSquares[i])]
@@ -49,34 +44,34 @@ const iterate = (arrayOfSquares: BigInt[][][]): BigInt[][][] => {
     return nextArrayOfSquares;
 }
 
-export const pitagoreanTriple = (fibonacciSquare: BigInt[][]): BigInt[] => {
+export const pitagoreanTriple = (fibonacciSquare: bigint[][]): bigint[] => {
 
-    const triple: BitInt[] = [
+    const triple: bigint[] = [
         (fibonacciSquare[0][0] * fibonacciSquare[1][0]), 
         (fibonacciSquare[0][1] * fibonacciSquare[1][1]) * BigInt(2), 
         (fibonacciSquare[0][0] * fibonacciSquare[1][1]) + (fibonacciSquare[0][1] * fibonacciSquare[1][0]),
-        
     ]
     
     // for fibonacci-like square 1 1 1/3 and 1/2 are irreducible fractions, lets check it!
     //                           3 2 
-    if (bigIntGCD(fibonacciSquare[0][0], fibonacciSquare[1][0]) > BigInt(1) || 
+    /*if (bigIntGCD(fibonacciSquare[0][0], fibonacciSquare[1][0]) > BigInt(1) || 
         bigIntGCD(fibonacciSquare[0][1], fibonacciSquare[1][1]) > BigInt(1)
     ) 
         throw new Error("The square is wrong, the fractions generated are not irreducible!")
+    */
     // The pithagorean triple must verify the pithagorean formel, a**2 + b**2 - c**2 =0
     if (
-        triple[0] ** BigInt(2) + triple[1]** BigInt(2) - triple[2]** BigInt(2) !== BigInt(0) 
+        triple[0] * triple[0] + triple[1] * triple[1] - triple[2] * triple[2] !== BigInt(0) 
     ) 
         throw new Error("The triple does not satisfy the pithagorean theorem!")
     // The triple should be irreducible, let's check it!
-    if (bigIntGCD(triple[0], bigIntGCD(triple[1], triple[2])) > BigInt(1)) 
+    /*if (bigIntGCD(triple[0], bigIntGCD(triple[1], triple[2])) > BigInt(1)) 
         throw new Error("The triple is not irreducible!")
-   
+    */
     return triple;
 }
 
-export const childrenAt = (fibonnaciSquare: BigInt[][], i: number): BigInt[][] => {
+export const childrenAt = (fibonnaciSquare: bigint[][], i: number): bigint[][] => {
     
     if (i === 0)
         return [
@@ -112,7 +107,7 @@ export const childrenAt = (fibonnaciSquare: BigInt[][], i: number): BigInt[][] =
 }
 
 
-export const children = (fibonnaciSquare: BigInt[][]): BigInt[][][] => {
+export const children = (fibonnaciSquare: bigint[][]): bigint[][][] => {
     
     const childOne = [
         [
@@ -142,14 +137,4 @@ export const children = (fibonnaciSquare: BigInt[][]): BigInt[][][] => {
     ];
 
     return [childOne, childTwo, childThree]
-}
-
-function gcd (a: BigInt, b: BigInt): BigInt {
-    if(b == BigInt(0)){
-        return a;
-    }
-    return gcd(b, a%b);
-}
-function gcd_more_than_two_numbers (a: BigInt[]): BigInt {
-  return a.reduce(gcd)
 }

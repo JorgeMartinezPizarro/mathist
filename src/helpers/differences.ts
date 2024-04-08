@@ -1,6 +1,6 @@
 import eratostenes from "./eratostenes"
 
-export default (array: BigInt[]): BigInt[][] => {
+export default function differences(array: BigInt[]): BigInt[][] {
     const matrix: BigInt[][] = [array]
     for (var a=0;a<array.length;a++) {
         const l: BigInt[] = [];

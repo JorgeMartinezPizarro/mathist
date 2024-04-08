@@ -1,13 +1,12 @@
 import fs from "fs"
 
-import removeFilesAsync from "@/helpers/removeFilesAsync"
-import getTimeMicro from "@/helpers/getTimeMicro";
 import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_ALLOCATABLE_MATRIX_30GB} from "./Constants";
-import duration from "./duration";
-import toHuman from "./toHuman"
-import eratosthenes from "./sieve"
+import getTimeMicro from "@/helpers/getTimeMicro";
+import duration from "@/helpers/duration";
+import toHuman from "@/helpers/toHuman";
+import eratosthenes from "@/helpers/sieve";
 
-export default (LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) => {
+export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) {
   
   // LIMIT CHECKS 
   // TODO: use ENVIRONMENT variable for check or not.
@@ -44,11 +43,10 @@ function primesToExcel(LIMIT: number) {
       return {
         filename,
         length: -1,
-        time: getTimeMicro() - elapsed
+        time: getTimeMicro() - elapsed,
+        primes: [],
       }
     }
-    // DO NOT remove files older than 8h
-    //removeFilesAsync('./public/files/', ["csv"], 60 * 60 * 8);
   } catch (e) {
     console.log("WARNING: an error ocurred deleting cache files from " + root)
   }
@@ -71,16 +69,19 @@ function primesToExcel(LIMIT: number) {
   }
 
   for (var i = 1; i < sieve.length; i++) {
-    if (i * 2 + 1 <= LIMIT && sieve.get(i) === 0) {
+    if (i * 2 + 1 <= LIMIT && !sieve.get(i)) {
       line.push( 2 * i + 1)
       length++
     }
     if (line.length === EXCEL_MAX_COLS || i === sieve.length-1) {
       try {
         fs.appendFileSync(path, line.join(',') + "\r\n");
-      } catch (e) {
-        console.log("Error writting to file " + path + ", " + e.toString())
-        throw new Error("Error writting to file " + path + ", " + e.toString())
+      } catch (error) {
+        let message
+        if (error instanceof Error) message = error.message
+        else message = String(error)
+        console.log("Error writting to file " + path + ", " + message)
+        throw new Error("Error writting to file " + path + ", " + message)
       }
       rows++;
       // Max excel file size
@@ -97,7 +98,7 @@ function primesToExcel(LIMIT: number) {
   console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
   
-  return {filename, time: getTimeMicro() - elapsed, length};
+  return {filename, time: getTimeMicro() - elapsed, length, primes: []};
 }
 
 // Count primes and return count and last amount primes
@@ -143,7 +144,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
   let e = getTimeMicro()
   // Basically push primes until get an amount
   for (var i = memorySize; i >= 1; i-- ) {
-    if (i * 2 + 1 <= lastNumber && sieve.get(i) === 0) {
+    if (i * 2 + 1 <= lastNumber && !sieve.get(i)) {
       if (count < amount) {
         try {
           arrayOfPrimes.push(i * 2 + 1)

@@ -13,7 +13,7 @@ import { redirect } from "next/navigation";
 export default function Home({ params }: { params: { slug: string } }) {
   
   if (params.slug !== "sieve" && params.slug !== "tree" && params.slug !== "factors" && params.slug !== "series") {
-    redirect("/sieve", "replace");
+    redirect("/sieve");
   }
 
   return <TabContext value={params.slug}>

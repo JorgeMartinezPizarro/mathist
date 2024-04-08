@@ -4,12 +4,11 @@ import { useState, useEffect, useCallback } from "react"
 import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material"
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 
-export default function PrimesDifferences() {
+const SerieDifferences = () => {
   
-  const [number, setNumber] = useState<BigInt[][]|boolean>(false)
+  const [number, setNumber] = useState<BigInt[][]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
-  const AMOUNT = 39
   const [value, setValue] = useState({label: "integers", value: "integers"})
 
     const handleSubmit = useCallback(() => {
@@ -46,7 +45,7 @@ export default function PrimesDifferences() {
   return (
     <div className="main">
         <hr />
-        <p>Select a serie S to obtain it's serie of differences. </p>
+        <p>Select a serie S to obtain it&apos;s serie of differences. </p>
         <hr />
         <p>Some of these series of series have regularities, where others not.</p>
         <hr />
@@ -75,7 +74,7 @@ export default function PrimesDifferences() {
           onChange={(event, values) => {
               
             setValue(values)
-            setNumber(false)
+            setNumber([])
           }}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Serie" />}
@@ -91,7 +90,7 @@ export default function PrimesDifferences() {
       
       {number && (<>
         <hr />
-        <p>Below the {LENGTH} first {value.label} and it's nth-differences up to {LENGTH}</p>
+        <p>Below the {LENGTH} first {value.label} and it&apos;s nth-differences up to {LENGTH}</p>
         <hr />
         <table>
           <tbody>
@@ -103,7 +102,7 @@ export default function PrimesDifferences() {
               return false
             }).map((row, i) => 
               <tr key={JSON.stringify(row)}>{row.slice(0, LENGTH).map((nr, j) => 
-                <td className={i === j ? "diagonal" : ""} key={j}>{nr && BigInt(nr).toString()}</td>
+                <td className={i === j ? "diagonal" : ""} key={j}>{nr && nr.toString()}</td>
               )}</tr>
             )}
           </tbody>
@@ -112,3 +111,5 @@ export default function PrimesDifferences() {
     </div>
   );
 }
+
+export default SerieDifferences;

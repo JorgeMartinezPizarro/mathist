@@ -5,11 +5,13 @@ export async function POST(request: Request) {
   const body = await request.json();
 
   const LIMIT = BigInt(body.number || "0")
-  BigInt.prototype.toJSON = function() { return this.toString() }
-
+  
   try {
     return Response.json(pitagoreanTriple(LIMIT))
-  } catch (e) {
-    return Response.json({ error: e.toString(), status: 400 });
+  } catch (error) {
+    let message
+    if (error instanceof Error) message = error.message
+    else message = String(error)
+    return Response.json({ error: message }, { status: 400 });
   }
 }

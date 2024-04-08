@@ -4,10 +4,12 @@ export async function GET(request: Request) {
   
   const { searchParams } = new URL(request.url)
   const LIMIT = BigInt(searchParams.get('LIMIT') || "0")
-  BigInt.prototype.toJSON = function() { return this.toString() }
   try {
     return Response.json( pitagoreanTree(LIMIT) )
-  } catch (e) {
-    return Response.json({ error: 'Error generating the pitagorean tree ...' }, { status: 400 });
+  } catch (error) {
+    let message
+    if (error instanceof Error) message = error.message
+    else message = String(error)
+    return Response.json({ error: message }, { status: 400 });
   }
 }
