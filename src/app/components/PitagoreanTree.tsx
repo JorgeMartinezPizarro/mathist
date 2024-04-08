@@ -28,12 +28,12 @@ const PitagoreanTree = () => {
     const [loading, setLoading] = useState(false)
 
     const [error, setError] = useState(false)
-    const [number, setNumber] = useState("0")
+    const [number, setNumber] = useState("")
 
     const [triple, setTriple] = useState<Triple>({
-        triple: [BigInt(15), BigInt(8), BigInt(17)],
-        square: [[BigInt(3), BigInt(1)], [BigInt(5), BigInt(4)]],
-        time: 0
+        triple: [BigInt(3), BigInt(4), BigInt(5)],
+        square: [[BigInt(1), BigInt(1)], [BigInt(3), BigInt(2)]],
+        time: 1
     })
 
 

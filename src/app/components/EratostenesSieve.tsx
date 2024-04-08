@@ -14,7 +14,7 @@ const EratostenesSieve = () => {
 
     const [value, setValue] = useState<string>("2")
 
-    const [duration, setDuration] = useState(0)
+    const [duration, setDuration] = useState(1)
 
     const [durationFull, setDurationFull] = useState(0)
 

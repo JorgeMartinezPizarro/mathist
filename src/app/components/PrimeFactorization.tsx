@@ -12,7 +12,7 @@ const PrimeFactorization = () => {
 
     const [value, setValue] = useState<string>("2")
 
-    const [duration, setDuration] = useState(0)
+    const [duration, setDuration] = useState(1)
     
     const [loading, setLoading] = useState<boolean>(false)
     
