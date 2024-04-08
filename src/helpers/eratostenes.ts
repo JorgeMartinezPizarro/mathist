@@ -13,11 +13,11 @@ export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_
   // 1b Up to 64MB RAM 516MB disk, natural limit for the web, it takes 20s to compute
   if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
     // SKIP IT FOR HARD TESTINGs
-    //throw new Error("max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk.");
+    throw new Error("Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk. For more ask the admin.");
   } 
-  // 500b Up to 30GB RAM 240GB disk ( x500), common sense limit, it takes 10h to compute
+  // 500b Up to 30GB RAM 240GB disk ( x500), common sense limit, it takes 12h to compute
   if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
-    throw new Error("max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk.");
+    throw new Error("Max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk.");
   }
 
   if (excel) {

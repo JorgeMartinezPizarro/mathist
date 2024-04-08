@@ -101,7 +101,7 @@ const EratostenesSieve = () => {
         <hr/>
         <p>Eratosthenes sieve of a given length, max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
         <hr/>
-        <p>Server max is {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 229GB of primes in around 10 hours.</p>
+        <p>Tested with {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 229GB of primes in around 12 hours, below some examples:</p>
         <hr/>
         <p>
             <a href="https://mather.ideniox.com/primes/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
