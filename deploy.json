@@ -3,8 +3,8 @@
         {
             "name": "mathist",
             "script": "npm",
-            "instances": 4,
-            "args": "dev",
+            "instances": 8,
+            "args": "start",
             "watch": true,
             "env": {
                 "PORT": "3000"

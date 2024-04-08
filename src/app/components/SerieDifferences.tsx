@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from "react"
-import { CircularProgress, Autocomplete, TextField, Button, FormGroup } from "@mui/material"
+import { CircularProgress, Autocomplete, TextField, Button, FormGroup, Alert } from "@mui/material"
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 
 const SerieDifferences = () => {
@@ -83,7 +83,7 @@ const SerieDifferences = () => {
         {loading && <CircularProgress />}
       </FormGroup>
       
-      {error && JSON.stringify(error, null, 2)}
+      {error && <Alert severity="error">{error}</Alert>}
       
       {number && (<>
         <hr />

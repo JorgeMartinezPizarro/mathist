@@ -74,7 +74,7 @@ const PrimeFactorization = () => {
             />
             <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">FACTORIZE</Button>
             {loading && <CircularProgress/>}
-            {error && <p><Alert severity="error">{error}</Alert></p>}
+            {error && <Alert severity="error">{error}</Alert>}
         </FormGroup>
         
         {!error && !loading && <>
