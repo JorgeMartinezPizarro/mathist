@@ -80,8 +80,8 @@ const PitagoreanTree = () => {
 
     return <div>
         <div>
-            <Image src="/image4.png" height={200} width={0} alt="" />
-            <Image src="/image2.png" height={200} width={0} alt=""/>
+            <Image src="/image4.png" height={100} width={100} alt="" />
+            <Image src="/image2.png" height={100} width={200} alt=""/>
         </div>
         <hr />
         <p>Write a number to generate a pithagorean triple. The max value of the number is {M}</p>
