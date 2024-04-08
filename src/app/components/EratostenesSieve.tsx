@@ -92,7 +92,7 @@ export default () => {
     return <div>
         <img src="/image6.png" height={200} />
         <hr/>
-        <p>Sieve of a given length, max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
+        <p>Eratosthenes sieve of a given length, max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
         <hr/>
         <p>Server max is {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 229GB of primes in around 10 hours.</p>
         <hr/>
