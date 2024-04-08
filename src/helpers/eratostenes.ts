@@ -34,9 +34,11 @@ function primesToExcel(LIMIT: number) {
   console.log("Let's sieve for less or equal than " + LIMIT)
   
   const elapsed = getTimeMicro()
-  const root = "./public/files/"  
+  const root = "./public/files/"
+  const filenameTemp = "temp-primes-to-" + LIMIT + ".csv"
   const filename = "primes-to-" + LIMIT + ".csv"
-  const path = root + filename
+  const pathTemp = root + filenameTemp;
+  const path = root + filename;
 
   try {
     if (fs.existsSync(path)) {
@@ -62,10 +64,10 @@ function primesToExcel(LIMIT: number) {
   e = getTimeMicro()
   
   // write primes in sieve to a CSV file
-  fs.writeFileSync(path, "")
+  fs.writeFileSync(pathTemp, "")
 
   if (sieve.length === 0) {
-    fs.appendFileSync(path, "2")
+    fs.appendFileSync(pathTemp, "2")
   }
 
   for (var i = 1; i < sieve.length; i++) {
@@ -75,7 +77,7 @@ function primesToExcel(LIMIT: number) {
     }
     if (line.length === EXCEL_MAX_COLS || i === sieve.length-1) {
       try {
-        fs.appendFileSync(path, line.join(',') + "\r\n");
+        fs.appendFileSync(pathTemp, line.join(',') + "\r\n");
       } catch (error) {
         let message
         if (error instanceof Error) message = error.message
@@ -92,6 +94,8 @@ function primesToExcel(LIMIT: number) {
     }
   }
 
+  fs.renameSync(pathTemp, path);
+  
   var stats = fs.statSync(path)
   var fileSizeInBytes = stats.size;
 
