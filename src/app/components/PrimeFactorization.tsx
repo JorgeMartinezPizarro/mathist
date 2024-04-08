@@ -44,11 +44,9 @@ const PrimeFactorization = () => {
 
     }, [value])
 
-    const max = MAX_DIGITS_FACTORIZATION
-    
     return <div>
         <hr />
-        <p>Enter a number below to factorize it. The max number can be entered is 10**{max} - 1</p>
+        <p>Enter a number below to factorize it. The max number can be entered is 10**{MAX_DIGITS_FACTORIZATION} - 1.</p>
         <hr />
         <p>2**82589933 - 1 is the biggest known prime, a prime with 24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a></p>
         <hr />
@@ -63,7 +61,7 @@ const PrimeFactorization = () => {
                 value={value}
                 onChange={(event => {
                     try {
-                        if (event.target.value.length <= max && parseInt(event.target.value) > 0) {
+                        if (event.target.value.length <= MAX_DIGITS_FACTORIZATION && parseInt(event.target.value) > 0) {
                             setValue(BigInt(event.target.value.toString()).toString())
                             setNumber([])
                             setDuration(0)

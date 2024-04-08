@@ -5,11 +5,11 @@ import {primeFactors} from 'prime-lib';
 
 import getTimeMicro from './getTimeMicro';
 
-const zero: BigInt = BigInt(0)
-const one: BigInt = BigInt(1)
-const two: BigInt = BigInt(2)
+const zero: bigint = BigInt(0)
+const one: bigint = BigInt(1)
+const two: bigint = BigInt(2)
 
-export default function factors(n: BigInt ) {
+export default function factors(n: bigint ) {
 
     const start = getTimeMicro()
 
@@ -23,14 +23,14 @@ export default function factors(n: BigInt ) {
     }
     
     return {
-        factors: BigInt(n.toString()) <= BigInt("9007199254740991") ? primeFactors(parseInt(n.toString())) : primesOf(n), 
+        factors: n <= BigInt("9007199254740991") ? primeFactors(parseInt(n.toString())) : primesOf(n), 
         time: getTimeMicro() - start
     }
 }
 
 // How to get sqrt of a BigInt, found under the link below
 // https://stackoverflow.com/a/53684036
-function sqrt(value: BigInt): BigInt {
+function sqrt(value: bigint): bigint {
     if (value < zero) {
         throw 'square root of negative numbers is not supported'
     }
@@ -38,9 +38,9 @@ function sqrt(value: BigInt): BigInt {
         return value;
     }
 
-    function newtonIteration(n: BigInt, x0: BigInt): BigInt {
-        const x1: BigInt = BigInt(n.toString()) / BigInt(x0.toString()) + BigInt(x0.toString()) >> BigInt(one.toString());
-        if (x0 === x1 || x0 === BigInt((BigInt(x1.toString()) - BigInt(one.toString())).toString())) {
+    function newtonIteration(n: bigint, x0: bigint): bigint {
+        const x1: bigint = n / x0 + x0 >> one;
+        if (x0 === x1 || x0 === x1 - one) {
             return x0;
         }
         return newtonIteration(n, x1);
@@ -49,7 +49,7 @@ function sqrt(value: BigInt): BigInt {
     return newtonIteration(value, one);
 }
 
-const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
+const primesOf = (num: bigint, factors: bigint [] = []): bigint [] => {
     if (num < one) {
         return []
     }
@@ -57,15 +57,15 @@ const primesOf = (num: BigInt, factors: BigInt [] = []): BigInt [] => {
         return [...factors, num]
     }
     
-    if (BigInt(num.toString()) % BigInt(two.toString()) === zero) {
-        return primesOf(BigInt(num.toString())/BigInt(two.toString()), [...factors, two])
+    if (num % two === zero) {
+        return primesOf(num/two, [...factors, two])
     }
 
-    const x: BigInt = sqrt(num)
+    const x: bigint = sqrt(num)
     
-    for (var i: bigint = BigInt(3); i <= BigInt(x.toString()); i += BigInt(2)) {
-        if (BigInt(num.toString()) % BigInt(i.toString()) === zero) {
-            return primesOf(BigInt(num.toString())/BigInt(i.toString()), [...factors, i])
+    for (var i: bigint = BigInt(3); i <= x; i += two) {
+        if (num % i === zero) {
+            return primesOf(num/i, [...factors, i])
         }
     }
     
