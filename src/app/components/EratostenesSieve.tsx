@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, CircularProgress, TextField, Alert  } from "@mui/material"
+import { Button, CircularProgress, TextField, Alert, FormGroup  } from "@mui/material"
 import { useState } from "react"
 
 import {default as d} from "@/helpers/duration"
@@ -101,7 +101,7 @@ const EratostenesSieve = () => {
         <hr/>
         <p>Eratosthenes sieve of a given length, max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
         <hr/>
-        <p>Tested with {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 229GB of primes in around 12 hours, below some examples:</p>
+        <p>Tested with {string(BigInt(MAX_ALLOCATABLE_MATRIX_30GB))}, using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 240GB of primes in around 12 hours, below some examples:</p>
         <hr/>
         <p>
             <a href="https://mather.ideniox.com/primes/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
@@ -113,7 +113,7 @@ const EratostenesSieve = () => {
             <a href="https://mather.ideniox.com/primes/primes-to-500b.csv" download="primes-to-500b.csv">primes-to-500b.csv</a>
         </p>
         <hr/>
-        <>
+        <FormGroup row={true}>
             <TextField
                 className="input"
                 label="Length"
@@ -129,11 +129,10 @@ const EratostenesSieve = () => {
                     }
                 })}
             />
-            <Button type="submit" disabled={loading} onClick={generateSieve} variant="contained">GENERATE</Button>
+            <Button disabled={loading} onClick={generateSieve} variant="contained">GENERATE</Button>
             <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
             {loading && <CircularProgress />}
-            
-        </>
+        </FormGroup>
         {error && <p><Alert severity="error">{error}</Alert></p>}
         <hr/>
         {!error && durationFull !== 0 && <>

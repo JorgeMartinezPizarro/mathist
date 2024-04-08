@@ -2,7 +2,7 @@
 
 import string from "@/helpers/string"
 import {default as d} from "@/helpers/duration"
-import { TextField, Button, CircularProgress, Alert } from "@mui/material"
+import { TextField, Button, CircularProgress, Alert, FormGroup } from "@mui/material"
 import { useCallback, useState } from "react"
 import { MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
 
@@ -52,7 +52,7 @@ const PrimeFactorization = () => {
         <hr />
         <p>Try with {string(BigInt("1111111111111111111"))}, {string(BigInt("5112599469399894959"))} or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <hr />
-        <div>
+        <FormGroup row={true}>
             <TextField
                 className="input"
                 label="Number"
@@ -75,7 +75,7 @@ const PrimeFactorization = () => {
             <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">FACTORIZE</Button>
             {loading && <CircularProgress/>}
             {error && <p><Alert severity="error">{error}</Alert></p>}
-        </div>
+        </FormGroup>
         
         {!error && !loading && <>
             {number.length > 0 && <>

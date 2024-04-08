@@ -3,7 +3,7 @@
 import { MAX_DIGITS_TRIPLE } from "@/helpers/Constants"
 import duration from "@/helpers/duration"
 import string from "@/helpers/string"
-import { TextField, Button, CircularProgress, Alert } from "@mui/material"
+import { TextField, Button, CircularProgress, Alert, FormGroup } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
@@ -81,30 +81,32 @@ const PitagoreanTree = () => {
         <hr />
         <p>Write a path in base 3 to generate a pithagorean triple. The max length of the path is {MAX_DIGITS_TRIPLE}.</p>
         <hr />
-        <TextField
-            className="input"
-            label="Number"
-            type="string"
-            value={number}
-            onChange={(event => {
-                // This limit make the http parameters for a GET request fails.
-                const regex = new RegExp("[^012$]");
-                if (event.target.value.toString().length <= MAX_DIGITS_TRIPLE && !regex.test(event.target.value))
-                    try {
-                        setNumber(event.target.value)
-                        setTriple({
-                            triple: [],
-                            square: [],
-                            time: 0
-                        })
+        <FormGroup row={true}>
+            <TextField
+                className="input"
+                label="Number"
+                type="string"
+                value={number}
+                onChange={(event => {
+                    // This limit make the http parameters for a GET request fails.
+                    const regex = new RegExp("[^012$]");
+                    if (event.target.value.toString().length <= MAX_DIGITS_TRIPLE && !regex.test(event.target.value))
+                        try {
+                            setNumber(event.target.value)
+                            setTriple({
+                                triple: [],
+                                square: [],
+                                time: 0
+                            })
 
-                    } catch (e) {
+                        } catch (e) {
 
-                    }
-            })}
-        />
-        <Button onClick={handleSend} variant="contained">GENERATE</Button>
-        {loading && <CircularProgress/>}
+                        }
+                })}
+            />
+            <Button onClick={handleSend} variant="contained">GENERATE</Button>
+            {loading && <CircularProgress/>}
+        </FormGroup>
         <p>{error && <Alert severity="error">{error}</Alert>}</p>
         <hr />
         <p>More detail about what are we computing here, in the video: <a href="https://www.youtube.com/watch?v=94mV7Fmbx88" >https://www.youtube.com/watch?v=94mV7Fmbx88</a>. A visualization tool for the triples: <a href="https://www.geogebra.org/calculator/hd2hcvas">https://www.geogebra.org/calculator/hd2hcvas</a></p>

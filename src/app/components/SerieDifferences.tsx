@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from "react"
-import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material"
+import { CircularProgress, Autocomplete, TextField, Button, FormGroup } from "@mui/material"
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 
 const SerieDifferences = () => {
@@ -49,7 +49,7 @@ const SerieDifferences = () => {
         <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
         <hr />
-      <div className="form-container">
+      <FormGroup className="form-container" row={true}>
         <Autocomplete
           disablePortal
           disableClearable
@@ -77,13 +77,12 @@ const SerieDifferences = () => {
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Serie" />}
         />
-        <span >
-          <Button className='oddButton' onClick={()=> {
-            handleSubmit()
-          }} variant="contained">GENERATE</Button>
-        </span>
-      </div>
-      {loading && <CircularProgress />}
+        <Button disabled={loading} className='oddButton' onClick={()=> {
+          handleSubmit()
+        }} variant="contained">GENERATE</Button>
+        {loading && <CircularProgress />}
+      </FormGroup>
+      
       {error && JSON.stringify(error, null, 2)}
       
       {number && (<>

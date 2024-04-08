@@ -37,15 +37,20 @@ li {
   color: red;
 }
 
-button {
+button, button:disabled {
   margin: 8px!important;
 }
-button.oddButton {
+button.oddButton, button.oddButton:disabled {
   margin-top: 38px!important;
 }
 .MuiAutocomplete-root {
   margin: 0 auto;
   display: inline-block
+}
+.MuiFormGroup-root {
+  text-align: center!important;
+  vertical-align: middle!important;
+  display: inline-block!important;
 }
 .form-container {
   vertical-align: middle;
