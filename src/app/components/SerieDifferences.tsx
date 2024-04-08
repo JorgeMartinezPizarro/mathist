@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useCallback } from "react"
 import { CircularProgress, Autocomplete, TextField, Button } from "@mui/material"
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 
@@ -9,7 +9,7 @@ const SerieDifferences = () => {
   const [number, setNumber] = useState<BigInt[][]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
-  const [value, setValue] = useState({label: "integers", value: "integers"})
+  const [value, setValue] = useState({label: "integer", value: "integer"})
 
     const handleSubmit = useCallback(() => {
         setLoading(true)
@@ -45,9 +45,7 @@ const SerieDifferences = () => {
   return (
     <div className="main">
         <hr />
-        <p>Select a serie S to obtain it&apos;s serie of differences. </p>
-        <hr />
-        <p>Some of these series of series have regularities, where others not.</p>
+        <p>Select a serie S to obtain it&apos;s serie of differences. Some of these series of series have regularities, where others not.</p>
         <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
         <hr />
@@ -59,17 +57,17 @@ const SerieDifferences = () => {
           isOptionEqualToValue={(option, value) => option.value === value.value && option.label === value.label}
           value={value}
           options={[
-              {label: "integers", value:"integers"},
-              {label: "squares", value:"squares"},
-              {label: "triangulars", value:"triangulars"},
-              {label: "penthagonals", value:"penthagonals"},
-              {label: "hexagonals", value:"hexagonals"},
-              {label: "cubes", value:"cubes"},
-              {label: "exponentials", value:"exponentials"},
-              {label: "primes", value:"primes"},
+              {label: "integer", value:"integer"},
+              {label: "square", value:"square"},
+              {label: "triangular", value:"triangular"},
+              {label: "penthagonal", value:"penthagonal"},
+              {label: "hexagonal", value:"hexagonal"},
+              {label: "cube", value:"cube"},
+              {label: "exponential", value:"exponential"},
+              {label: "prime", value:"prime"},
               {label: "fibonacci", value:"fibonacci"},
-              {label: "lucas", value:"lucas"},
-              {label: "factorials", value:"factorials"},
+              {label: "luca", value:"luca"},
+              {label: "factorial", value:"factorial"},
           ]}
           onChange={(event, values) => {
               
@@ -90,7 +88,7 @@ const SerieDifferences = () => {
       
       {number && (<>
         <hr />
-        <p>Below the {LENGTH} first {value.label} and it&apos;s nth-differences up to {LENGTH}</p>
+        <p>Below the {LENGTH} first {value.label} numbers and it&apos;s nth-differences up to {LENGTH}</p>
         <hr />
         <table>
           <tbody>

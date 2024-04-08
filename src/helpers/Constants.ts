@@ -10,7 +10,7 @@ export const EXCEL_MAX_COLS = 16384;                                // FIX VALUE
 
 // Healthy limits
 export const MAX_LENGTH_FOR_SIEVE_HEALTY = 2 ** 30;                 // Healthy sieve of 1b in 20 seconds and 515MB
-export const MAX_DIGITS_TRIPLE = 60000;                             // Healthy computation of less than a sec
+export const MAX_DIGITS_TRIPLE = 180000;                             // Healthy computation of less than a sec
 export const MAX_DIGITS_SIEVE = 12;                                 // Healthy computation limit
 export const MAX_DIGITS_FACTORIZATION = 19;                         // Healthy computation of a few seconds 
 

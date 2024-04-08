@@ -5,38 +5,38 @@ export default function series(LIMIT: number, name: string): BigInt[] {
   let array: BigInt[] = [];
   let aux: number[] = [];
   
-  if (name === "primes") {
+  if (name === "prime") {
     const int = Math.floor( 2 * LIMIT * Math.log(LIMIT))
     aux = eratostenes(int, int).primes
   }
   
   for (var i=0;i<LIMIT;i++) {
 
-    if (name === "factorials") {
+    if (name === "factorial") {
       array.push(factorial(i))
     }
-    else if (name === "integers") {
+    else if (name === "integer") {
       array.push(BigInt(i))
     }
-    else if (name === "squares") {
+    else if (name === "square") {
       array.push(BigInt(i**2))
     }
-    else if (name === "cubes") {
+    else if (name === "cube") {
       array.push(BigInt(i**3))
     }
-    else if (name === "triangulars") {
+    else if (name === "triangular") {
       array.push(BigInt(i*(i+1)/2))
     }
-    else if (name === "penthagonals") {
+    else if (name === "penthagonal") {
       array.push(BigInt(i*(3 * i -1)/2))
     }
-    else if (name === "hexagonals") {
+    else if (name === "hexagonal") {
       array.push(BigInt(2 * i*(2 * i -1)/2))
     }
-    else if (name === "exponentials") {
+    else if (name === "exponential") {
       array.push(BigInt(2**i))
     }
-    else if (name === "primes") {
+    else if (name === "prime") {
       array.push(BigInt(aux[i]))
     }
     else if (name === "fibonacci") {
@@ -45,7 +45,7 @@ export default function series(LIMIT: number, name: string): BigInt[] {
       else 
         array.push(BigInt(array[i-1].toString()) + BigInt(array[i-2].toString()))
     }
-    else if (name === "lucas") {
+    else if (name === "luca") {
       if (i === 0)
         array.push(BigInt(2))
       else if (i === 1) 

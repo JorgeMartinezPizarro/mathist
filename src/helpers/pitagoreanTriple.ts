@@ -1,21 +1,18 @@
 import getTimeMicro from "./getTimeMicro"
 import { childrenAt, pitagoreanTriple as pt } from "./pitagoreanTree"
 
-export default function pitagoreanTriple(n: bigint) {
-    if (BigInt(n.toString()) < BigInt(0)) {
-        throw new Error("Invalid value, must be a not negative integer value!")
-    }
+export default function pitagoreanTriple(n: string) {
+    
     const start = getTimeMicro()
 
-    const x = n.toString(3)
-    const a = x.length
+    const a = n.length
 
     let currentFS: bigint[][] = [[BigInt(1),BigInt(1)],[BigInt(3),BigInt(2)]]
-
-    for (var i=a-1;i>=0;i--) {
-        currentFS = childrenAt(currentFS, parseInt(x[i]))
+    
+    for (var i=0;i<a;i++) {
+        currentFS = childrenAt(currentFS, parseInt(n[i]))
     }
     
-    return {path: x.split("").reverse().join(""), triple: pt(currentFS), square: currentFS, time: getTimeMicro() - start}
+    return {triple: pt(currentFS), square: currentFS, time: getTimeMicro() - start}
 
 }

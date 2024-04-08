@@ -3,7 +3,6 @@ import getTimeMicro from "./getTimeMicro"
 
 export default function pitagoreanTree(n: bigint) {
     
-    
     const start = getTimeMicro()
     
     const initialFibonacciSquare = [[BigInt(1),BigInt(1)],[BigInt(3),BigInt(2)]]
@@ -19,9 +18,8 @@ export default function pitagoreanTree(n: bigint) {
             triple: pitagoreanTriple(square),
             square,
         }
-    })
+    });
     
-
     let array: TreeElement[][] = []
 
     for (var j: bigint = BigInt(0); j < n; j += BigInt(1)) {
@@ -52,22 +50,12 @@ export const pitagoreanTriple = (fibonacciSquare: bigint[][]): bigint[] => {
         (fibonacciSquare[0][0] * fibonacciSquare[1][1]) + (fibonacciSquare[0][1] * fibonacciSquare[1][0]),
     ]
     
-    // for fibonacci-like square 1 1 1/3 and 1/2 are irreducible fractions, lets check it!
-    //                           3 2 
-    /*if (bigIntGCD(fibonacciSquare[0][0], fibonacciSquare[1][0]) > BigInt(1) || 
-        bigIntGCD(fibonacciSquare[0][1], fibonacciSquare[1][1]) > BigInt(1)
-    ) 
-        throw new Error("The square is wrong, the fractions generated are not irreducible!")
-    */
     // The pithagorean triple must verify the pithagorean formel, a**2 + b**2 - c**2 =0
     if (
         triple[0] * triple[0] + triple[1] * triple[1] - triple[2] * triple[2] !== BigInt(0) 
     ) 
         throw new Error("The triple does not satisfy the pithagorean theorem!")
-    // The triple should be irreducible, let's check it!
-    /*if (bigIntGCD(triple[0], bigIntGCD(triple[1], triple[2])) > BigInt(1)) 
-        throw new Error("The triple is not irreducible!")
-    */
+    
     return triple;
 }
 
