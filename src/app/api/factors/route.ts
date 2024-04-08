@@ -2,9 +2,11 @@ import factors from '@/helpers/factors'
 
 export async function GET(request: Request) {
     
-    const { searchParams } = new URL(request.url)
-    const n = BigInt(searchParams.get('LIMIT') || "0")
-
+    const { searchParams } = new URL(request.url);
+    const n = BigInt(searchParams.get('LIMIT') || "0");
+    (BigInt.prototype as any).toJSON = function() {
+        return this.toString()
+      }
     try {
         return Response.json(factors(n))
     } catch (error) {

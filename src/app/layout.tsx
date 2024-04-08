@@ -15,10 +15,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   
-  (BigInt.prototype as any).toJSON = function() {
-    return this.toString()
-  } 
-
   return (
     <html lang="en">
       <body className={inter.className}>{children}</body>

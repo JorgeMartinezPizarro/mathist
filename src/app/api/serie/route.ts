@@ -4,8 +4,10 @@ export async function GET(request: Request) {
   
   const { searchParams } = new URL(request.url)
   const name = searchParams.get('name') || "integers"
-  const LIMIT = parseInt(searchParams.get('LIMIT') || "0")
-  
+  const LIMIT = parseInt(searchParams.get('LIMIT') || "0");
+  (BigInt.prototype as any).toJSON = function() {
+    return this.toString()
+  }
   try {
     return Response.json( series(LIMIT, name) )
   } catch (error) {

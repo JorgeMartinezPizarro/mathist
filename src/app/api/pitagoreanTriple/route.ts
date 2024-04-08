@@ -4,7 +4,11 @@ export async function POST(request: Request) {
   
   const body = await request.json();
 
-  const LIMIT = body.number.toString()
+  const LIMIT = body.number;
+
+  (BigInt.prototype as any).toJSON = function() {
+    return this.toString()
+  }
   
   try {
     return Response.json(pitagoreanTriple(LIMIT))
