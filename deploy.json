@@ -3,15 +3,9 @@
         {
           "name": "mathist",
           "script": "npm",
-          "args": "start",
-          "autorestart": true,
-          "watch": false,
-          "instances": 4,
-          "error_file": "./error.log",
-          "exec_mode": "cluster",
-          "env": {
-            "PORT": 3000
-          }
+          "args" : "start",
+          "instances": "max",
+          "exec_mode": "cluster"
         }
       ]
 }
