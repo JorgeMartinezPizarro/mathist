@@ -1,8 +1,9 @@
-FROM keymetrics/pm2:latest-alpine
+FROM node:latest
 
 WORKDIR /app
 COPY . .
 RUN npm install
-RUN ls -al -R .
+RUN npm run build
+RUN npm install pm2 -G
 EXPOSE 3000
 CMD pm2 start ./deploy.json --no-daemon --watch
