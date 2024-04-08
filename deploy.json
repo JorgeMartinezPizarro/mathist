@@ -4,6 +4,7 @@
             "name": "mathist",
             "script": "node_modules/next/dist/bin/next",
             "instances": 8,
+            "cwd": "./",
             "args": "start",
             "watch": true,
             "env": {
