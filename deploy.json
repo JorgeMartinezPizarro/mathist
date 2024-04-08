@@ -4,7 +4,6 @@
           "name": "mathist",
           "script": "npm",
           "args": "start",
-          "cwd": "./",
           "autorestart": true,
           "watch": false,
           "instances": 4,
