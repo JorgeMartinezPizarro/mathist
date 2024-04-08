@@ -4,12 +4,11 @@
           "name": "mathist",
           "script": "npm",
           "args": "start",
-          "cwd": "./",
           "autorestart": true,
           "watch": false,
-          "max_memory_restart": "1G",
-          "instances" : "16",
-          "mode" : "cluster",
+          "instances": 4,
+          "error_file": "./error.log",
+          "exec_mode": "cluster",
           "env": {
             "PORT": 3000,
             "NODE_ENV": "production"
