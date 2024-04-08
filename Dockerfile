@@ -5,4 +5,4 @@ COPY . .
 RUN npm install
 RUN ls -al -R .
 EXPOSE 3000
-CMD pm2 start ./deploy.json
+CMD pm2 start ./deploy.json --no-daemon --watch

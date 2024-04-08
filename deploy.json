@@ -2,7 +2,7 @@
     "apps": [
         {
             "name": "mathist",
-            "script": "npm",
+            "script": "node_modules/next/dist/bin/next",
             "instances": 8,
             "args": "start",
             "watch": true,
