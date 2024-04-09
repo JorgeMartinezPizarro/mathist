@@ -1,12 +1,11 @@
 {
     "apps": [
-      {
-        "name": "mather",
-        "script": "npm",
-        "args": "start",
-        "instances": "8",
-        "exec_mode": "cluster",
-        "cwd": "./"
-      }
+        {
+            "name": "mather",
+            "script": "npm",
+            "args" : "start",
+            "instances": "max",
+            "exec_mode": "cluster"
+        }
     ]
   }
