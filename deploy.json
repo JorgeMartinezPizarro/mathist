@@ -4,9 +4,9 @@
             "name": "mather",
             "script": "./node_modules/.bin/next",
             "args" : "start -p 3000",
-            "instances": "1",
+            "instances": "4",
             "cwd" : "/app/",
-            "exec_mode": "fork"
+            "exec_mode": "cluster"
         }
     ]
   }
