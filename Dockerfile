@@ -9,4 +9,4 @@ RUN npm run build
 EXPOSE 3000
 RUN pm2-runtime ls
 
-RUN pm2-runtime start deploy.json
+RUN pm2-runtime start /app/deploy.json
