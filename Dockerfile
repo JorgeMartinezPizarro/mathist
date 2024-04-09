@@ -7,6 +7,5 @@ RUN npm install pm2 --global
 COPY . .
 RUN npm run build
 EXPOSE 3000
-RUN pm2-runtime ls
 
-RUN pm2-runtime start /app/deploy.json
+CMD pm2-runtime start /app/deploy.json
