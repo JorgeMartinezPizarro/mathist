@@ -28,9 +28,9 @@ export default function Home({ params }: { params: { slug: string } }) {
   return <TabContext value={params.slug}>
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
       <TabList aria-label="lab API tabs example" centered scrollButtons allowScrollButtonsMobile >
-        {elements.map(element => <Tab href={"/" + element.name} label={element.name} value={element.name}/>)}
+        {elements.map(element => <Tab key={element.name} href={"/" + element.name} label={element.name} value={element.name}/>)}
       </TabList>
     </Box>
-    {elements.map(element => <TabPanel value={element.name}>{element.component}</TabPanel>)}
+    {elements.map(element => <TabPanel key={element.name} value={element.name}>{element.component}</TabPanel>)}
   </TabContext>
 }
