@@ -13,25 +13,24 @@ import { redirect } from "next/navigation";
 
 export default function Home({ params }: { params: { slug: string } }) {
   
-  if (!["about", "sieve", "tree", "factors", "series"].includes(params.slug)) {
-    redirect("/sieve");
+  const elements = [
+    {name: "sieve", component: <EratostenesSieve/>},
+    {name: "tree", component: <PitagoreanTree/>},
+    {name: "factors", component: <PrimeFactorization/>},
+    {name: "series", component: <SerieDifferences/>},
+    {name: "about", component: <About/>},
+  ]
+
+  if (!elements.map(el => el.name).includes(params.slug)) {
+    redirect("/" + elements[0]);
   }
 
   return <TabContext value={params.slug}>
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <TabList aria-label="lab API tabs example" centered>
-        
-        <Tab href="/sieve" label="Sieve" value="sieve" />
-        <Tab href="/tree" label="Tree" value="tree" />
-        <Tab href="/factors" label="Factors" value="factors" />
-        <Tab href="/series" label="Series" value="series" />
-        <Tab href="/about" label="About" value="about" />
+      <TabList aria-label="lab API tabs example" centered scrollButtons allowScrollButtonsMobile >
+        {elements.map(element => <Tab href={"/" + element.name} label={element.name} value={element.name}/>)}
       </TabList>
     </Box>
-    <TabPanel value="about"><About /></TabPanel>
-    <TabPanel value="sieve"><EratostenesSieve /></TabPanel>
-    <TabPanel value="tree"><PitagoreanTree /></TabPanel>
-    <TabPanel value="factors"><PrimeFactorization /></TabPanel>
-    <TabPanel value="series"><SerieDifferences /></TabPanel>
+    {elements.map(element => <TabPanel value={element.name}>{element.component}</TabPanel>)}
   </TabContext>
 }

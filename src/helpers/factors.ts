@@ -1,10 +1,9 @@
 // Here some ideas to extrapolate number operations to BigInt
 // https://golb.hplar.ch/2018/09/javascript-bigint.html
 import {isPrime, bignumber } from "mathjs"
-import {primeFactors} from 'prime-lib';
 
-import getTimeMicro from './getTimeMicro';
-import { MAX_COMPUTATION_FACTORS } from "./Constants";
+import getTimeMicro from '@/helpers/getTimeMicro';
+import { MAX_COMPUTATION_FACTORS } from "@/helpers/Constants";
 
 const zero: bigint = BigInt(0)
 const one: bigint = BigInt(1)
@@ -24,22 +23,11 @@ export default function factors(n: bigint ) {
         throw new Error("It works only with positive integers!")
     }
     
-    let factors: bigint[];
-    let message: string;
-    
-    if (n <= BigInt("9007199254740991")) {
-        factors = primeFactors(parseInt(n.toString())).map(i => BigInt(i));
-        message = "";
-    }
-    else {
-        const r =  primesOf(n);
-        factors = r.factors;
-        message = r.message;
-    }
+    const r =  primesOf(n);
     
     return {
-        message,
-        factors, 
+        message: r.message,
+        factors: r.factors, 
         time: getTimeMicro() - start
     }
 }
@@ -64,7 +52,6 @@ function sqrt(value: bigint): bigint {
 
     return newtonIteration(value, one);
 }
-
 
 interface Factorization {
 
@@ -99,7 +86,7 @@ const primesOf = (num: bigint, factors: bigint [] = [], start: bigint = three): 
     
     if (num === one)
         return {factors, message:""}
-    
+
     return {factors: [...factors, num], message: ""};
 
 }

@@ -79,12 +79,16 @@ const PitagoreanTree = () => {
             <Image src="/image2.png" height={100} width={200} alt=""/>
         </p>
         <hr />
+        <p>More detail about what are we computing here, in the video: <a href="https://www.youtube.com/watch?v=94mV7Fmbx88" >https://www.youtube.com/watch?v=94mV7Fmbx88</a>.</p>
+        <hr />
+        <p>A visualization tool for the triples: <a href="https://www.geogebra.org/calculator/hd2hcvas">https://www.geogebra.org/calculator/hd2hcvas</a></p>
+        <hr/>
         <p>Write a path in base 3 to generate a pithagorean triple. The max length of the path is {MAX_DIGITS_TRIPLE}.</p>
         <hr />
         <FormGroup row={true}>
             <TextField
                 className="input"
-                label="Number"
+                label="Path"
                 type="string"
                 value={number}
                 onChange={(event => {
@@ -108,8 +112,6 @@ const PitagoreanTree = () => {
             {loading && <CircularProgress/>}
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
-        <hr />
-        <p>More detail about what are we computing here, in the video: <a href="https://www.youtube.com/watch?v=94mV7Fmbx88" >https://www.youtube.com/watch?v=94mV7Fmbx88</a>. A visualization tool for the triples: <a href="https://www.geogebra.org/calculator/hd2hcvas">https://www.geogebra.org/calculator/hd2hcvas</a></p>
         { !error && <>
             {triple.square && triple.square.length === 2 && triple.square[0].length === 2  && triple.square[1].length === 2 && <>
                 <hr />
@@ -135,31 +137,28 @@ const PitagoreanTree = () => {
             </>}
             <hr />
         </>}
-        <p>Pitagorean tree of length 3</p>
+        <p>Pitagorean tree of length 3 calculated in {duration(tree.time)}</p>
         <hr />
-        <pre>
-            <table className="pithagorean"><tbody>{tree.tree.length > 0 && (<>
-                <tr>
-                    <td>&lt;{tree.tree[0][0].triple.join(" ")}&gt;</td>
-                </tr>
-                <tr>
-                    <td>
-                        <table className="pithagorean"><tbody><tr>{tree.tree[1].map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                    <table className="pithagorean"><tbody><tr>
-                            <td key={"1"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(0, 3).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
-                            <td key={"2"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(3, 6).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
-                            <td key={"3"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(6, 9).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
-                        </tr></tbody></table>
-                    </td>
-                </tr>
-            </>)}</tbody></table>
-        </pre>
+        <table className="pithagorean"><tbody>{tree.tree.length > 0 && (<>
+            <tr>
+                <td>&lt;{tree.tree[0][0].triple.join(" ")}&gt;</td>
+            </tr>
+            <tr>
+                <td>
+                    <table className="pithagorean"><tbody><tr>{tree.tree[1].map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                <table className="pithagorean"><tbody><tr>
+                        <td key={"1"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(0, 3).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
+                        <td key={"2"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(3, 6).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
+                        <td key={"3"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(6, 9).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
+                    </tr></tbody></table>
+                </td>
+            </tr>
+        </>)}</tbody></table>
         <hr />
-        <p>Tree of height {size} calculated in {duration(tree.time)}</p>
     </>
 }
 

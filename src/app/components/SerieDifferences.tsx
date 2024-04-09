@@ -45,7 +45,7 @@ const SerieDifferences = () => {
   return (
     <div className="main">
         <hr />
-        <p>Select a serie S to obtain it&apos;s serie of differences. Some of these series of series have regularities, where others not.</p>
+        <p>Select a serie to obtain it&apos;s series of differences. Some of these series of series have regularities, while others not.</p>
         <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
         <hr />
