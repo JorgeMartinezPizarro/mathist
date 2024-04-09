@@ -6,7 +6,7 @@
             "args" : "start",
             "instances": "1",
             "cwd" : "/app",
-            "exec_mode": "cluster"
+            "exec_mode": "fork"
         }
     ]
   }
