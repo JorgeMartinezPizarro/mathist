@@ -1,17 +1,11 @@
 {
     "apps": [
-        {
-          "name": "mathist",
-          "script": "npm",
-          "args" : "start",
-          "instances": "max",
-          "exec_mode": "cluster",
-          "env": {
-            "NODE_ENV": "development"
-          },
-          "env_production": {
-            "NODE_ENV": "production"
-          }
-        }
+      {
+        "name": "mather",
+        "script": "npm",
+        "args": "start",
+        "instances": "8",
+        "exec_mode": "cluster"
+      }
     ]
-}
+  }
