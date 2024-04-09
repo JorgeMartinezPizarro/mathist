@@ -50,7 +50,7 @@ const PrimeFactorization = () => {
         <hr />
         <p>2**82589933 - 1 is the biggest known prime, a prime with 24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a></p>
         <hr />
-        <p>Try with {string(BigInt("1111111111111111111"))}, {string(BigInt("5112599469399894959"))} or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
+        <p>Try with {string(BigInt("9755243441802343081"))}, {string(BigInt("5112599469399894959"))} or generate your own primes using: <a href="https://bigprimes.org/">https://bigprimes.org/</a></p>
         <hr />
         <FormGroup row={true}>
             <TextField
