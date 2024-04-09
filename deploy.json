@@ -3,7 +3,7 @@
         {
             "name": "mather",
             "script": "npm",
-            "args" : "start",
+            "args" : "start -p 4000 ./",
             "instances": "1",
             "cwd" : "/app",
             "exec_mode": "fork"
