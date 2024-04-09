@@ -8,4 +8,4 @@ COPY . .
 RUN npm run build
 EXPOSE 3000
 
-CMD pm2-runtime start /app/deploy.json
+CMD npm run start
