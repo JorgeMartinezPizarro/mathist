@@ -107,7 +107,7 @@ const PitagoreanTree = () => {
             <Button onClick={handleSend} variant="contained">GENERATE</Button>
             {loading && <CircularProgress/>}
         </FormGroup>
-        {error && <Alert severity="error">{error}</Alert>}
+        {error && <><hr/><Alert severity="error">{error}</Alert></>}
         <hr />
         <p>More detail about what are we computing here, in the video: <a href="https://www.youtube.com/watch?v=94mV7Fmbx88" >https://www.youtube.com/watch?v=94mV7Fmbx88</a>. A visualization tool for the triples: <a href="https://www.geogebra.org/calculator/hd2hcvas">https://www.geogebra.org/calculator/hd2hcvas</a></p>
         { !error && <>

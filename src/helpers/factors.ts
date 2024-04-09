@@ -4,10 +4,12 @@ import {isPrime, bignumber } from "mathjs"
 import {primeFactors} from 'prime-lib';
 
 import getTimeMicro from './getTimeMicro';
+import { MAX_COMPUTATION_FACTORS } from "./Constants";
 
 const zero: bigint = BigInt(0)
 const one: bigint = BigInt(1)
 const two: bigint = BigInt(2)
+const three: bigint = BigInt(3)
 
 export default function factors(n: bigint ) {
 
@@ -22,8 +24,22 @@ export default function factors(n: bigint ) {
         throw new Error("It works only with positive integers!")
     }
     
+    let factors: bigint[];
+    let message: string;
+    
+    if (n <= BigInt("9007199254740991")) {
+        factors = primeFactors(parseInt(n.toString())).map(i => BigInt(i));
+        message = "";
+    }
+    else {
+        const r =  primesOf(n);
+        factors = r.factors;
+        message = r.message;
+    }
+    
     return {
-        factors: n <= BigInt("9007199254740991") ? primeFactors(parseInt(n.toString())) : primesOf(n), 
+        message,
+        factors, 
         time: getTimeMicro() - start
     }
 }
@@ -49,12 +65,21 @@ function sqrt(value: bigint): bigint {
     return newtonIteration(value, one);
 }
 
-const primesOf = (num: bigint, factors: bigint [] = []): bigint [] => {
+
+interface Factorization {
+
+    factors: bigint[];
+    message: string;
+}
+
+const primesOf = (num: bigint, factors: bigint [] = [], start: bigint = three): Factorization => {
+    
     if (num < one) {
-        return []
+        return {factors: [], message: ""}
     }
+    
     if (isPrime(bignumber(num.toString()))) {
-        return [...factors, num]
+        return {factors: [...factors, num], message: ""}
     }
     
     if (num % two === zero) {
@@ -63,16 +88,18 @@ const primesOf = (num: bigint, factors: bigint [] = []): bigint [] => {
 
     const x: bigint = sqrt(num)
     
-    for (var i: bigint = BigInt(3); i <= x; i += two) {
+    for (var i: bigint = start; i <= x; i += two) {
         if (num % i === zero) {
-            return primesOf(num/i, [...factors, i])
+            return primesOf(num/i, [...factors, i], i)
+        }
+        if (i > MAX_COMPUTATION_FACTORS) {
+            return {factors: [...factors, num], message: "Factor " + num.toString() + " is not prime"};
         }
     }
     
     if (num === one)
-        return factors
-    return [...factors, num];
-
+        return {factors, message:""}
     
+    return {factors: [...factors, num], message: ""};
 
 }

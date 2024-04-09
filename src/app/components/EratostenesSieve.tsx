@@ -133,7 +133,7 @@ const EratostenesSieve = () => {
             <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
             {loading && <CircularProgress />}
         </FormGroup>
-        {error && <Alert severity="error">{error}</Alert>}
+        {error && <><hr/><Alert severity="error">{error}</Alert></>}
         <hr/>
         {!error && durationFull !== 0 && <>
             {length > 0 && <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>}

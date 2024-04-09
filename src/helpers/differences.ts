@@ -1,12 +1,12 @@
 import eratostenes from "./eratostenes"
 
-export default function differences(array: BigInt[]): BigInt[][] {
-    const matrix: BigInt[][] = [array]
+export default function differences(array: bigint[]): bigint[][] {
+    const matrix: bigint[][] = [array]
     for (var a=0;a<array.length;a++) {
-        const l: BigInt[] = [];
+        const l: bigint[] = [];
 
         for (var i=1; i<matrix[a].length;i++) {
-            l.push(BigInt(matrix[a][i].toString()) - BigInt(matrix[a][i-1].toString()))
+            l.push(matrix[a][i] - matrix[a][i-1])
         }
         
         matrix.push(l)

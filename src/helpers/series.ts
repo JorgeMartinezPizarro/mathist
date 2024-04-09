@@ -1,8 +1,8 @@
 import eratostenes from "./eratostenes";
 import factorial from "./factorial";
 
-export default function series(LIMIT: number, name: string): BigInt[] {
-  let array: BigInt[] = [];
+export default function series(LIMIT: number, name: string): bigint[] {
+  let array: bigint[] = [];
   let aux: number[] = [];
   
   if (name === "prime") {

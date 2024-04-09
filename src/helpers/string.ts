@@ -1,4 +1,4 @@
-export default function string(value: BigInt) {
+export default function string(value: bigint) {
 
     if (value.toString().length < 4) 
         return value.toString()

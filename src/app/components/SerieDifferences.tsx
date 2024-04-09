@@ -83,7 +83,7 @@ const SerieDifferences = () => {
         {loading && <CircularProgress />}
       </FormGroup>
       
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && <><hr/><Alert severity="error">{error}</Alert></>}
       
       {number && (<>
         <hr />

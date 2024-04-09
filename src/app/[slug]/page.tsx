@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Tab, Box } from '@mui/material';
 import { TabPanel, TabList, TabContext }  from '@mui/lab';
 
-import HomePage from "../components/HomePage";
+import About from "../components/About";
 import PrimeFactorization from "../components/PrimeFactorization";
 import PitagoreanTree from "../components/PitagoreanTree";
 import SerieDifferences from "../components/SerieDifferences";
@@ -13,21 +13,22 @@ import { redirect } from "next/navigation";
 
 export default function Home({ params }: { params: { slug: string } }) {
   
-  if (!["home", "sieve", "tree", "factors", "series"].includes(params.slug)) {
-    redirect("/home");
+  if (!["about", "sieve", "tree", "factors", "series"].includes(params.slug)) {
+    redirect("/sieve");
   }
 
   return <TabContext value={params.slug}>
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
       <TabList aria-label="lab API tabs example" centered>
-        <Tab href="/home" label="Home" value="home" />
+        
         <Tab href="/sieve" label="Sieve" value="sieve" />
         <Tab href="/tree" label="Tree" value="tree" />
         <Tab href="/factors" label="Factors" value="factors" />
         <Tab href="/series" label="Series" value="series" />
+        <Tab href="/about" label="About" value="about" />
       </TabList>
     </Box>
-    <TabPanel value="home"><HomePage /></TabPanel>
+    <TabPanel value="about"><About /></TabPanel>
     <TabPanel value="sieve"><EratostenesSieve /></TabPanel>
     <TabPanel value="tree"><PitagoreanTree /></TabPanel>
     <TabPanel value="factors"><PrimeFactorization /></TabPanel>
