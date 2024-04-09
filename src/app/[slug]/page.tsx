@@ -1,17 +1,17 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { Tab, Box } from '@mui/material';
+import { Tabs, Tab, Box } from '@mui/material';
 import { TabPanel, TabList, TabContext }  from '@mui/lab';
-
-import About from "../components/About";
-import PrimeFactorization from "../components/PrimeFactorization";
-import PitagoreanTree from "../components/PitagoreanTree";
-import SerieDifferences from "../components/SerieDifferences";
-import EratostenesSieve from "../components/EratostenesSieve";
 import { redirect } from "next/navigation";
 
-export default function Home({ params }: { params: { slug: string } }) {
+import About from "@/app/components/About";
+import PrimeFactorization from "@/app/components/PrimeFactorization";
+import PitagoreanTree from "@/app/components/PitagoreanTree";
+import SerieDifferences from "@/app/components/SerieDifferences";
+import EratostenesSieve from "@/app/components/EratostenesSieve";
+
+const Home = ({ params }: { params: { slug: string } }) => {
   
   const elements = [
     {name: "sieve", component: <EratostenesSieve/>},
@@ -22,15 +22,27 @@ export default function Home({ params }: { params: { slug: string } }) {
   ]
 
   if (!elements.map(el => el.name).includes(params.slug)) {
-    redirect("/" + elements[0]);
+    redirect("/" + elements[0].name);
   }
+
+  /*
+   For mobile use a drawer, for large monitors use tabs:
+    https://mui.com/material-ui/react-drawer/
+
+    <Button onClick={toggleDrawer(true)}>Open drawer</Button>
+    <Drawer open={open} onClose={toggleDrawer(false)}>
+      {DrawerList}
+    </Drawer>
+  */
 
   return <TabContext value={params.slug}>
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <TabList aria-label="lab API tabs example" centered scrollButtons allowScrollButtonsMobile >
+      <TabList aria-label="lab API tabs example" centered>
         {elements.map(element => <Tab key={element.name} href={"/" + element.name} label={element.name} value={element.name}/>)}
       </TabList>
     </Box>
     {elements.map(element => <TabPanel key={element.name} value={element.name}>{element.component}</TabPanel>)}
   </TabContext>
 }
+
+export default Home;
