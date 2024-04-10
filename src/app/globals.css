@@ -77,6 +77,18 @@ button.oddButton, button.oddButton:disabled {
   margin-top: 0;
 }
 
+.icon {
+  font-family: Arial;
+  color: white;
+  font-size: 13pt;
+  display: inline-block!important;
+  width: 35px!important;
+  height: 35px!important;
+  padding: 0!important;
+  margin: 0!important;
+  
+}
+
 .item {
   font-family: Arial;
   color: white;
@@ -84,11 +96,8 @@ button.oddButton, button.oddButton:disabled {
   text-transform: capitalize;
   text-decoration: none;
   display: inline-block!important;
-  width: 100%!important;
   height: 35px!important;
-  padding: 0!important;
-  margin: 0!important;
-  
+  margin-top: -35px !important;
 }
 
 .title {

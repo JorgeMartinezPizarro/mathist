@@ -45,13 +45,14 @@ const Page = ({ params }: { params: { slug: string } }) => {
         <List>
           {elements.map((element) => (
             <ListItem key={element.name} disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={(e) => {e.stopPropagation(); redirect("/" + element.name)}}>
                 <ListItemIcon>
-                  <SubdirectoryArrowRightIcon/>
+                  <a href={"/" + element.name}>
+                    <SubdirectoryArrowRightIcon className="icon"/>
+                    <Button className="item" ><span>{element.name}</span></Button>
+                  </a>
                 </ListItemIcon>
-                <ListItemText>
-                  <Button className="item" href={"/" + element.name}><span>{element.name}</span></Button>
-                </ListItemText>
+                
               </ListItemButton>
             </ListItem>
           ))}
