@@ -15,13 +15,16 @@ export async function GET(request: Request) {
   if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
     // SKIP IT FOR HARD TESTINGs
     return Response.json(
-      { error: "Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk. For more ask the admin."}, 
+      {error: "Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk. For more ask the admin."}, 
       {status: 500}
     )
   } 
   // 535b, up to 31GB RAM 240GB disk (x500), common sense limit, it takes 12h to compute
   if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
-    throw new Error("Max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk.");
+    return Response.json(
+      {error: "Max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk."},
+      {status: 500}
+    )
   }
 
   (BigInt.prototype as any).toJSON = function() {

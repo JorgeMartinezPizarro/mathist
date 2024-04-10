@@ -1,14 +1,15 @@
 'use client'
 
-import { Tab, Box } from '@mui/material';
-import { TabPanel, TabList, TabContext }  from '@mui/lab';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, Drawer, Button } from '@mui/material';
 import { redirect } from "next/navigation";
+import MenuIcon from '@mui/icons-material/Menu';
 
 import About from "@/app/components/About";
 import PrimeFactorization from "@/app/components/PrimeFactorization";
 import PitagoreanTree from "@/app/components/PitagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratostenesSieve from "@/app/components/EratostenesSieve";
+import { useState } from 'react';
 
 const Page = ({ params }: { params: { slug: string } }) => {
   
@@ -24,19 +25,38 @@ const Page = ({ params }: { params: { slug: string } }) => {
     redirect("/" + elements[0].name);
   }
 
-  /*
-   TODO: For mobile use a drawer, for large monitors use tabs:
-    https://mui.com/material-ui/react-drawer/
-  */
+  const currentElement = elements.find(el => el.name === params.slug)
 
-  return <TabContext value={params.slug}>
-    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <TabList aria-label="lab API tabs example" centered>
-        {elements.map(element => <Tab key={element.name} href={"/" + element.name} label={element.name} value={element.name}/>)}
-      </TabList>
-    </Box>
-    {elements.map(element => <TabPanel key={element.name} value={element.name}>{element.component}</TabPanel>)}
-  </TabContext>
+  const [open, setOpen] = useState(false);
+
+  const toggleDrawer = (newOpen: boolean) => () => {
+    setOpen(newOpen);
+  };
+
+  return <div>
+    <div className="header">
+      <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><MenuIcon/></Button>
+      <span className="title">{currentElement?.name.toUpperCase()}</span>
+    </div>
+    <Drawer open={open} onClose={toggleDrawer(false)}>
+      <Box role="presentation" onClick={toggleDrawer(false)}>
+        <List>
+          {elements.map((element) => (
+            <ListItem key={element.name} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <a className="item" href={"/" + element.name}><span>{element.name}</span></a>
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+    </Drawer>
+    <div className="main">
+      {currentElement?.component}
+    </div>
+</div>
 }
 
 export default Page;

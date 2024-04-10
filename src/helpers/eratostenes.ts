@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY, MAX_ALLOCATABLE_MATRIX_30GB} from "./Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE} from "./Constants";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
