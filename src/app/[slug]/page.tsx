@@ -36,7 +36,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
   return <div>
     <div className="header">
       <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><MenuIcon/></Button>
-      <span className="title">{currentElement?.name.toUpperCase()}</span>
+      <span className="title">{currentElement?.name}</span>
     </div>
     <Drawer open={open} onClose={toggleDrawer(false)}>
       <Box role="presentation" onClick={toggleDrawer(false)}>

@@ -67,6 +67,7 @@ button.oddButton, button.oddButton:disabled {
 
 .MuiDrawer-root .MuiDrawer-paper {
   padding-top: 25px;
+  padding-right: 4px;
   width: 150px;
   overflow-x: hidden;
   background: #1976d2;
@@ -77,7 +78,7 @@ button.oddButton, button.oddButton:disabled {
 }
 
 .item {
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-family: Arial;
   color: white;
   font-size: 18pt;
   text-transform: capitalize;
@@ -85,11 +86,12 @@ button.oddButton, button.oddButton:disabled {
 }
 
 .title {
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  padding-top: 4px;
+  display: inline-block;
+  font-family: Arial;
   color: #1976d2;
   font-size: 21pt;
-  text-transform: capitalize;
-  text-decoration: none;
+  text-transform: uppercase;
 }
 .header {
   height: 75px;
