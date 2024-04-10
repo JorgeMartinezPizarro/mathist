@@ -1,4 +1,4 @@
-import { MAX_DISPLAY_SIEVE } from '@/helpers/Constants';
+import { MAX_SERIES_DIFFERENCES_SIZE } from '@/helpers/Constants';
 import differences from '@/helpers/differences';
 
 export async function POST(request: Request) {
@@ -9,8 +9,8 @@ export async function POST(request: Request) {
     return this.toString()
   } 
 
-  if (array.length > MAX_DISPLAY_SIEVE) {
-    return Response.json({error: "Max length of serie is " + MAX_DISPLAY_SIEVE + ", " + array.length + " provided"}, {status: 500})
+  if (array.length > 2 * MAX_SERIES_DIFFERENCES_SIZE - 1) {
+    return Response.json({error: "Max length of serie is " + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + ", " + array.length + " provided"}, {status: 500})
   }
 
   return Response.json(differences(array)  )

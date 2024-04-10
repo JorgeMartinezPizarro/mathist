@@ -8,8 +8,8 @@ export async function GET(request: Request) {
   const LIMIT = parseInt(searchParams.get('LIMIT') || "0");
 
   
-  if (LIMIT > MAX_SERIES_DIFFERENCES_SIZE) {
-    return Response.json({ error: "The series function works up to " + MAX_SERIES_DIFFERENCES_SIZE + " elements, " + LIMIT + " provided."}, {status: 500})
+  if (LIMIT > 2 * MAX_SERIES_DIFFERENCES_SIZE - 1) {
+    return Response.json({ error: "The series function works up to " + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + " elements, " + LIMIT + " provided."}, {status: 500})
   }
 
   (BigInt.prototype as any).toJSON = function() {
