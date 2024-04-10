@@ -2,6 +2,8 @@
 
 import { redirect } from 'next/navigation'
 
-export default function Page() {
+const Home = () => {
     redirect("/home");
 }
+
+export default Home;

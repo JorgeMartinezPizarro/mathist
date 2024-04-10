@@ -1,10 +1,16 @@
+import { MAX_DIGITS_TRIPLE } from '@/helpers/Constants';
 import pitagoreanTriple from '@/helpers/pitagoreanTriple'
+import string from '@/helpers/string';
 
 export async function POST(request: Request) {
   
   const body = await request.json();
 
-  const LIMIT = body.number;
+  const LIMIT: string = body.number;
+
+  if (LIMIT.length > MAX_DIGITS_TRIPLE) {
+    throw new Error("Max value of path is " + string(BigInt(LIMIT)))
+  }
 
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()

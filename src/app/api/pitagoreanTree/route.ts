@@ -1,3 +1,4 @@
+import { MAX_LENGTH_TREE } from '@/helpers/Constants';
 import pitagoreanTree from '@/helpers/pitagoreanTree'
 
 export async function GET(request: Request) {
@@ -7,6 +8,11 @@ export async function GET(request: Request) {
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
   }
+
+  if (LIMIT > MAX_LENGTH_TREE) {
+    return Response.json({error: "Max length of pithagorean tree is " + MAX_LENGTH_TREE + ", " + LIMIT + " provided."}, {status: 500})
+  }
+
   try {
     return Response.json( pitagoreanTree(LIMIT) )
   } catch (error) {

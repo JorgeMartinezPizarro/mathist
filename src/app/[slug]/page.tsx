@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
-import { Tabs, Tab, Box } from '@mui/material';
+import { Tab, Box } from '@mui/material';
 import { TabPanel, TabList, TabContext }  from '@mui/lab';
 import { redirect } from "next/navigation";
 
@@ -11,7 +10,7 @@ import PitagoreanTree from "@/app/components/PitagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratostenesSieve from "@/app/components/EratostenesSieve";
 
-const Home = ({ params }: { params: { slug: string } }) => {
+const Page = ({ params }: { params: { slug: string } }) => {
   
   const elements = [
     {name: "sieve", component: <EratostenesSieve/>},
@@ -26,13 +25,8 @@ const Home = ({ params }: { params: { slug: string } }) => {
   }
 
   /*
-   For mobile use a drawer, for large monitors use tabs:
+   TODO: For mobile use a drawer, for large monitors use tabs:
     https://mui.com/material-ui/react-drawer/
-
-    <Button onClick={toggleDrawer(true)}>Open drawer</Button>
-    <Drawer open={open} onClose={toggleDrawer(false)}>
-      {DrawerList}
-    </Drawer>
   */
 
   return <TabContext value={params.slug}>
@@ -45,4 +39,4 @@ const Home = ({ params }: { params: { slug: string } }) => {
   </TabContext>
 }
 
-export default Home;
+export default Page;

@@ -1,7 +1,5 @@
+import { MAX_DISPLAY_SIEVE } from '@/helpers/Constants';
 import differences from '@/helpers/differences';
-import eratostenes from '@/helpers/eratostenes';
-import type { NextApiRequest, NextApiResponse } from 'next'
- 
 
 export async function POST(request: Request) {
 
@@ -10,5 +8,10 @@ export async function POST(request: Request) {
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
   } 
+
+  if (array.length > MAX_DISPLAY_SIEVE) {
+    return Response.json({error: "Max length of serie is " + MAX_DISPLAY_SIEVE + ", " + array.length + " provided"}, {status: 500})
+  }
+
   return Response.json(differences(array)  )
 }

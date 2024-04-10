@@ -8,39 +8,56 @@ const SerieDifferences = () => {
   
   const [number, setNumber] = useState<BigInt[][]>([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<string>("")
   const [value, setValue] = useState({label: "integer", value: "integer"})
 
     const handleSubmit = useCallback(() => {
-        setLoading(true)
-        fetch("/api/serie?LIMIT=" + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + "&name=" + value.value)
-      .then(res => res.json())
-      .then(res => {
-        const options = {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(res),
-        }
-        fetch("/api/differences", options)
-          .then(res => res.json())
-          .then(res => {
-            setNumber(res)
-            setLoading(false)
+      setLoading(true)
+      fetch("/api/serie?LIMIT=" + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + "&name=" + value.value)
+        .then(res => res.json())
+        .then(res => {
+
+          if (res.error) {
+            throw new Error(res.error)
+          }
+          const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+            },
+            body: JSON.stringify(res),
+          }
+          fetch("/api/differences", options)
+            .then(res => res.json())
+            .then(res => {
+              if (res.error) {
+                throw new Error(res.error)
+              }
+              setNumber(res)
+              setLoading(false)
+            })
+            .catch(error=> {
+              let message
+              if (error instanceof Error) message = error.message
+              else message = String(error)
+              if (message.indexOf("Failed to fetch") !== -1)
+                  setError("Error generating excel, server disconnected")
+              else 
+                  setError(message.replaceAll("Error: ", ""))
+              setLoading(false)
+            })
           })
-          .catch(err=> {
-            setError(err)
-            setLoading(false)
-          })
-      })
-      .catch(err => {
-        setError(err)
+      .catch(error => {
+        let message
+        if (error instanceof Error) message = error.message
+        else message = String(error)
+        if (message.indexOf("Failed to fetch") !== -1)
+            setError("Error generating excel, server disconnected")
+        else 
+            setError(message.replaceAll("Error: ", ""))
         setLoading(false)
       })
     }, [value])
-
-  const LENGTH = MAX_SERIES_DIFFERENCES_SIZE;
 
   return (
     <div className="main">
@@ -87,18 +104,18 @@ const SerieDifferences = () => {
       
       {number && (<>
         <hr />
-        <p>Below the {LENGTH} first {value.label} numbers and it&apos;s nth-differences up to {LENGTH}</p>
+        <p>Below the {MAX_SERIES_DIFFERENCES_SIZE} first {value.label} numbers and it&apos;s nth-differences up to {MAX_SERIES_DIFFERENCES_SIZE}</p>
         <hr />
         <table>
           <tbody>
-            {number.slice(0, LENGTH).filter((el, id) => {
+            {number.slice(0, MAX_SERIES_DIFFERENCES_SIZE).filter((el, id) => {
               for (var idx = 0; idx<el.length; idx++) {
                 if (BigInt(el[idx].toString()) !== BigInt(0))
                   return true
               }
               return false
             }).map((row, i) => 
-              <tr key={JSON.stringify(row)}>{row.slice(0, LENGTH).map((nr, j) => 
+              <tr key={JSON.stringify(row)}>{row.slice(0, MAX_SERIES_DIFFERENCES_SIZE).map((nr, j) => 
                 <td className={i === j ? "diagonal" : ""} key={j}>{nr && nr.toString()}</td>
               )}</tr>
             )}

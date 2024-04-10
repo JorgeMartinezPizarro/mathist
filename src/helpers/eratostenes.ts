@@ -8,18 +8,6 @@ import eratosthenes from "@/helpers/sieve";
 
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) {
   
-  // LIMIT CHECKS 
-  // TODO: use ENVIRONMENT variable for check or not.
-  // 1b Up to 64MB RAM 516MB disk, natural limit for the web, it takes 20s to compute
-  if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
-    // SKIP IT FOR HARD TESTINGs
-    throw new Error("Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk. For more ask the admin.");
-  } 
-  // 500b Up to 30GB RAM 240GB disk ( x500), common sense limit, it takes 12h to compute
-  if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
-    throw new Error("Max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk.");
-  }
-
   if (excel) {
     return primesToExcel(LIMIT)
   } 
@@ -29,6 +17,7 @@ export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_
 // Create excel file with primes up to LIMIT
 function primesToExcel(LIMIT: number) {
 
+  // TODO: use a hash for the filename to avoid collisions with other users!
   console.log("//////////////////////////////////////////////////////////////////////////////////////////")
   console.log("Requesting excel file primes-to-" + LIMIT + ".csv")
   console.log("Let's sieve for less or equal than " + LIMIT)
