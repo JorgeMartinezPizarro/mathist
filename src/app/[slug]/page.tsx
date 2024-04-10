@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer, Button } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer, Button, Divider } from '@mui/material';
 import { redirect } from "next/navigation";
 import MenuIcon from '@mui/icons-material/Menu';
 import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
@@ -41,7 +41,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
     </div>
     <Drawer open={open} onClose={toggleDrawer(false)}>
       <Box role="presentation" onClick={toggleDrawer(false)}>
-        <span className="subtitle">Mather</span>
+        <Button onClick={() => {window.location.href="/"}} className="subtitle">Mather</Button>
         <List>
           {elements.map((element) => (
             <ListItem key={element.name} disablePadding>
