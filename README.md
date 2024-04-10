@@ -1,6 +1,6 @@
 ## About
 
-Mathist is a math website, using the power of BigInt and mathjs to do the calculations. It is deployed under [`mather.ideniox.com`](https://mather.ideniox.com).
+Mathist is a math website, using the power of BigInt and mathjs to do the calculations. It is deployed under [mather.ideniox.com](https://mather.ideniox.com).
 
 ## Getting Started
 
