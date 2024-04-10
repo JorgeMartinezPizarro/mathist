@@ -97,9 +97,8 @@ const PrimeFactorization = () => {
                     Numbers in red are composite numbers. That happens when at least 2 prime factors are bigger than {string(BigInt(MAX_COMPUTATION_FACTORS))}
                 </Alert><hr/></>}
                 <p>Done in {d(duration)}</p>
-            </>}
-            <hr />
-            <p>{number.length === 0 && string(BigInt(value)) + " = [?]"}</p>
+            </>}            
+            {number.length === 0 && <><p>{string(BigInt(value)) + " = [?]"}</p></>}
         </>}
     </div>
 

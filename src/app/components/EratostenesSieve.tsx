@@ -139,17 +139,16 @@ const EratostenesSieve = () => {
         {!error && durationFull !== 0 && <>
             {length > 0 && <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>}
             {length  === -1 && <p>Getting from cache in {d(durationFull)}</p>}
-            <hr/>
         </>}
         {!error && (primes.length > 0) && !loading && (<>
-             <p>Total of primes smaller or equal than {string(BigInt(value))} is {string(BigInt(length))}</p>
+            <p>Total of primes smaller or equal than {string(BigInt(value))} is {string(BigInt(length))}</p>
             <hr/>
             <p>Duration {d(duration)}</p>
             <hr/>
             <p>Last teen primes of the sieve:</p>
             <hr/>
             <p>[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>
-            <hr />
+            
         </>)}
     </div>
 }

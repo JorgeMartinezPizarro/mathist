@@ -1,15 +1,16 @@
 'use client'
 
-import { Box, List, ListItem, ListItemButton, ListItemIcon, Drawer, Button } from '@mui/material';
+import { useState } from 'react';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer, Button } from '@mui/material';
 import { redirect } from "next/navigation";
 import MenuIcon from '@mui/icons-material/Menu';
+import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
 
 import About from "@/app/components/About";
 import PrimeFactorization from "@/app/components/PrimeFactorization";
 import PitagoreanTree from "@/app/components/PitagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratostenesSieve from "@/app/components/EratostenesSieve";
-import { useState } from 'react';
 
 const Page = ({ params }: { params: { slug: string } }) => {
   
@@ -40,13 +41,17 @@ const Page = ({ params }: { params: { slug: string } }) => {
     </div>
     <Drawer open={open} onClose={toggleDrawer(false)}>
       <Box role="presentation" onClick={toggleDrawer(false)}>
+        <span className="subtitle">Mather</span>
         <List>
           {elements.map((element) => (
             <ListItem key={element.name} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  <a className="item" href={"/" + element.name}><span>{element.name}</span></a>
+                  <SubdirectoryArrowRightIcon/>
                 </ListItemIcon>
+                <ListItemText>
+                  <Button className="item" href={"/" + element.name}><span>{element.name}</span></Button>
+                </ListItemText>
               </ListItemButton>
             </ListItem>
           ))}

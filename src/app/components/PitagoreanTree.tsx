@@ -158,7 +158,6 @@ const PitagoreanTree = () => {
                 </td>
             </tr>
         </>)}</tbody></table>
-        <hr />
     </>
 }
 

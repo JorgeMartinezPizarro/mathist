@@ -68,7 +68,7 @@ button.oddButton, button.oddButton:disabled {
 .MuiDrawer-root .MuiDrawer-paper {
   padding-top: 25px;
   padding-right: 4px;
-  width: 150px;
+  width: 190px;
   overflow-x: hidden;
   background: #1976d2;
 }
@@ -83,6 +83,12 @@ button.oddButton, button.oddButton:disabled {
   font-size: 18pt;
   text-transform: capitalize;
   text-decoration: none;
+  display: inline-block!important;
+  width: 100%!important;
+  height: 35px!important;
+  padding: 0!important;
+  margin: 0!important;
+  
 }
 
 .title {
@@ -93,6 +99,24 @@ button.oddButton, button.oddButton:disabled {
   font-size: 21pt;
   text-transform: uppercase;
 }
+
+.subtitle {
+  font-family: Arial;
+  color: white;
+  font-size: 22pt;
+  text-transform: capitalize;
+  text-decoration: underline;
+  display: inline-block!important;
+  width: 100%!important;
+  height: 35px!important;
+  padding: 0!important;
+  margin: 0!important;
+}
+
 .header {
   height: 75px;
+}
+
+.MuiDrawer-root  .MuiListItemIcon-root {
+  color: white;
 }
