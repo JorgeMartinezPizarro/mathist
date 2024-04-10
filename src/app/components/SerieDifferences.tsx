@@ -102,7 +102,7 @@ const SerieDifferences = () => {
       
       {error && <><hr/><Alert severity="error">{error}</Alert></>}
       
-      {number && (<>
+      {number.length > 0 && (<>
         <hr />
         <p>Below the {MAX_SERIES_DIFFERENCES_SIZE} first {value.label} numbers and it&apos;s nth-differences up to {MAX_SERIES_DIFFERENCES_SIZE}</p>
         <hr />
