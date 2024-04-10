@@ -6,13 +6,13 @@ Mathist is a math website, using the power of BigInt and mathjs to do the calcul
 
 To get it running locally, you need to install latest `node` and `npm`.
 
-To run a dev version 
+To run a develop version :
 
 ```
 npm run dev
 ```
 
-To build and run production: 
+To build and run a production version: 
 
 ```
 npm run build
@@ -29,4 +29,10 @@ To run it you need `docker` installed on your system and run:
 
 ```
 docker run -d jorgemartinezpizarro/mathist:latest
+```
+
+To generate your own docker image, just:
+
+```
+docker build .
 ```
