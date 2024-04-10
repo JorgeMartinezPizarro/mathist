@@ -105,8 +105,8 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
     console.log("//////////////////////////////////////////////////////////////////////////////////////////")
     console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
     console.log("Let's sieve for less or equal than " + lastNumber)
-    console.log("Sieved in " + duration(0) + ", now count and generate " + amount + " primes")
-    console.log("Primes obtained and counted in " + duration(0))
+    console.log("Sieved in " + duration(10) + ", now count and generate " + amount + " primes")
+    console.log("Primes obtained and counted in " + duration(10))
     console.log("Total duration " +  duration(getTimeMicro() - elapsed))
     return {primes: [], time: getTimeMicro() - elapsed, length: 0}
   }  
@@ -114,8 +114,8 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
     console.log("//////////////////////////////////////////////////////////////////////////////////////////")
     console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
     console.log("Let's sieve for less or equal than " + lastNumber)
-    console.log("Sieved in " + duration(0) + ", now count and generate " + amount + " primes")
-    console.log("Primes obtained and counted in " + duration(0))
+    console.log("Sieved in " + duration(10) + ", now count and generate " + amount + " primes")
+    console.log("Primes obtained and counted in " + duration(10))
     console.log("Total duration " +  duration(getTimeMicro() - elapsed))
     return {primes: [[2]], time: getTimeMicro() - elapsed, length: 1}
   } 
@@ -143,7 +143,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
           }
           count++
         } catch (e) {
-          throw new Error("Error push " + count + "th time in array at primes below " + lastNumber + " last prime generated is " + (1 + 2*i))
+          throw new Error("Error push " + count + "-th time in array at primes below " + lastNumber + " last prime generated is " + (1 + 2*i))
         }
       }
       numberOfPrimes++;

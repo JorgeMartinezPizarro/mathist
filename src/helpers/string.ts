@@ -1,9 +1,9 @@
 export default function string(value: bigint) {
 
-    if (value.toString().length < 4) 
+    if (value.toString().replaceAll("-", "").length < 6)
         return value.toString()
-    else if (value.toString().length < 25) 
-        return value.toString() + "(" + value.toString().length+ ")"
+    else if (value.toString().replaceAll("-", "").length < 32) 
+        return value.toString() + "(" + value.toString().replaceAll("-", "").length+ ")"
     else
-        return value.toString().slice(0, 5) + "..." +  value.toString().slice(-5) + "(" + value.toString().length + ")"
+        return value.toString().slice(0, 12) + "..." +  value.toString().slice(-12) + "(" + value.toString().replaceAll("-", "").length + ")"
 }

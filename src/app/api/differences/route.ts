@@ -4,7 +4,7 @@ import differences from '@/helpers/differences';
 export async function POST(request: Request) {
 
   const body = await request.json();
-  const array = body;
+  const array: bigint[] = body;
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
   } 

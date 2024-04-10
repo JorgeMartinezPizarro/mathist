@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import { CircularProgress, Autocomplete, TextField, Button, FormGroup, Alert } from "@mui/material"
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
+import string from "@/helpers/string"
 
 const SerieDifferences = () => {
   
@@ -116,7 +117,7 @@ const SerieDifferences = () => {
               return false
             }).map((row, i) => 
               <tr key={JSON.stringify(row)}>{row.slice(0, MAX_SERIES_DIFFERENCES_SIZE).map((nr, j) => 
-                <td className={i === j ? "diagonal" : ""} key={j}>{nr && nr.toString()}</td>
+                <td className={i === j ? "diagonal" : ""} key={j}>{string(BigInt(nr.toString()))}</td>
               )}</tr>
             )}
           </tbody>
