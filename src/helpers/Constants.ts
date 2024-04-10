@@ -14,6 +14,6 @@ export const MAX_DIGITS_TRIPLE = 180000;                            // Healthy c
 export const MAX_LENGTH_TREE = 10;                                  // Healthy computation of just few seconds
 export const MAX_DIGITS_SIEVE = 12;                                 // Healthy computation of less than a minute
 export const MAX_DIGITS_FACTORIZATION = 30;                         // Healthy computation of less than a minute
-export const MAX_COMPUTATION_FACTORS = 10**8;                       // Max value to check divisibility by in a few seconds
+export const MAX_COMPUTATION_FACTORS = 2 ** 28;                     // Max value to check divisibility by in a few seconds
 export const MAX_SERIES_DIFFERENCES_SIZE = 20;                      // Side of the displayed number square
 export const MAX_DISPLAY_SIEVE = 10;                                // How many primes are displayed

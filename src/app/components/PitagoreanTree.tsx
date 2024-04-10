@@ -75,8 +75,8 @@ const PitagoreanTree = () => {
 
     return <>
         <p>
-            <Image src="/image4.png" height={100} width={100} alt="" />
-            <Image src="/image2.png" height={100} width={200} alt=""/>
+            <Image src="/image4.png" priority={true} height={100} width={100} alt="" />
+            <Image src="/image2.png" priority={true} height={100} width={200} alt=""/>
         </p>
         <hr />
         <p>More detail about what are we computing here, in the video: <a href="https://www.youtube.com/watch?v=94mV7Fmbx88" >https://www.youtube.com/watch?v=94mV7Fmbx88</a>.</p>
