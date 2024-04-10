@@ -5,6 +5,7 @@ import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
 import eratosthenes from "@/helpers/sieve";
+import id from "@/helpers/id";
 
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) {
   
@@ -17,16 +18,14 @@ export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_
 // Create excel file with primes up to LIMIT
 function primesToExcel(LIMIT: number) {
 
-  // TODO: use a hash for the filename to avoid collisions with other users!
   console.log("//////////////////////////////////////////////////////////////////////////////////////////")
   console.log("Requesting excel file primes-to-" + LIMIT + ".csv")
   console.log("Let's sieve for less or equal than " + LIMIT)
   
   const elapsed = getTimeMicro()
   const root = "./public/files/"
-  const filenameTemp = "temp-primes-to-" + LIMIT + ".csv"
-  const filename = "primes-to-" + LIMIT + ".csv"
-  const pathTemp = root + filenameTemp;
+  const filename = id(20) + ".csv"
+  
   const path = root + filename;
 
   try {
@@ -53,10 +52,10 @@ function primesToExcel(LIMIT: number) {
   e = getTimeMicro()
   
   // write primes in sieve to a CSV file
-  fs.writeFileSync(pathTemp, "")
+  fs.writeFileSync(path, "")
 
   if (sieve.length === 0) {
-    fs.appendFileSync(pathTemp, "2")
+    fs.appendFileSync(path, "2")
   }
 
   for (var i = 1; i < sieve.length; i++) {
@@ -66,7 +65,7 @@ function primesToExcel(LIMIT: number) {
     }
     if (line.length === EXCEL_MAX_COLS || i === sieve.length-1) {
       try {
-        fs.appendFileSync(pathTemp, line.join(',') + "\r\n");
+        fs.appendFileSync(path, line.join(',') + "\r\n");
       } catch (error) {
         let message
         if (error instanceof Error) message = error.message
@@ -83,9 +82,7 @@ function primesToExcel(LIMIT: number) {
     }
   }
 
-  fs.renameSync(pathTemp, path);
-  
-  var stats = fs.statSync(path)
+  var stats = fs.statSync(path);
   var fileSizeInBytes = stats.size;
 
   console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
