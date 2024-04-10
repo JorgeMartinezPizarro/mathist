@@ -10,6 +10,7 @@ import toHuman from "@/helpers/toHuman";
 import Image from "next/image";
 
 const EratostenesSieve = () => {
+
     const [primes, setPrimes] = useState<number[]>([2])
 
     const [value, setValue] = useState<string>("2")

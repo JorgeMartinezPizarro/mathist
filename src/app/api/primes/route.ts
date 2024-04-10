@@ -7,26 +7,25 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url||"".toString())
   const LIMIT = parseInt(searchParams.get('LIMIT') || "0")
   const amount = parseInt(searchParams.get('amount') || MAX_DISPLAY_SIEVE.toString())
+  const extra = searchParams.get('KEY') || ""; // TODO: Use it together with env definition to skip the limit. Adding the key to github make it not secret :)
   const excel = searchParams.get('excel') ? true : false;
-
-  // LIMIT CHECKS 
-  // TODO: use web request origin for check or not. Extend this approach to forbid the access to api to others than localhost:3000.
-  // 1b Up to 64MB RAM 516MB disk, natural limit for the web, it takes 20s to compute
+  
   if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
-    // SKIP IT FOR HARD TESTINGs
+    // 1b Up to 64MB RAM 516MB disk, natural limit for the web, it takes 20s to compute
     return Response.json(
       {error: "Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk. For more ask the admin."}, 
       {status: 500}
     )
   } 
-  // 535b, up to 31GB RAM 240GB disk (x500), common sense limit, it takes 12h to compute
+  
   if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
+    // 535b, up to 31GB RAM 240GB disk (x500), common sense limit, it takes 12h to compute
     return Response.json(
       {error: "Max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk."},
       {status: 500}
     )
   }
-
+  
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
   }
