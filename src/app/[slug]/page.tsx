@@ -41,7 +41,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
     </div>
     <Drawer open={open} onClose={toggleDrawer(false)}>
       <Box role="presentation" onClick={toggleDrawer(false)}>
-        <Button onClick={() => {window.location.href="/"}} className="subtitle">Mather</Button>
+        <Button className="subtitle">Mather</Button>
         <List>
           {elements.map((element) => (
             <ListItem key={element.name} disablePadding>
