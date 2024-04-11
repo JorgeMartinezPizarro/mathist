@@ -91,7 +91,7 @@ export const childrenAt = (fibonnaciSquare: bigint[][], i: number): bigint[][] =
             ]
         ];
     
-    throw new Error("Invalid child position, must be 0 1 or 2")
+    throw new Error("Invalid child position " + i + ", must be 0 1 or 2")
 }
 
 

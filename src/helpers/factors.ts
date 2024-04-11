@@ -16,6 +16,7 @@ export default function factors(n: bigint ) {
 
     if (n === one || n === zero) {
         return {
+            message: "0 and 1 are special numbers, no primes.",
             factors: [n],
             time: getTimeMicro()-start,
         }

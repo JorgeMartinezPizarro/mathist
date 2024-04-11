@@ -1,4 +1,5 @@
 export default function differences(array: bigint[]): bigint[][] {
+    
     const matrix: bigint[][] = [array]
     for (var a=0;a<array.length;a++) {
         const l: bigint[] = [];

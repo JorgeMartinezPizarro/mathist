@@ -8,7 +8,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url||"".toString())
     const LIMIT = parseInt(searchParams.get('LIMIT') || "0")
     const amount = parseInt(searchParams.get('amount') || MAX_DISPLAY_SIEVE.toString())
-    const extra = searchParams.get('KEY') || ""; // TODO: Use it together with env definition to skip the limit.
     const excel = searchParams.get('excel') ? true : false;
     
     if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 

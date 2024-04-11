@@ -28,19 +28,6 @@ function primesToExcel(LIMIT: number) {
   
   const path = root + filename;
 
-  try {
-    if (fs.existsSync(path)) {
-      return {
-        filename,
-        length: -1,
-        time: getTimeMicro() - elapsed,
-        primes: [],
-      }
-    }
-  } catch (e) {
-    console.log("WARNING: an error ocurred deleting cache files from " + root)
-  }
-
   let e = getTimeMicro();
   const sieve = eratosthenes(LIMIT);
   let line = new Array();
@@ -101,7 +88,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
   if (lastNumber < 0) {
     throw new Error("Cannot get the sieve of negative numbers")
   }
-  if (lastNumber === 1) {
+  if (lastNumber === 1 || lastNumber === 0) {
     console.log("//////////////////////////////////////////////////////////////////////////////////////////")
     console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
     console.log("Let's sieve for less or equal than " + lastNumber)

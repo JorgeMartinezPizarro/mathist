@@ -5,7 +5,9 @@ export async function GET(request: Request) {
   
   try {
     const { searchParams } = new URL(request.url)
-    const LIMIT = BigInt(searchParams.get('LIMIT') || "0");
+    const limit: string = searchParams.get('LIMIT') || "-";
+    const LIMIT = BigInt(limit);
+    
     (BigInt.prototype as any).toJSON = function() {
       return this.toString()
     }

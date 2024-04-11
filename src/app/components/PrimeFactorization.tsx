@@ -55,13 +55,15 @@ const PrimeFactorization = () => {
             <TextField
                 className="input"
                 label="Number"
-                type="number"
+                type="text"
                 disabled={loading}
                 value={value}
                 onChange={(event => {
                     try {
-                        if (event.target.value.length <= MAX_DIGITS_FACTORIZATION && parseInt(event.target.value) > 0) {
-                            setValue(BigInt(event.target.value.toString()).toString())
+                        const regex = new RegExp("[^0123456789$]");
+                        
+                        if (event.target.value.length <= MAX_DIGITS_FACTORIZATION && !regex.test(event.target.value)) {
+                            setValue(event.target.value)
                             setNumber([])
                             setDuration(0)
                             setError(false)
@@ -93,9 +95,16 @@ const PrimeFactorization = () => {
                     })}
                 </p>
                 <hr />
-                {message && <><Alert severity="error">
-                    Numbers in red are composite numbers. That happens when at least 2 prime factors are bigger than {string(BigInt(MAX_COMPUTATION_FACTORS))}
-                </Alert><hr/></>}
+                {message.includes("Factor ") && message.includes(" is not prime") && <>
+                    <Alert severity="error">
+                        Numbers in red are composite numbers. That happens when at least 2 prime factors are bigger than {string(BigInt(MAX_COMPUTATION_FACTORS))}
+                    </Alert>
+                <hr/></>}
+                { message && (!message.includes("Factor ") || !message.includes(" is not prime")) && <>
+                    <Alert severity="error">
+                        {message}
+                    </Alert>
+                <hr/></>}
                 <p>Done in {d(duration)}</p>
             </>}            
             {number.length === 0 && <><p>{string(BigInt(value)) + " = [?]"}</p></>}

@@ -46,7 +46,7 @@ const PitagoreanTree = () => {
               "content-type": "application/json",
             },
             body: JSON.stringify({
-                number,
+                number: number,
             }),
           }
         setError(false)

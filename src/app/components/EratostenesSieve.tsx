@@ -118,14 +118,16 @@ const EratostenesSieve = () => {
             <TextField
                 className="input"
                 label="Length"
-                type="number"
+                type="text"
                 disabled={loading}
                 value={value}
                 onChange={(event => {
-                    if (event.target.value.length <= MAX_DIGITS_SIEVE && parseInt(event.target.value) > 0) {
+                    const regex = new RegExp("[^0123456789$]");
+                    if (event.target.value.length <= MAX_DIGITS_SIEVE && !regex.test(event.target.value)) {
                         setValue(event.target.value)
                         setPrimes([])
                         setDurationFull(0)
+                        setDuration(0)
                         setLength(0)
                     }
                 })}
@@ -135,12 +137,12 @@ const EratostenesSieve = () => {
             {loading && <CircularProgress />}
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
-        <hr/>
         {!error && durationFull !== 0 && <>
-            {length > 0 && <p>Prepared download of {string(BigInt(length))} primes in {d(durationFull)}</p>}
-            {length  === -1 && <p>Getting from cache in {d(durationFull)}</p>}
+            <hr/>
+            {length > 0 && <p>Generated download of {string(BigInt(length))} primes in {d(durationFull)}</p>}
         </>}
         {!error && (primes.length > 0) && !loading && (<>
+            <hr/>
             <p>Total of primes smaller or equal than {string(BigInt(value))} is {string(BigInt(length))}</p>
             <hr/>
             <p>Duration {d(duration)}</p>
@@ -149,6 +151,10 @@ const EratostenesSieve = () => {
             <hr/>
             <p>[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>         
         </>)}
+        {(!error && duration > 0 && !length && !loading) && <>
+            <hr/>
+            <p>No primes found below {parseInt(value)}</p>
+        </>}
     </>
 }
 

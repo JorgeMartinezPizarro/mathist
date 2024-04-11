@@ -5,7 +5,8 @@ export async function GET(request: Request) {
     
     try {
         const { searchParams } = new URL(request.url);
-        const n = BigInt(searchParams.get('LIMIT') || "0");
+        const n = BigInt(parseInt(searchParams.get('LIMIT')||""));
+
         (BigInt.prototype as any).toJSON = function() {
             return this.toString()
         }
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
         if (n > BigInt(10**MAX_DIGITS_FACTORIZATION -1)) {
             return Response.json( {error: "Max value of LIMIT is " + BigInt(10**MAX_DIGITS_FACTORIZATION -1) + ", " + n + " provided"}, {status: 500})
         }
-
+        
         return Response.json(factors(n))
     } catch (error) {
         let message
