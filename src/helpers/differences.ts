@@ -11,6 +11,6 @@ export default function differences(array: bigint[]): bigint[][] {
         
         matrix.push(l)
     }
-    console.log(matrix)
+    
     return matrix;
 }

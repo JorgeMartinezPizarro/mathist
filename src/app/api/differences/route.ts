@@ -6,8 +6,8 @@ export async function GET(request: Request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const length = parseInt(searchParams.get('length') || "0");
-    const name = searchParams.get('name') || "integer";
+    const length = parseInt(searchParams.get('length') || "");
+    const name = searchParams.get('name') || "";
 
     (BigInt.prototype as any).toJSON = function() {
       return this.toString()
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
     const array = series(2 * length - 1, name)
     const diff = differences(array)
-    return Response.json(differences(array))
+    return Response.json(diff)
   } catch (error) {
     let message
     if (error instanceof Error) message = error.message

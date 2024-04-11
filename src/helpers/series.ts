@@ -1,3 +1,4 @@
+import { isInteger } from "mathjs";
 import eratostenes from "./eratostenes";
 import factorial from "./factorial";
 
@@ -5,6 +6,26 @@ export default function series(LIMIT: number, name: string): bigint[] {
   let array: bigint[] = [];
   let aux: number[] = [];
   
+  if (name === "factorial"
+   || name === "integer"
+   || name === "square" 
+   || name === "cube"
+   || name === "triangular"
+   || name === "penthagonal"
+   || name === "hexagonal"
+   || name === "exponential"
+   || name === "prime"
+   || name === "fibonacci"
+   || name === "luca") {
+
+   } else {
+    throw new Error("Invalid name " + name)
+   }
+
+   if (isNaN(LIMIT) || !isInteger(LIMIT)) {
+    throw new Error("Invalid length " + LIMIT)
+   }
+
   if (name === "prime") {
     const int = Math.floor( 2 * LIMIT * Math.log(LIMIT))
     aux = eratostenes(int, int).primes

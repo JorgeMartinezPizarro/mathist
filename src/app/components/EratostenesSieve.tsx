@@ -153,7 +153,7 @@ const EratostenesSieve = () => {
         </>)}
         {(!error && duration > 0 && !length && !loading) && <>
             <hr/>
-            <p>No primes found below {parseInt(value)}</p>
+            <p>No primes smaller or equal than {parseInt(value)}</p>
         </>}
     </>
 }

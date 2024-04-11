@@ -22,6 +22,9 @@ function primesToExcel(LIMIT: number) {
   console.log("Requesting excel file primes-to-" + LIMIT + ".csv")
   console.log("Let's sieve for less or equal than " + LIMIT)
   
+  if (isNaN(LIMIT)) {
+    throw new Error("Invalid LIMIT " + LIMIT)
+  }
   const elapsed = getTimeMicro()
   const root = "./public/files/"
   const filename = id(20) + ".csv"
@@ -82,6 +85,9 @@ function primesToExcel(LIMIT: number) {
 function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
   const elapsed = getTimeMicro()
 
+  if (isNaN(lastNumber)) {
+    throw new Error("Invalid LIMIT " + lastNumber)
+  }
   if (amount > MAX_ALLOCATABLE_ARRAY) {
     throw new Error("Such a big array of primes may not fit in memory, max " + MAX_ALLOCATABLE_ARRAY)
   }
