@@ -147,8 +147,7 @@ const EratostenesSieve = () => {
             <hr/>
             <p>Last teen primes of the sieve:</p>
             <hr/>
-            <p>[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>
-            
+            <p>[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>         
         </>)}
     </div>
 }

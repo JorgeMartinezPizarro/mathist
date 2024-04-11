@@ -21,6 +21,12 @@ table.pithagorean, table.pithagorean tbody tr td {
   table-layout: fixed;
 }
 
+table.pithagorean tbody tr td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 input[type="numeric"] {
   border: 1px solid grey;
   border-radius: 8px;
@@ -40,9 +46,6 @@ li {
 button, button:disabled {
   margin: 8px!important;
 }
-button.oddButton, button.oddButton:disabled {
-  margin-top: 38px!important;
-}
 .MuiAutocomplete-root {
   margin: 0 auto;
   display: inline-block
@@ -52,9 +55,8 @@ button.oddButton, button.oddButton:disabled {
   vertical-align: middle!important;
   display: inline-block!important;
 }
-.form-container {
-  vertical-align: middle;
-  margin-top: -24px;
+.MuiInputBase-root  {
+  min-width: 200px;
 }
 
 .drawer {
@@ -75,6 +77,7 @@ button.oddButton, button.oddButton:disabled {
 
 .main {
   margin-top: 0;
+  overflow: hidden;
 }
 
 .icon {
@@ -128,4 +131,16 @@ button.oddButton, button.oddButton:disabled {
 
 .MuiDrawer-root  .MuiListItemIcon-root {
   color: white;
+}
+
+.inline-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  list-style: none;
+  align-items: center;
+  justify-content: center;
+}
+a, .inline-grid span {
+  word-break:break-all;
 }

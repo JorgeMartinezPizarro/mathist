@@ -141,19 +141,19 @@ const PitagoreanTree = () => {
         <hr />
         <table className="pithagorean"><tbody>{tree.tree.length > 0 && (<>
             <tr>
-                <td>&lt;{tree.tree[0][0].triple.join(" ")}&gt;</td>
+                <td title={"<"+ tree.tree[0][0].triple.join(", ")+">"}>&lt;{tree.tree[0][0].triple.join(", ")}&gt;</td>
             </tr>
             <tr>
                 <td>
-                    <table className="pithagorean"><tbody><tr>{tree.tree[1].map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table>
+                    <table className="pithagorean"><tbody><tr>{tree.tree[1].map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
                 </td>
             </tr>
             <tr>
                 <td>
                 <table className="pithagorean"><tbody><tr>
-                        <td key={"1"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(0, 3).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
-                        <td key={"2"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(3, 6).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
-                        <td key={"3"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(6, 9).map(el => <td key={el.triple.toString()}>&lt;{el.triple.join(" ")}&gt;</td>)}</tr></tbody></table></td>
+                        <td key={"1"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(0, 3).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"} >&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table></td>
+                        <td key={"2"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(3, 6).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table></td>
+                        <td key={"3"}><table className="pithagorean"><tbody><tr>{tree.tree[2].slice(6, 9).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table></td>
                     </tr></tbody></table>
                 </td>
             </tr>

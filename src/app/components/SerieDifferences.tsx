@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useCallback } from "react"
-import { CircularProgress, Autocomplete, TextField, Button, FormGroup, Alert } from "@mui/material"
+import { CircularProgress, TextField, Button, FormGroup, Alert, Select, MenuItem } from "@mui/material"
+
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 import string from "@/helpers/string"
 
@@ -10,55 +11,55 @@ const SerieDifferences = () => {
   const [number, setNumber] = useState<BigInt[][]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>("")
-  const [value, setValue] = useState({label: "integer", value: "integer"})
+  const [value, setValue] = useState<string>("integer")
 
-    const handleSubmit = useCallback(() => {
-      setLoading(true)
-      fetch("/api/serie?LIMIT=" + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + "&name=" + value.value)
-        .then(res => res.json())
-        .then(res => {
+  const handleSubmit = useCallback(() => {
+    setLoading(true)
+    fetch("/api/serie?LIMIT=" + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + "&name=" + value)
+      .then(res => res.json())
+      .then(res => {
 
-          if (res.error) {
-            throw new Error(res.error)
-          }
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify(res),
-          }
-          fetch("/api/differences", options)
-            .then(res => res.json())
-            .then(res => {
-              if (res.error) {
-                throw new Error(res.error)
-              }
-              setNumber(res)
-              setLoading(false)
-            })
-            .catch(error=> {
-              let message
-              if (error instanceof Error) message = error.message
-              else message = String(error)
-              if (message.indexOf("Failed to fetch") !== -1)
-                  setError("Error generating excel, server disconnected")
-              else 
-                  setError(message.replaceAll("Error: ", ""))
-              setLoading(false)
-            })
+        if (res.error) {
+          throw new Error(res.error)
+        }
+        const options = {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(res),
+        }
+        fetch("/api/differences", options)
+          .then(res => res.json())
+          .then(res => {
+            if (res.error) {
+              throw new Error(res.error)
+            }
+            setNumber(res)
+            setLoading(false)
           })
-      .catch(error => {
-        let message
-        if (error instanceof Error) message = error.message
-        else message = String(error)
-        if (message.indexOf("Failed to fetch") !== -1)
-            setError("Error generating excel, server disconnected")
-        else 
-            setError(message.replaceAll("Error: ", ""))
-        setLoading(false)
-      })
-    }, [value])
+          .catch(error=> {
+            let message
+            if (error instanceof Error) message = error.message
+            else message = String(error)
+            if (message.indexOf("Failed to fetch") !== -1)
+                setError("Error generating excel, server disconnected")
+            else 
+                setError(message.replaceAll("Error: ", ""))
+            setLoading(false)
+          })
+        })
+    .catch(error => {
+      let message
+      if (error instanceof Error) message = error.message
+      else message = String(error)
+      if (message.indexOf("Failed to fetch") !== -1)
+          setError("Error generating excel, server disconnected")
+      else 
+          setError(message.replaceAll("Error: ", ""))
+      setLoading(false)
+    })
+  }, [value])
 
   return (
     <div className="main">
@@ -67,35 +68,29 @@ const SerieDifferences = () => {
         <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
         <hr />
-      <FormGroup className="form-container" row={true}>
-        <Autocomplete
-          disablePortal
-          disableClearable
-          id="combo-box-demo"
-          isOptionEqualToValue={(option, value) => option.value === value.value && option.label === value.label}
+      <FormGroup row={true}>
+        <TextField
           value={value}
-          options={[
-              {label: "integer", value:"integer"},
-              {label: "square", value:"square"},
-              {label: "triangular", value:"triangular"},
-              {label: "penthagonal", value:"penthagonal"},
-              {label: "hexagonal", value:"hexagonal"},
-              {label: "cube", value:"cube"},
-              {label: "exponential", value:"exponential"},
-              {label: "prime", value:"prime"},
-              {label: "fibonacci", value:"fibonacci"},
-              {label: "luca", value:"luca"},
-              {label: "factorial", value:"factorial"},
-          ]}
-          onChange={(event, values) => {
-              
-            setValue(values)
+          label="Number"
+          onChange={event => {
+            setValue(event.target.value)
             setNumber([])
           }}
-          sx={{ width: 300 }}
-          renderInput={(params) => <TextField {...params} label="Serie" />}
-        />
-        <Button disabled={loading} className='oddButton' onClick={()=> {
+          select 
+        >
+          <MenuItem key={"integer"} value={"integer"}>Integers</MenuItem>
+          <MenuItem key={"square"} value={"square"}>Squares</MenuItem>
+          <MenuItem key={"triangular"} value={"triangular"}>Triangulars</MenuItem>
+          <MenuItem key={"penthagonal"} value={"penthagonal"}>Penthagonals</MenuItem>
+          <MenuItem key={"hexagonal"} value={"hexagonal"}>Hexagonals</MenuItem>
+          <MenuItem key={"cube"} value={"cube"}>Cubes</MenuItem>
+          <MenuItem key={"exponential"} value={"exponential"}>Exponentials</MenuItem>
+          <MenuItem key={"prime"} value={"prime"}>Primes</MenuItem>
+          <MenuItem key={"fibonacci"} value={"fibonacci"}>Fibonacci</MenuItem>
+          <MenuItem key={"luca"} value={"luca"}>Luca</MenuItem>
+          <MenuItem key={"factorial"} value={"factorial"}>Factorials</MenuItem>
+        </TextField>
+        <Button disabled={loading} onClick={()=> {
           handleSubmit()
         }} variant="contained">GENERATE</Button>
         {loading && <CircularProgress />}
@@ -105,7 +100,7 @@ const SerieDifferences = () => {
       
       {number.length > 0 && (<>
         <hr />
-        <p>Below the {MAX_SERIES_DIFFERENCES_SIZE} first {value.label} numbers and it&apos;s nth-differences up to {MAX_SERIES_DIFFERENCES_SIZE}</p>
+        <p>Below the {MAX_SERIES_DIFFERENCES_SIZE} first {value} numbers and it&apos;s nth-differences up to {MAX_SERIES_DIFFERENCES_SIZE}</p>
         <hr />
         <table>
           <tbody>

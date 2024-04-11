@@ -78,7 +78,7 @@ const PrimeFactorization = () => {
         <hr/>
         {!error && !loading && <>
             {number.length > 0 && <>
-                <p>
+                <p className="inline-grid">
                     <span key="-2">{string(BigInt(value))}</span>
                     <span key="-1">&nbsp;=&nbsp;</span>
                     {number.map((n, id) => {

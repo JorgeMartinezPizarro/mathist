@@ -2,9 +2,9 @@
 
 Mathist is a math website, using the power of BigInt and mathjs to do the calculations. It is deployed under [mather.ideniox.com](https://mather.ideniox.com).
 
-## Getting Started
+## Local
 
-To get it running locally, you need to install latest `node` and `npm`.
+To get it running locally, you need to install the latest `node` and `npm`.
 
 To run a develop version :
 
@@ -31,7 +31,7 @@ To run it you need `docker` installed on your system and run:
 docker run -d jorgemartinezpizarro/mathist:latest
 ```
 
-To generate your own docker image, just:
+To generate your own docker image, run:
 
 ```
 docker build .
