@@ -159,3 +159,7 @@ a {
 a, .inline-grid span {
   word-break:break-all;
 }
+
+div[role="alert"] {
+  margin: 0 16px;
+}
