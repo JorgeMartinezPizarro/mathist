@@ -75,11 +75,22 @@ button, button:disabled {
   background: #1976d2;
 }
 
+hr {
+  margin: 16px!important;
+  background: #1976d2!important;
+  color: #1976d2!important;
+  border-color: #1976d2!important;
+}
+a {
+  color: #1976d2!important;
+}
 .main {
   margin-top: 0;
   overflow: hidden;
 }
-
+.main p {
+  margin: 0 16px;
+}
 .icon {
   font-family: Arial;
   color: white;
