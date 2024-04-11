@@ -38,7 +38,6 @@ const SerieDifferences = () => {
 
   return (
     <>
-        <hr />
         <p>Select a serie to obtain it&apos;s series of differences. Some of these series of series have regularities, while others not.</p>
         <hr />
         <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
@@ -78,24 +77,26 @@ const SerieDifferences = () => {
         <p>Below the {MAX_SERIES_DIFFERENCES_SIZE} first {value} numbers and it&apos;s nth-differences up to {MAX_SERIES_DIFFERENCES_SIZE}</p>
         
       </>)}
-      <hr />
-      <div style={{overflowX: "auto"}}>
-        <table>
-          <tbody>
-            {number.slice(0, MAX_SERIES_DIFFERENCES_SIZE).filter((el, id) => {
-              for (var idx = 0; idx<el.length; idx++) {
-                if (BigInt(el[idx].toString()) !== BigInt(0))
-                  return true
-              }
-              return false
-            }).map((row, i) => 
-              <tr key={JSON.stringify(row)}>{row.slice(0, MAX_SERIES_DIFFERENCES_SIZE).map((nr, j) => 
-                <td className={i === j ? "diagonal" : ""} key={j}>{string(BigInt(nr.toString()))}</td>
-              )}</tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {number.length > 0 &&  <>
+        <hr />
+        <div style={{overflowX: "auto"}}>
+          <table>
+            <tbody>
+              {number.slice(0, MAX_SERIES_DIFFERENCES_SIZE).filter((el, id) => {
+                for (var idx = 0; idx<el.length; idx++) {
+                  if (BigInt(el[idx].toString()) !== BigInt(0))
+                    return true
+                }
+                return false
+              }).map((row, i) => 
+                <tr key={JSON.stringify(row)}>{row.slice(0, MAX_SERIES_DIFFERENCES_SIZE).map((nr, j) => 
+                  <td className={i === j ? "diagonal" : ""} key={j}>{string(BigInt(nr.toString()))}</td>
+                )}</tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </>}
     </>
   );
 }

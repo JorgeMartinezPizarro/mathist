@@ -80,7 +80,7 @@ button, button:disabled {
 }
 
 hr {
-  height: 1pt;
+  height: 1px;
   background-color: #1976d2!important;
   border: none;
   margin: 16px!important;
