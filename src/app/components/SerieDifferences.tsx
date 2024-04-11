@@ -15,54 +15,29 @@ const SerieDifferences = () => {
 
   const handleSubmit = useCallback(() => {
     setLoading(true)
-    fetch("/api/serie?LIMIT=" + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + "&name=" + value)
+    fetch("/api/differences?name=" + value + "&length=" + MAX_SERIES_DIFFERENCES_SIZE)
       .then(res => res.json())
       .then(res => {
-
         if (res.error) {
           throw new Error(res.error)
         }
-        const options = {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(res),
-        }
-        fetch("/api/differences", options)
-          .then(res => res.json())
-          .then(res => {
-            if (res.error) {
-              throw new Error(res.error)
-            }
-            setNumber(res)
-            setLoading(false)
-          })
-          .catch(error=> {
-            let message
-            if (error instanceof Error) message = error.message
-            else message = String(error)
-            if (message.indexOf("Failed to fetch") !== -1)
-                setError("Error generating excel, server disconnected")
-            else 
-                setError(message.replaceAll("Error: ", ""))
-            setLoading(false)
-          })
-        })
-    .catch(error => {
-      let message
-      if (error instanceof Error) message = error.message
-      else message = String(error)
-      if (message.indexOf("Failed to fetch") !== -1)
-          setError("Error generating excel, server disconnected")
-      else 
-          setError(message.replaceAll("Error: ", ""))
-      setLoading(false)
-    })
+        setNumber(res)
+        setLoading(false)
+      })
+      .catch(error=> {
+        let message
+        if (error instanceof Error) message = error.message
+        else message = String(error)
+        if (message.indexOf("Failed to fetch") !== -1)
+            setError("Error generating excel, server disconnected")
+        else 
+            setError(message.replaceAll("Error: ", ""))
+        setLoading(false)
+      })
   }, [value])
 
   return (
-    <div className="main">
+    <>
         <hr />
         <p>Select a serie to obtain it&apos;s series of differences. Some of these series of series have regularities, while others not.</p>
         <hr />
@@ -101,7 +76,10 @@ const SerieDifferences = () => {
       {number.length > 0 && (<>
         <hr />
         <p>Below the {MAX_SERIES_DIFFERENCES_SIZE} first {value} numbers and it&apos;s nth-differences up to {MAX_SERIES_DIFFERENCES_SIZE}</p>
-        <hr />
+        
+      </>)}
+      <hr />
+      <div style={{overflowX: "auto"}}>
         <table>
           <tbody>
             {number.slice(0, MAX_SERIES_DIFFERENCES_SIZE).filter((el, id) => {
@@ -117,8 +95,8 @@ const SerieDifferences = () => {
             )}
           </tbody>
         </table>
-      </>)}
-    </div>
+      </div>
+    </>
   );
 }
 

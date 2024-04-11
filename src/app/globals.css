@@ -16,14 +16,17 @@ table tbody tr td {
 }
 
 table.pithagorean, table.pithagorean tbody tr td {
+  margin: 0!important;
+  padding: 0!important;
   width: 100%;
   border: none;
+  border-collapse: collapse;
   table-layout: fixed;
 }
 
 table.pithagorean tbody tr td {
   white-space: nowrap;
-  overflow: hidden;
+  overflow-x: hidden;
   text-overflow: ellipsis;
 }
 
@@ -55,8 +58,9 @@ button, button:disabled {
   vertical-align: middle!important;
   display: inline-block!important;
 }
+
 .MuiInputBase-root  {
-  min-width: 200px;
+  min-width: 165px;
 }
 
 .drawer {
@@ -86,7 +90,7 @@ a {
 }
 .main {
   margin-top: 0;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 .main p {
   margin: 0 16px;

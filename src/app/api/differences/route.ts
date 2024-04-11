@@ -1,17 +1,28 @@
 import { MAX_SERIES_DIFFERENCES_SIZE } from '@/helpers/Constants';
 import differences from '@/helpers/differences';
+import series from '@/helpers/series';
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
 
-  const body = await request.json();
-  const array: bigint[] = body;
-  (BigInt.prototype as any).toJSON = function() {
-    return this.toString()
-  } 
+  try {
+    const { searchParams } = new URL(request.url);
+    const length = parseInt(searchParams.get('length') || "0");
+    const name = searchParams.get('name') || "integer";
 
-  if (array.length > 2 * MAX_SERIES_DIFFERENCES_SIZE - 1) {
-    return Response.json({error: "Max length of serie is " + (2 * MAX_SERIES_DIFFERENCES_SIZE - 1) + ", " + array.length + " provided"}, {status: 500})
+    (BigInt.prototype as any).toJSON = function() {
+      return this.toString()
+    } 
+
+    if (length > MAX_SERIES_DIFFERENCES_SIZE)
+      throw new Error("Max length allowed " + (MAX_SERIES_DIFFERENCES_SIZE))
+
+    const array = series(2 * length - 1, name)
+    const diff = differences(array)
+    return Response.json(differences(array))
+  } catch (error) {
+    let message
+    if (error instanceof Error) message = error.message
+    else message = String(error)
+    return Response.json({ error: message }, { status: 500 });
   }
-
-  return Response.json(differences(array)  )
 }
