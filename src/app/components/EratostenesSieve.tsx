@@ -97,8 +97,8 @@ const EratostenesSieve = () => {
         }
     }
 
-    return <div>
-        <Image src="/image6.png" priority={true} height={100} width={100} alt=""/>
+    return <>
+        <p><Image src="/image6.png" priority={true} height={100} width={100} alt=""/></p>
         <hr/>
         <p>Eratosthenes sieve of a given length, max is {string(BigInt(MAX_LENGTH_FOR_SIEVE_HEALTY))}, using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
         <hr/>
@@ -149,7 +149,7 @@ const EratostenesSieve = () => {
             <hr/>
             <p>[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>         
         </>)}
-    </div>
+    </>
 }
 
 export default EratostenesSieve;

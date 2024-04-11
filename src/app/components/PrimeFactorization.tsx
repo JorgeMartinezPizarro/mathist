@@ -47,7 +47,7 @@ const PrimeFactorization = () => {
 
     }, [value])
 
-    return <div>
+    return <>
         <hr />
         <p>Enter a number below to factorize it. The max number can be entered is 10**{MAX_DIGITS_FACTORIZATION} - 1.</p>
         <hr />
@@ -100,7 +100,7 @@ const PrimeFactorization = () => {
             </>}            
             {number.length === 0 && <><p>{string(BigInt(value)) + " = [?]"}</p></>}
         </>}
-    </div>
+    </>
 
 }
 

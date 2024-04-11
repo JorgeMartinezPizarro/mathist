@@ -76,10 +76,10 @@ button, button:disabled {
 }
 
 hr {
+  height: 1pt;
+  background-color: #1976d2!important;
+  border: none;
   margin: 16px!important;
-  background: #1976d2!important;
-  color: #1976d2!important;
-  border-color: #1976d2!important;
 }
 a {
   color: #1976d2!important;
