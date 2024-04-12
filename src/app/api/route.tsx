@@ -1,6 +1,6 @@
 export async function GET(request: Request) {
     const valid_endpoints = [
-        "differenecs",
+        "differeneces",
         "factors",
         "pitagoreanTree",
         "pitagoreanTriple",
