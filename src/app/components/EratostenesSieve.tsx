@@ -50,7 +50,7 @@ const EratostenesSieve = () => {
                 // in dev we get the files from assets, it just imply a re run cause assets are static
             }
             else if (env == "production"){
-                link.href = "/generated/" + filename;
+                link.href = "/generated-primes/" + filename;
                 // In production we serve the files separately in a nginx serve block
             }
             
