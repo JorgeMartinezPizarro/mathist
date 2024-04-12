@@ -108,11 +108,11 @@ a {
 }
 
 .item {
-  font-family: Arial;
+  font-family: Arial!important;
   color: white!important;
-  font-size: 18pt;
-  text-transform: capitalize;
-  text-decoration: none;
+  font-size: 18pt!important;
+  text-transform: capitalize!important;
+  text-decoration: none!important;
   display: inline-block!important;
   height: 35px!important;
   margin-top: -35px !important;
@@ -128,10 +128,10 @@ a {
 }
 
 .subtitle {
-  font-family: Arial;
+  font-family: Arial!important;
   color: white!important;
-  font-size: 22pt;
-  text-transform: capitalize;
+  font-size: 22pt!important;
+  text-transform: capitalize!important;
   text-decoration: underline!important;
   display: inline-block!important;
   height: 35px!important;
