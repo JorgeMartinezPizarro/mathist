@@ -5,6 +5,7 @@ export async function GET(request: Request) {
         "pitagoreanTree",
         "pitagoreanTriple",
         "primes",
+        "randomPrimes",
     ];
     return Response.json({ error: "invalid endpoint /, existing endpoints " + valid_endpoints.join(", ")}, {status: 500});
   }
