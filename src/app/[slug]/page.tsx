@@ -11,6 +11,7 @@ import PrimeFactorization from "@/app/components/PrimeFactorization";
 import PitagoreanTree from "@/app/components/PitagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratostenesSieve from "@/app/components/EratostenesSieve";
+import { notFound } from 'next/navigation'
 
 const Page = ({ params }: { params: { slug: string } }) => {
   
@@ -23,7 +24,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
   ]
 
   if (!elements.map(el => el.name).includes(params.slug)) {
-    redirect("/" + elements[0].name);
+    notFound()
   }
 
   const currentElement = elements.find(el => el.name === params.slug)
