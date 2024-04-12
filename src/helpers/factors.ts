@@ -81,51 +81,75 @@ interface Factor {
     message: string;
 }
 
-// Divide by 2, 3 5 and then iterate over the different rests mod 30
+// Divide by 2, 3 5 and then iterate over mod 30
 const factor = function(n: bigint): Factor {
     
     if (isPrime(bignumber(n.toString()))) return {
         factor: n, 
         message: "",
     }
-
     if (n==zero) return {
         factor: BigInt(0),
         message: "",
     }  
-
     if (n%one || n*n<2) return {
         factor: BigInt(1),
         message: "",
-    };
-        
-    ([two, three, BigInt(5)] as bigint[]).forEach(k=> {
-        if (n%k===zero) {
-            return {
-                factor: k,
-                message: "",
-            }
-        }
-    })
+    }  
     
+    if (n%two==zero) return {
+        factor: BigInt(2),
+        message: "",
+    }  
+    if (n%three==zero) return {
+        factor: BigInt(3),
+        message: "",
+    }  
+    if (n%BigInt(5)==zero) return {
+        factor: BigInt(5),
+        message: "",
+    }  
     var m: bigint = sqrt(n);
     for (var i: bigint=BigInt(7);i<=m;i+=BigInt(30)) {
-      
+
      if (i > MAX_COMPUTATION_FACTORS) {
       return {
         factor: n,
         message:"Factor " + n + " is not prime"
       }
+     } 
+     if (n%i==zero) return {
+        factor: i,
+        message: "",
+     };
+     if (n%(i+BigInt(4))==zero) return {
+        factor: i+BigInt(4),
+        message: "",
      }
-
-     ([i, i + BigInt(4), i+BigInt(6), i+BigInt(6), i+BigInt(10), i+BigInt(12), i+BigInt(16), i+BigInt(22), i+BigInt(24)] as bigint[]).forEach(k => {
-        if (n%k===zero) {
-            return {
-                factor: k,
-                message: "",
-            }
-        }
-     })
+     if (n%(i+BigInt(6))==zero) return {
+        factor: i+BigInt(6),
+        message: "",
+     }
+     if (n%(i+BigInt(10))==zero) return {
+        factor: i+BigInt(10),
+        message: "",
+     }
+     if (n%(i+BigInt(12))==zero) return {
+        factor: i+BigInt(12),
+        message: "",
+     }
+     if (n%(i+BigInt(16))==zero) return {
+        factor: i+BigInt(16),
+        message: "",
+     }
+     if (n%(i+BigInt(22))==zero) return {
+        factor: i+BigInt(22),
+        message: "",
+     }
+     if (n%(i+BigInt(24))==zero) return {
+        factor: i+BigInt(24),
+        message: "",
+     }
     }
     return {
         factor: n,
