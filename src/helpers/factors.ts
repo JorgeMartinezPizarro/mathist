@@ -15,7 +15,7 @@ const three: bigint = BigInt(3)
 export default function factors(n: bigint ): Factorization {
     console.log("/////////////////////////////////")
     const start = getTimeMicro()
-    console.log(getRandomPrimes(200, 5), " took " + duration(getTimeMicro() - start))
+    
     if (n === one || n === zero) {
         return {
             message: "0 and 1 are special numbers, no primes.",
