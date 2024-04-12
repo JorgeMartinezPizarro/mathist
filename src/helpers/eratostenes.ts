@@ -30,7 +30,19 @@ function primesToExcel(LIMIT: number) {
     throw new Error("Generated an empty file ...")
   }
   const elapsed = getTimeMicro()
-  const root = "./public/files/"
+
+  const env = process.env.NODE_ENV
+  let root;
+  if(env == "development"){
+    root = "./public/files/"
+    // in dev we get the files from assets, it just imply a re run cause assets are static
+  }
+  else if (env == "production"){
+    root = "./files"
+    // In production we serve the files separately in a nginx serve block
+  }
+
+  
   const filename = id(20) + ".csv"
   
   const path = root + filename;
@@ -92,7 +104,7 @@ function primesToExcel(LIMIT: number) {
   console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
   
-  return {filename: "/files/" + filename, time: getTimeMicro() - elapsed, length, primes: []};
+  return {filename, time: getTimeMicro() - elapsed, length, primes: []};
 }
 
 // Count primes and return count and last amount primes
