@@ -5,7 +5,13 @@ export async function GET(request: Request) {
     
     try {
         const { searchParams } = new URL(request.url);
-        const n = BigInt(parseInt(searchParams.get('LIMIT')||""));
+        let n;
+        const t = searchParams.get('LIMIT')||""
+        try {
+            n = BigInt(t);
+        } catch (e) {
+            throw new Error("Invalid BigInt " + t)
+        }
 
         (BigInt.prototype as any).toJSON = function() {
             return this.toString()
