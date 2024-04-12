@@ -92,7 +92,7 @@ function primesToExcel(LIMIT: number) {
   console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
   
-  return {filename, time: getTimeMicro() - elapsed, length, primes: []};
+  return {filename: "/files/" + filename, time: getTimeMicro() - elapsed, length, primes: []};
 }
 
 // Count primes and return count and last amount primes
