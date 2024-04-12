@@ -22,9 +22,9 @@ const Page = ({ params }: { params: { slug: string } }) => {
     {name: "about", component: <About/>},
   ]
 
-  if (!elements.map(el => el.name).includes(params.slug)) {
+  /*if (!elements.map(el => el.name).includes(params.slug)) {
     redirect("/" + elements[0].name);
-  }
+  }*/
 
   const currentElement = elements.find(el => el.name === params.slug)
 
