@@ -43,18 +43,8 @@ const EratostenesSieve = () => {
             }
             const link = document.createElement("a");
             
-            const env = process.env.NODE_ENV
-            
-            if(env == "development"){
-                link.href = "/files/" + filename;
-                // in dev we get the files from assets, it just imply a re run cause assets are static
-            }
-            else if (env == "production"){
-                link.href = "/generated-primes/" + filename;
-                // In production we serve the files separately in a nginx serve block
-            }
-            
-            
+            link.href = "/files/" + filename;
+                        
             link.download = "primes-to-" + limit.toString() + ".csv";
             document.body.appendChild(link);
             link.click();        

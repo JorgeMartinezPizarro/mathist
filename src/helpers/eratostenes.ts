@@ -31,21 +31,9 @@ function primesToExcel(LIMIT: number) {
   }
   const elapsed = getTimeMicro()
 
-  const env = process.env.NODE_ENV
   let root;
-  console.log("////////////////////////////////")
-  console.log(env)
-  console.log("////////////////////////////////")
-  if(env == "development"){
-    
-    root = "./public/files/"
-    // in dev we get the files from assets, it just imply a re run cause assets are static
-  }
-  else if (env == "production"){
-    root = "./files/"
-    // In production we serve the files separately in a nginx serve block
-  }
-
+  root = "./public/files/"
+  
   
   const filename = id(20) + ".csv"
   
