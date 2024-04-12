@@ -15,12 +15,12 @@ export async function GET(request: Request) {
       throw new Error("Invalid parameters length = " + LIMIT + ", amount = " + amount)
     }
 
-    if (amount > 5) {
-      throw new Error("Too much numbers, max allowed is 5")
+    if (amount > 10) {
+      throw new Error("Too much numbers, max amount allowed is 10")
     }
 
     if (LIMIT > 600) {
-      throw new Error("Too long numbers, max allowed is 600 digits")
+      throw new Error("Too long numbers, max length is 600 digits")
     }
 
     if (amount)
