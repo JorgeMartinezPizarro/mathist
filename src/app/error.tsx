@@ -41,7 +41,7 @@ export default function Error({
               <ListItemButton onClick={(e) => {e.stopPropagation(); redirect("/" + element.name)}}>
                 <ListItemIcon>
                   <a href={"/" + element.name}>
-                    //<SubdirectoryArrowRightIcon className="icon"/>
+                    <SubdirectoryArrowRightIcon className="icon"/>
                     <Button className="item" ><span>{element.name}</span></Button>
                   </a>
                 </ListItemIcon>

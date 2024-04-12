@@ -24,7 +24,7 @@ const EratostenesSieve = () => {
     const [loading, setLoading] = useState<boolean>(false)
     
     const [error, setError] = useState<string|boolean>(false)
-
+    
     const downloadCSV = async () => {
         try {
             const limit = parseInt(value)
