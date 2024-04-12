@@ -33,7 +33,11 @@ function primesToExcel(LIMIT: number) {
 
   const env = process.env.NODE_ENV
   let root;
+  console.log("////////////////////////////////")
+  console.log(env)
+  console.log("////////////////////////////////")
   if(env == "development"){
+    
     root = "./public/files/"
     // in dev we get the files from assets, it just imply a re run cause assets are static
   }
