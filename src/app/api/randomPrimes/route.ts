@@ -8,14 +8,18 @@ export async function GET(request: Request) {
   
   try {
     const { searchParams } = new URL(request.url||"".toString())
-    const LIMIT = BigInt(searchParams.get('length') || "NaN")
-    const amount = BigInt(searchParams.get('amount') || "NaN");
+    const LIMIT = parseInt(searchParams.get('length') || "NaN")
+    const amount = parseInt(searchParams.get('amount') || "NaN");
     
-    if (amount > BigInt(5)) {
+    if (isNaN(LIMIT) || isNaN(amount)) {
+      throw new Error("Invalid parameters length = " + LIMIT + ", amount = " + amount)
+    }
+
+    if (amount > 5) {
       throw new Error("Too much numbers, max allowed is 5")
     }
 
-    if (LIMIT > BigInt(600)) {
+    if (LIMIT > 600) {
       throw new Error("Too long numbers, max allowed is 600 digits")
     }
 
