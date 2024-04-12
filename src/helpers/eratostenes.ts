@@ -42,7 +42,7 @@ function primesToExcel(LIMIT: number) {
     // in dev we get the files from assets, it just imply a re run cause assets are static
   }
   else if (env == "production"){
-    root = "./files"
+    root = "./files/"
     // In production we serve the files separately in a nginx serve block
   }
 
