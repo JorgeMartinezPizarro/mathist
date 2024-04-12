@@ -46,6 +46,8 @@ const SerieDifferences = () => {
         <TextField
           value={value}
           label="Number"
+          name="number"
+          id="number"
           onChange={event => {
             setValue(event.target.value)
             setNumber([])
