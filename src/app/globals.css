@@ -109,7 +109,7 @@ a {
 
 .item {
   font-family: Arial;
-  color: white;
+  color: white!important;
   font-size: 18pt;
   text-transform: capitalize;
   text-decoration: none;
@@ -129,7 +129,7 @@ a {
 
 .subtitle {
   font-family: Arial;
-  color: white;
+  color: white!important;
   font-size: 22pt;
   text-transform: capitalize;
   text-decoration: underline!important;
