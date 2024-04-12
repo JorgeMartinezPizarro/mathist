@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 
 const Home = () => {
-    //redirect("/home");
+    redirect("/sieve");
 }
 
 export default Home;
