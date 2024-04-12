@@ -45,7 +45,8 @@ function primesToExcel(LIMIT: number) {
   console.log("Sieved in " + duration(getTimeMicro() - e) + ", start writting primes to file")
   e = getTimeMicro()
   
-  // write primes in sieve to a CSV file
+  // Create the file
+  
   fs.writeFileSync(path, "")
 
   if (sieve.length === 0) {
@@ -76,6 +77,15 @@ function primesToExcel(LIMIT: number) {
     }
   }
 
+  console.log("\nGranting read and write access to user"); 
+  fs.chmod(path, 0o777, () => { 
+    console.log("Trying to write to file"); 
+    fs.writeFileSync('example.txt', "This file has now been edited."); 
+  
+    console.log("\nReading the file contents"); 
+    console.log(fs.readFileSync("example.txt", 'utf8')); 
+  }); 
+  
   var stats = fs.statSync(path);
   var fileSizeInBytes = stats.size;
 
