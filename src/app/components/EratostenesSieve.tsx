@@ -133,7 +133,7 @@ const EratostenesSieve = () => {
                 })}
             />
             <Button disabled={loading} onClick={generateSieve} variant="contained">GENERATE</Button>
-            <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
+            <Button disabled={true /*loading*/} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
             {loading && <CircularProgress />}
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
