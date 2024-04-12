@@ -19,6 +19,8 @@ npm run build
 npm run start
 ```
 
+Running in production will fail the `sieve` to `DOWNLOAD`, `public/files` generated on the fly. Needed an additional strategy. I solved it with a httpd docker.
+
 Open [localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Docker
