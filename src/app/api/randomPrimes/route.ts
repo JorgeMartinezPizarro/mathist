@@ -8,8 +8,8 @@ export async function GET(request: Request) {
   
   try {
     const { searchParams } = new URL(request.url||"".toString())
-    const LIMIT = parseInt(searchParams.get('length') || "NaN")
-    const amount = parseInt(searchParams.get('amount') || "NaN");
+    const LIMIT: number = parseInt(searchParams.get('length') || "NaN")
+    const amount: number = parseInt(searchParams.get('amount') || "NaN");
     
     if (isNaN(LIMIT) || isNaN(amount)) {
       throw new Error("Invalid parameters length = " + LIMIT + ", amount = " + amount)
