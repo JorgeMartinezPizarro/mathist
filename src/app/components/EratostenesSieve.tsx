@@ -42,7 +42,7 @@ const EratostenesSieve = () => {
                 throw new Error(error.toString())
             }
             const link = document.createElement("a");
-            link.href = "/" + filename;
+            link.href = "/files/" + filename;
             link.download = "primes-to-" + limit.toString() + ".csv";
             document.body.appendChild(link);
             link.click();        
