@@ -11,11 +11,11 @@ export async function GET(request: Request) {
     const LIMIT = parseInt(searchParams.get('length') || "NaN")
     const amount = parseInt(searchParams.get('amount') || "NaN");
     
-    if (amount > 500) {
+    if (amount > 100) {
       throw new Error("Too much numbers!")
     }
 
-    if (LIMIT > 400) {
+    if (LIMIT > 300) {
       throw new Error("Too long numbers!")
     }
 

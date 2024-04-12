@@ -88,7 +88,7 @@ interface Factor {
 const factor = function(n: bigint): Factor {
 
     // Check 2 probabilistic tests, miller-rabin and Strengthening the Baillie-PSW primality test
-    if (n > 10**12 && isMillerRabinProbablePrime(n, 100) && isBaillieProbablePrime(n)) return {
+    if (n > 10**12 && isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) return {
         factor: n, 
         message: "",
     }
