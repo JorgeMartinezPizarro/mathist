@@ -12,7 +12,6 @@ import PitagoreanTree from "@/app/components/PitagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratostenesSieve from "@/app/components/EratostenesSieve";
 import { notFound } from 'next/navigation'
-import ErrorBoundary from '@/app/components/ErrorBoundary';
 
 const Page = ({ params }: { params: { slug: string } }) => {
   
@@ -36,7 +35,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
     setOpen(newOpen);
   };
 
-  return <ErrorBoundary>
+  return <>
     <div className="header">
       <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><MenuIcon/></Button>
       <span className="title">{currentElement?.name}</span>
@@ -64,7 +63,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
     <div className="main">
       {currentElement?.component}
     </div>
-  </ErrorBoundary>
+  </>
 }
 
 export default Page;

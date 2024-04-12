@@ -26,14 +26,14 @@ const EratostenesSieve = () => {
     const [error, setError] = useState<string|boolean>(false)
 
     const downloadCSV = async () => {
-        const limit = parseInt(value)
-        setError(false)
-        setLoading(true)
-        setDuration(0)
-        setPrimes([])
-        setLength(0)
-        setDurationFull(0)
         try {
+            const limit = parseInt(value)
+            setError(false)
+            setLoading(true)
+            setDuration(0)
+            setPrimes([])
+            setLength(0)
+            setDurationFull(0)
             const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
             const promise = await fetch(url)
             const response = await promise.json()
@@ -42,9 +42,7 @@ const EratostenesSieve = () => {
                 throw new Error(error.toString())
             }
             const link = document.createElement("a");
-            
             link.href = "/files/" + filename;
-                        
             link.download = "primes-to-" + limit.toString() + ".csv";
             document.body.appendChild(link);
             link.click();        
@@ -66,21 +64,19 @@ const EratostenesSieve = () => {
     };
 
     const generateSieve = async () => {
-        const url = "/api/primes?LIMIT="+value.toString()
-        setLoading(true)
-        setError(false)
-        setPrimes([])
-        setLength(0)
-        setDurationFull(0)
         try {
+            const url = "/api/primes?LIMIT="+value.toString()
+            setLoading(true)
+            setError(false)
+            setPrimes([])
+            setLength(0)
+            setDurationFull(0)
             const promise = await fetch(url)
             const response = await promise.json()
             const {primes, time, length, error} = response
-            
             if (error) {
                 throw new Error(error.toString())
             }
-
             setDuration(time)
             setLength(length)
             setLoading(false)
@@ -91,7 +87,7 @@ const EratostenesSieve = () => {
             if (error instanceof Error) message = error.message
             else message = String(error)
             if (message.indexOf("Failed to fetch") !== -1)
-                setError("Error generating excel, server disconnected")
+                setError("Error generating sieve, server disconnected")
             else 
                 setError(message.replaceAll("Error: ", ""))
             setLength(0)
