@@ -5,6 +5,7 @@ import id from '@/helpers/id';
 import getTimeMicro from "./getTimeMicro";
 import duration from "./duration";
 import { FALSE_BIG_PRIME } from "./Constants";
+import string from "./string";
 
 // The random generator
 // Inspired in https://bigprimes.org/how-it-works
@@ -13,7 +14,11 @@ const randomPrimes = (length: number, amount: number) => {
 
     const start = getTimeMicro();
 
-    console.log(isPrime(bignumber(FALSE_BIG_PRIME.toString())))
+    const a = isPrime(bignumber(FALSE_BIG_PRIME.toString())) ? "is prime" : "is not prime"
+
+    const b = isMillerRabinProbablePrime(FALSE_BIG_PRIME) && isBaillieProbablePrime(FALSE_BIG_PRIME) ? "passed the tests" : " failed the tests"
+    
+    console.log("The number " + string(FALSE_BIG_PRIME) + " " + a + " but " + b)
     
     let elapsed = getTimeMicro();
     let countFailedAttemps = 0
@@ -31,7 +36,7 @@ const randomPrimes = (length: number, amount: number) => {
         }
     }
 
-    console.log("Failed attemps " + countFailedAttemps + ", now checking primality by the hard way")
+    console.log("Failed attemps " + countFailedAttemps + ", now check with another primality test")
     elapsed = getTimeMicro();
     
     primes.forEach(prime => {
