@@ -39,8 +39,10 @@ export default function factors(n: bigint ): Factorization {
             }
         }
         m = m / f.factor
-        f = factor(m)
+        console.log(f)
+        f = factor(m)        
     }
+    console.log(f)
 
     return {
         factors,
@@ -84,77 +86,59 @@ interface Factor {
     message: string;
 }
 
-// Divide by 2, 3 5 and then iterate over mod 30
-const factor = function(n: bigint): Factor {
+// Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
 
-    // Check 2 probabilistic tests, miller-rabin and Strengthening the Baillie-PSW primality test
-    if (n > 10**12 && isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) return {
-        factor: n, 
-        message: "",
+const factor = function(n: bigint): Factor {
+    if (n > 10**10 && isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
+        return {
+            factor: n, 
+            message: "",
+        }
     }
-    else if (n==zero) return {
-        factor: BigInt(0),
-        message: "",
-    }  
-    else if (n%one || n*n<2) return {
-        factor: BigInt(1),
-        message: "",
-    }  
-    else if (n%two==zero) return {
-        factor: BigInt(2),
-        message: "",
-    }  
-    else if (n%three==zero) return {
-        factor: BigInt(3),
-        message: "",
-    }  
-    else if (n%BigInt(5)==zero) return {
-        factor: BigInt(5),
-        message: "",
-    }  
-    var m: bigint = sqrt(n);
-    for (var i: bigint=BigInt(7);i<=m;i+=BigInt(30)) {
-     if (i > MAX_COMPUTATION_FACTORS) {
-      return {
-        factor: n,
-        message:"Factor " + n + " is not prime"
-      }
-     } 
-     if (n%i==zero) return {
-        factor: i,
-        message: "",
-     };
-     else if (n%(i+BigInt(4))==zero) return {
-        factor: i+BigInt(4),
-        message: "",
-     }
-     else if (n%(i+BigInt(6))==zero) return {
-        factor: i+BigInt(6),
-        message: "",
-     }
-     else if (n%(i+BigInt(10))==zero) return {
-        factor: i+BigInt(10),
-        message: "",
-     }
-     else if (n%(i+BigInt(12))==zero) return {
-        factor: i+BigInt(12),
-        message: "",
-     }
-     else if (n%(i+BigInt(16))==zero) return {
-        factor: i+BigInt(16),
-        message: "",
-     }
-     else if (n%(i+BigInt(22))==zero) return {
-        factor: i+BigInt(22),
-        message: "",
-     }
-     else if (n%(i+BigInt(24))==zero) return {
-        factor: i+BigInt(24),
-        message: "",
-     }
+
+    const ringSize = BigInt(210)
+
+    const initialPrime = BigInt(11)
+
+    const dividers = [
+        0, 2, 6, 8, 12, 18, 20, 26, 30, 32, 36, 42, 48, 50, 56, 60, 62, 68, 72,
+        78, 86, 90, 92, 96, 98, 102, 110, 116, 120, 126, 128, 132, 138, 140, 146,
+        152, 156, 158, 162, 168, 170, 176, 180, 182, 186, 188, 198, 200
+    ].map(n => BigInt(n));
+
+    const firstPrimes = [
+        2, 3, 5, 7
+    ].map(n => BigInt(n));
+
+    const noFactors = [ 
+        0, 1
+    ].map(n => BigInt(n));
+
+    const x: bigint = n
+    
+    for (var i = 0; i < firstPrimes.length; i++) {
+        if (x % firstPrimes[i] === zero) return {factor: firstPrimes[i], message: ""};
+    }
+    
+    const m = sqrt(n);
+    for (let i: bigint = initialPrime; i <= m; i += ringSize) {
+        if (i > MAX_COMPUTATION_FACTORS) {
+            return {
+                factor: n,
+                message:"Factor " + n + " is not prime"
+            }
+        }
+        for (const a of dividers) {
+            if (x % (i + a) === zero) {
+                return {
+                    factor: i + a,
+                    message: ""
+                }
+            }
+        }
     }
     return {
         factor: n,
         message: ""
-   }
+    };
 }

@@ -3,6 +3,7 @@ import Bits from "./Bits";
 // Enhanced eratosthenes sieve starting with only odd numbers
 // it works for 100m in 500ms, for 1b in 8s, 4b in 32s, 8b 1m, 100b in 44m.
 // beyond it, there is no way to allocate the sieve in RAM
+// TODO: try removing multiples of 2, 3, 5 and 7 like in factors
 export default function sieve(lastNumber: number) {
     
   if (lastNumber === 2) {
