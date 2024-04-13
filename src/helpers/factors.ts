@@ -1,5 +1,3 @@
-// https://golb.hplar.ch/2018/09/javascript-bigint.html
-// export { rand, isProbablePrime, probablePrime, nextProbablePrime, nextProbablePrimeBit, safePrimeRandom, safePrimeBit }
 import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "./primalyTests"
 import getTimeMicro from '@/helpers/getTimeMicro';
 import id from '@/helpers/id';
