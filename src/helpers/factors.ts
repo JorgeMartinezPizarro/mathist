@@ -53,17 +53,21 @@ function sqrt(value: bigint): bigint {
     if (value < zero) {
         throw 'square root of negative numbers is not supported'
     }
-    if (value === one) {
-        return one;
+    // The method give incorrect values for small numbers, so check it separately
+    if ([zero, one].includes(value))  {
+        return value;
     }
     if (value < two * two) {
         return one;
     }
-    if (value > two**two && value < three * three) {
+    if (value < three * three) {
         return two;
     }
-    if (value > three * three && value <  BigInt(16)) {
+    if (value <  BigInt(16)) {
         return three;
+    }
+    if (value < BigInt(25)) {
+        return BigInt(4);
     }
     
     function newtonIteration(n: bigint, x0: bigint): bigint {
@@ -89,10 +93,7 @@ interface Factor {
     message: string;
 }
 
-
-
 const randomFactor = function(n: bigint): Factor {
-    
     console.log("////////////////////////////")
     console.log("Random factor of " + n)
     const m: bigint = sqrt(n)
