@@ -5,7 +5,7 @@ const About = () => {
         <hr/>
         <p>This website code can be found <a href="https://github.com/JorgeMartinezPizarro/mathist">in github</a>.</p>
         <hr/>
-        <p>The primes page is inspired by <a href="https://bigprimes.org/">https://bigprimes.org/</a>. As they do, we test primes and generate them using the Baillie-PSW and the Miller-Rabin primaly tests.</p>
+        <p>The primes page is inspired by <a href="https://bigprimes.org/">https://bigprimes.org/</a>. As they do, we test primes and generate them using the <a href="https://github.com/Harxxki/strengthened-baillie-psw">Strengthened Baillie-PSW</a> and the <a href="https://gist.github.com/JeffML/424a448f1c10d85e10de000420fa1b8d">Miller-Rabin</a> primaly tests.</p>
         <hr/>
         <p>The Tree and Series page are inspired by <a href="https://www.youtube.com/c/Mathologer">the Mathologer.</a></p>
         <hr/>
