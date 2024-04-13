@@ -16,11 +16,11 @@ const randomPrimes = (length: number, amount: number) => {
 
     // FALSE_BIG_PRIME is a coincidence!
     
-    const a = isPrime(bignumber(FALSE_BIG_PRIME.toString())) ? "is prime" : "is not prime"
+    /*const a = isPrime(bignumber(FALSE_BIG_PRIME.toString())) ? "is prime" : "is not prime"
 
     const b = isMillerRabinProbablePrime(FALSE_BIG_PRIME) && isBaillieProbablePrime(FALSE_BIG_PRIME) ? "passed the tests" : "did not pass the tests"
     
-    console.log("The number " + string(FALSE_BIG_PRIME) + " " + a + " but " + b)
+    console.log("The number " + string(FALSE_BIG_PRIME) + " " + a + " but " + b, " took " + duration(getTimeMicro() - start))*/
     
     let elapsed = getTimeMicro();
     let countFailedAttemps = 0
@@ -29,8 +29,9 @@ const randomPrimes = (length: number, amount: number) => {
     while (primes.length < amount) {
         const string: string = id(length)
         const number: bigint = BigInt(string)
-        // Check the baillie test only if the number did not start with 0
-        if (string[0] !== "0" && string[length-1] !== "2" && string[length-1] !== "4" && string[length-1] !== "6" && string[length-1] !== "8" && string[length-1] !== "0" && isBaillieProbablePrime(number)) {
+        // Check the baillie test only if the number did not start with 0 or is even
+        const firstCheck = (number: bigint) => number > 1000 ? isBaillieProbablePrime(number) : isPrime(parseInt(number.toString()))
+        if (string[0] !== "0" && firstCheck(number)) {
             primes.push(number)
         }
         else {
