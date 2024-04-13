@@ -138,7 +138,7 @@ const randomFactor = function(n: bigint): Factor {
 
 // Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
 
-const factor = function(n: bigint): Factor {
+export const factor = function(n: bigint): Factor {
     if (n > 10**10 && isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
         return {
             factor: n, 

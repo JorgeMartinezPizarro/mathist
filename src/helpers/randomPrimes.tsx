@@ -1,6 +1,6 @@
-import { isPrime } from "mathjs";
 
-import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "./primalyTests"
+
+import { isMillerRabinProbablePrime, isBaillieProbablePrime, isPrimeForSure } from "./primalyTests"
 import id from '@/helpers/id';
 import getTimeMicro from "./getTimeMicro";
 import duration from "./duration";
@@ -14,7 +14,7 @@ const randomPrimes = (length: number, amount: number) => {
     let countFailedAttemps = 0
     // Generate really big primes, above 300 digits it takes long!
     const primes: bigint[] = []
-    const firstCheck = (number: bigint) => number > BigInt(1000) ? isBaillieProbablePrime(number) : isPrime(parseInt(number.toString()))
+    const firstCheck = (number: bigint) => number > BigInt(10**6) ? isBaillieProbablePrime(number) : isPrimeForSure(parseInt(number.toString()))
     while (primes.length < amount) {
         const string: string = id(length)
         const number: bigint = BigInt(string)

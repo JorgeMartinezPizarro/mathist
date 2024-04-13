@@ -1,5 +1,5 @@
 import { isProbablePrime as isBaillieProbablePrime } from "s-bpsw"
-import { bignumber } from "mathjs"
+import { isPrime } from "mathjs";
 
 // Javascript program Miller-Rabin primality test
 // based on JavaScript code found at https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin/
@@ -89,6 +89,7 @@ function miillerTest(d, n)
 // input parameter that determines
 // accuracy level. Higher value of
 // k indicates more accuracy.
+// It works well for big numbers
 function isMillerRabinProbablePrime( n, k=7)
 {
 	// (JML- all literal integers converted to use n suffix denoting BigInt)
@@ -110,9 +111,13 @@ function isMillerRabinProbablePrime( n, k=7)
 	return true;
 }
 
+// It works only for numbers, BigInt is too much for a deterministic check
 function isPrimeForSure(n) {
 	// TODO: brute force. All libraries fail for big numbers, aka 100 digits. Look for a suitable solution.
-	return false;
+	if (n > MAX_SAFE_INTEGER) {
+		throw new Error("invalid length, isPrimeForSure works only with values below " + MAX_SAFE_INTEGER)
+	}
+	return isPrime(n)
 }
 
 export { isPrimeForSure, isMillerRabinProbablePrime, isBaillieProbablePrime }
