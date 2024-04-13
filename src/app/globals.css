@@ -47,7 +47,7 @@ li {
 }
 
 button, button:disabled {
-  margin: 8px!important;
+  margin: 16px 8px!important;
 }
 .MuiAutocomplete-root {
   margin: 0 auto;
@@ -61,6 +61,7 @@ button, button:disabled {
 
 .MuiInputBase-root  {
   min-width: 165px;
+  margin: 8px!important;
 }
 
 .drawer {

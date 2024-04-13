@@ -12,6 +12,7 @@ import PitagoreanTree from "@/app/components/PitagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratostenesSieve from "@/app/components/EratostenesSieve";
 import { notFound } from 'next/navigation'
+import RandomPrimes from '../components/RandomPrimes';
 
 const Page = ({ params }: { params: { slug: string } }) => {
   
@@ -20,6 +21,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
     {name: "tree", component: <PitagoreanTree/>},
     {name: "factors", component: <PrimeFactorization/>},
     {name: "series", component: <SerieDifferences/>},
+    {name: "primes", component: <RandomPrimes/>},
     {name: "about", component: <About/>},
   ]
 

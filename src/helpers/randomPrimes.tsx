@@ -5,9 +5,16 @@ import id from '@/helpers/id';
 import getTimeMicro from "./getTimeMicro";
 import duration from "./duration";
 
+export interface RandomPrimesReport {
+    primes: bigint[];
+    time: number;
+    length: number;
+    amount: number;
+  }
+
 // The random generator
 // Inspired in https://bigprimes.org/how-it-works
-const randomPrimes = (length: number, amount: number) => {
+const randomPrimes = (length: number, amount: number): RandomPrimesReport => {
     
     const start = getTimeMicro();
     let elapsed = getTimeMicro();

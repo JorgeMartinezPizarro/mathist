@@ -3,7 +3,6 @@ import randomPrimes from '@/helpers/randomPrimes'
 
 export async function GET(request: Request) {
   
-  
   try {
     const { searchParams } = new URL(request.url||"".toString())
     const LIMIT: number = parseInt(searchParams.get('length') || "NaN")

@@ -15,7 +15,9 @@ export default function factors(n: bigint ): Factorization {
     if (n === one || n === zero) {
         return {
             message: "0 and 1 are special numbers, no primes.",
-            factors: [n],
+            factors: [
+                { prime: n, exponent: 1 }
+            ],
             time: getTimeMicro()-start,
         }
     } 
@@ -23,11 +25,19 @@ export default function factors(n: bigint ): Factorization {
         throw new Error("It works only with positive integers!")
     }
 
-    const factors: bigint[] = []
+    const factors: PrimePower[] = []
     let m = n
     let f: Factor = factor(n)
     while (f.factor > one) {
-        factors.push(f.factor)
+        if (factors.length > 0 && factors.slice(-1)[0].prime === f.factor) {
+            factors[factors.length - 1].exponent++
+        } else {
+            factors.push({
+                prime: f.factor,
+                exponent: 1,
+            })
+        }
+        
         if (f.message !== "") {
             return {
                 factors,
@@ -38,7 +48,7 @@ export default function factors(n: bigint ): Factorization {
         m = m / f.factor
         f = factor(m)
     }
-    console.log(f)
+    console.log(factors)
 
     return {
         factors,
@@ -81,9 +91,14 @@ function sqrt(value: bigint): bigint {
     return newtonIteration(value, one);
 }
 
+export interface PrimePower {
+    prime: bigint;
+    exponent: number;
+}
+
 interface Factorization {
 
-    factors: bigint[];
+    factors: PrimePower[];
     message: string;
     time: number;
 }

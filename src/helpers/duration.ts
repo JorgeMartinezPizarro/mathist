@@ -13,7 +13,7 @@ export default function duration(microseconds: number) {
         return Math.floor(microseconds  / minute) + " m " + Math.floor((microseconds - Math.floor(microseconds  / minute) * minute) / second) + " s";
     } else if (microseconds > second) {
         // seconds
-        return Math.floor(microseconds / second) + " s"
+        return Math.floor(microseconds / second) + " s "  + Math.floor((microseconds - Math.floor(microseconds  / second) * second) / millisecond) + " ms";
     } else if (microseconds > millisecond) {
         // milliseconds
         return Math.floor(microseconds / millisecond) + " ms"

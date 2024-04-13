@@ -7,7 +7,7 @@ import toHuman from "@/helpers/toHuman";
 import eratosthenes from "@/helpers/sieve";
 import id from "@/helpers/id";
 
-export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false) {
+export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
   
   if (excel) {
     return primesToExcel(LIMIT)
@@ -16,7 +16,7 @@ export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_
 }
 
 // Create excel file with primes up to LIMIT
-function primesToExcel(LIMIT: number) {
+function primesToExcel(LIMIT: number): SieveReport {
 
   console.log("//////////////////////////////////////////////////////////////////////////////////////////")
   console.log("Requesting excel file primes-to-" + LIMIT + ".csv")
@@ -81,15 +81,6 @@ function primesToExcel(LIMIT: number) {
     }
   }
 
-  console.log("\nGranting read and write access to user"); 
-  fs.chmod(path, 0o777, () => { 
-    console.log("Trying to write to file"); 
-    fs.writeFileSync('example.txt', "This file has now been edited."); 
-  
-    console.log("\nReading the file contents"); 
-    console.log(fs.readFileSync("example.txt", 'utf8')); 
-  }); 
-  
   var stats = fs.statSync(path);
   var fileSizeInBytes = stats.size;
 
@@ -100,7 +91,7 @@ function primesToExcel(LIMIT: number) {
 }
 
 // Count primes and return count and last amount primes
-function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
+function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
   const elapsed = getTimeMicro()
 
   if (isNaN(lastNumber)) {
@@ -165,5 +156,12 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE) {
 
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
 
-  return {primes: arrayOfPrimes.reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes};
+  return {filename: "", primes: arrayOfPrimes.reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes};
+}
+
+export interface SieveReport {
+  filename: string;
+  primes: bigint[];
+  time: number;
+  length: number;
 }

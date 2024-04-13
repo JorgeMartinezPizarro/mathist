@@ -2,12 +2,12 @@
 
 import { Button, CircularProgress, TextField, Alert, FormGroup } from "@mui/material"
 import { useState } from "react"
+import Image from "next/image";
 
 import {default as d} from "@/helpers/duration"
 import string from "@/helpers/string";
 import {MAX_ALLOCATABLE_MATRIX_30GB, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
 import toHuman from "@/helpers/toHuman";
-import Image from "next/image";
 
 const EratostenesSieve = () => {
 
@@ -28,13 +28,13 @@ const EratostenesSieve = () => {
     const downloadCSV = async () => {
         try {
             const limit = parseInt(value)
+            const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
             setError(false)
             setLoading(true)
             setDuration(0)
             setPrimes([])
             setLength(0)
-            setDurationFull(0)
-            const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
+            setDurationFull(0)            
             const promise = await fetch(url)
             const response = await promise.json()
             const {filename, time, error, length: l} = response
@@ -94,7 +94,7 @@ const EratostenesSieve = () => {
             setPrimes([])
         }
     }
-
+    
     return <>
         <p><Image src="/image6.png" priority={true} height={100} width={100} alt=""/></p>
         <hr/>
@@ -147,7 +147,7 @@ const EratostenesSieve = () => {
             <hr/>
             <p>Last teen primes of the sieve:</p>
             <hr/>
-            <p>[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>         
+            <p className="inline-grid">[{primes.map((prime: number) => string(BigInt(prime))).join(", ")}]</p>         
         </>)}
         {(!error && duration > 0 && !length && !loading) && <>
             <hr/>

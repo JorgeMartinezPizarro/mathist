@@ -5,10 +5,13 @@ import {default as d} from "@/helpers/duration"
 import { TextField, Button, CircularProgress, Alert, FormGroup } from "@mui/material"
 import { useCallback, useState } from "react"
 import { MAX_COMPUTATION_FACTORS, MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
+import { PrimePower } from "@/helpers/factors"
 
 const PrimeFactorization = () => {
 
-    const [number, setNumber] = useState<bigint[]>([BigInt(2)])
+    const [number, setNumber] = useState<PrimePower[]>([
+        { prime: BigInt(2), exponent: 1 }
+    ])
 
     const [value, setValue] = useState<string>("2")
 
@@ -86,9 +89,9 @@ const PrimeFactorization = () => {
                     {number.map((n, id) => {
                         let response = [];
                         if (message.includes("Factor " + n.toString() + " is not prime"))
-                            response.push(<span key={id} style={{color: "red"}}>{string(n)}</span>)
+                            response.push(<span key={id} style={{color: "red"}}>{string(n.prime)}{n.exponent > 1 ? ("**" + n.exponent) : ""}</span>)
                         else
-                            response.push(<span key={id}>{string(n)}</span>)
+                            response.push(<span key={id}>{string(n.prime)}{n.exponent > 1 ? ("**" + n.exponent) : ""}</span>)
                         if (id < number.length - 1)
                             response.push(<span key={id + " delimiter"}>&nbsp;*&nbsp;</span>)
                         return response

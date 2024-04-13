@@ -115,7 +115,7 @@ function isMillerRabinProbablePrime( n, k=7)
 function isPrimeForSure(n) {
 	// TODO: brute force. All libraries fail for big numbers, aka 100 digits. Look for a suitable solution.
 	if (n > MAX_SAFE_INTEGER) {
-		throw new Error("invalid length, isPrimeForSure works only with values below " + MAX_SAFE_INTEGER)
+		throw new Error("Invalid length, isPrimeForSure works only with values below " + MAX_SAFE_INTEGER)
 	}
 	return isPrime(n)
 }
