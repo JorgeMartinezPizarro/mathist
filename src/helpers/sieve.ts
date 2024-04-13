@@ -1,9 +1,18 @@
 import Bits from "./Bits";
 
-// Enhanced eratosthenes sieve starting with only odd numbers
-// it works for 100m in 500ms, for 1b in 8s, 4b in 32s, 8b 1m, 100b in 44m.
-// beyond it, there is no way to allocate the sieve in RAM
-// TODO: try removing multiples of 2, 3, 5 and 7 like in factors
+// Enhanced eratosthenes sieve with odd numbers
+//
+// Tested with values:
+//
+//  amount  time  RAM
+//  =====   ===== ====
+//  100m    500ms 5MB 
+//  1b      10s   64MB
+//  100b    50m   6GB 
+//  500b    10h   30GB
+//
+// Beyond 535b it will throw an error.
+// If your node has no enough memory it will throw an error earlier.
 export default function sieve(lastNumber: number) {
     
   if (lastNumber === 2) {
