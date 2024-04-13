@@ -13,14 +13,14 @@ import Bits from "./Bits";
 //
 // Beyond 535b it will throw an error.
 // If your node has no enough memory it will throw an error earlier.
-export default function sieve(lastNumber: number) {
+//
+export default function sieve(lastNumber: number): Bits {
     
   if (lastNumber === 2) {
     return new Bits(0)
   }
 
   try {
-      
       // Initialization
       const memorySize = Math.round(lastNumber / 2);
       const sieve = new Bits(memorySize);
@@ -44,5 +44,4 @@ export default function sieve(lastNumber: number) {
     console.log(text)
     throw new Error(text);
   }
-
 }
