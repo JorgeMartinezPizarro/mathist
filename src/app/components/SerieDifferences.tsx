@@ -5,10 +5,11 @@ import { CircularProgress, TextField, Button, FormGroup, Alert, Select, MenuItem
 
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 import string from "@/helpers/string"
+import NumberToString from "@/helpers/NumberToString"
 
 const SerieDifferences = () => {
   
-  const [number, setNumber] = useState<BigInt[][]>([])
+  const [number, setNumber] = useState<bigint[][]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>("")
   const [value, setValue] = useState<string>("integer")
@@ -92,7 +93,7 @@ const SerieDifferences = () => {
                 return false
               }).map((row, i) => 
                 <tr key={JSON.stringify(row)}>{row.slice(0, MAX_SERIES_DIFFERENCES_SIZE).map((nr, j) => 
-                  <td className={i === j ? "diagonal" : ""} key={j}>{string(BigInt(nr.toString()))}</td>
+                  <td className={i === j ? "diagonal" : ""} key={j}><NumberToString number={nr} /></td>
                 )}</tr>
               )}
             </tbody>

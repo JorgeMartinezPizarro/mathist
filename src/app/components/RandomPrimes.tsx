@@ -1,4 +1,5 @@
 import { MAX_DIGITS_PRIMALY_TEST } from "@/helpers/Constants";
+import NumberToString from "@/helpers/NumberToString";
 import duration from "@/helpers/duration";
 import { RandomPrimesReport } from "@/helpers/randomPrimes";
 import { Alert, Button, CircularProgress, FormGroup, TextField } from "@mui/material";
@@ -15,6 +16,7 @@ const initialRandomPrimes = {
 const RandomPrimes = () => {
 
     const [loading, setLoading] = useState(false)
+    const [loadingTest, setLoadingTest] = useState(false)
     const [randomPrimes, setRandomPrimes] = useState<RandomPrimesReport>(initialRandomPrimes)
     const [length, setLength] = useState(60)
     const [testTime, setTestTime] = useState(0)
@@ -29,7 +31,7 @@ const RandomPrimes = () => {
             setErrorTest("")
             setTestTime(0)
             setIsPrime(false)
-            setLoading(true)
+            setLoadingTest(true)
             const options = {
                 method: "POST",
                 headers: {
@@ -46,7 +48,7 @@ const RandomPrimes = () => {
             }
             setIsPrime(response.isPrime)
             setTestTime(response.time)
-            setLoading(false)
+            setLoadingTest(false)
         } catch (error) {
             setLoading(false)
             let message
@@ -99,8 +101,8 @@ const RandomPrimes = () => {
                         }
                 })}
             />
-            <Button disabled={loading} onClick={handleTestIfPrime} variant="contained">GENERATE</Button>
-            {loading && <CircularProgress/>}
+            <Button disabled={loadingTest} onClick={handleTestIfPrime} variant="contained">GENERATE</Button>
+            {loadingTest && <CircularProgress/>}
         </FormGroup>
         {errorTest && <><hr/><Alert severity="error">{errorTest}</Alert></>}
         <hr/>
@@ -161,7 +163,7 @@ const RandomPrimes = () => {
                 <div key={prime + "-container"}>
                     <hr key={prime + "-divider"}/>
                     <p className="inline-grid" key={prime+"-paragraph"}>
-                        <span key={prime + "-number"}>{prime.toString()}</span>
+                        <span key={prime + "-number"}><NumberToString number={prime}/></span>
                     </p>
                 </div>
             )}

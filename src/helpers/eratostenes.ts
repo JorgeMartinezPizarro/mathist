@@ -156,7 +156,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
 
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
 
-  return {filename: "", primes: arrayOfPrimes.reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes};
+  return {filename: "", primes: arrayOfPrimes.slice(0, amount).reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes};
 }
 
 export interface SieveReport {
