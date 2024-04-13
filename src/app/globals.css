@@ -15,16 +15,22 @@ table tbody tr td {
   padding: 4px;
 }
 
-table.pithagorean, table.pithagorean tbody tr td {
+table.pithagorean {
   width: 100%;
   border: none;
   border-collapse: collapse;
   table-layout: fixed;
+  max-width: 1000px;
 }
 
 table.pithagorean tbody tr td {
+  overflow: hidden;
   text-overflow: ellipsis;
-  padding: 8px;
+  padding: 2px;
+  max-width: 100%;
+  white-space: nowrap;
+  border: none;
+  border-collapse: collapse;
 }
 table tbody tr td span button {
   padding: 0;
@@ -37,13 +43,6 @@ table tbody tr td span button {
 .multiLine span {
   margin: 0!important;
   padding: 0!important;
-}
-.multiLine button {
-  display: inline!important;
-  margin: 0!important;
-  padding: 0!important;
-  height: 10px;
-  width: 10px;
 }
 
 .ellipsis {
@@ -90,7 +89,7 @@ button, button:disabled {
   position: absolute!important;
   left: 0!important;
   top: 0!important;
-
+  margin: 8px!important;
 }
 
 .MuiDrawer-root .MuiDrawer-paper {

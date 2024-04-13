@@ -122,7 +122,7 @@ const PitagoreanTree = () => {
                 <p>The fibonacci-like square generated:</p>
                 <hr />
                 <Grid container spacing={2}>
-                    {[0, 1].map(n => [0, 1].map(m => <Grid className="multiLine" item xs={6}>
+                    {[0, 1].map(n => [0, 1].map(m => <Grid key={n + "" + m} className="multiLine" item xs={6}>
                         <NumberToString number={triple.square[n][m]} />
                     </Grid>))}
                 </Grid>
@@ -133,7 +133,7 @@ const PitagoreanTree = () => {
                 <hr />
                 <Grid container spacing={2}>
                     {[0, 1, 2].map(n => {
-                        return <Grid className="multiLine" item xs={4}>
+                        return <Grid key={n} className="multiLine" item xs={4}>
                         <NumberToString number={triple.triple[n]} />
                     </Grid>
                     })}
