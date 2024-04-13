@@ -1,7 +1,7 @@
 const About = () => {
 
     return <>
-        <p>This website is a mathematic project related to integer numbers created a mathematician.</p>
+        <p>This website is a mathematic project related to integer numbers created by a mathematician.</p>
         <hr/>
         <p>This website code can be found <a href="https://github.com/JorgeMartinezPizarro/mathist">in github</a>.</p>
         <hr/>

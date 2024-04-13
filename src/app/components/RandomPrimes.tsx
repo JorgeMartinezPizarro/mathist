@@ -104,7 +104,7 @@ const RandomPrimes = () => {
         </FormGroup>
         {errorTest && <><hr/><Alert severity="error">{errorTest}</Alert></>}
         <hr/>
-        { testTime > 0 && !loading && <>
+        { testTime > 0 && <>
             <p>The number entered entered with {bigNumber.length} digits {isPrime ? "is probably prime" : "is not prime"}, it took {duration(testTime)}</p>
             <hr/>
         </>}
@@ -152,7 +152,7 @@ const RandomPrimes = () => {
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
 
-        {!error && !loading && randomPrimes.primes.length > 0 && <>
+        {!error && randomPrimes.primes.length > 0 && <>
             <hr key={"first-lane"}/>
             <p key={"second-lane"}>
                 Generated {amount} primes with {length} digits in {duration(randomPrimes.time)}

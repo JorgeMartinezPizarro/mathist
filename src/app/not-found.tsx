@@ -22,11 +22,12 @@ export default function Custom404() {
   };
 
   const elements = [
-    {name: "sieve", component: <EratostenesSieve/>},
-    {name: "tree", component: <PitagoreanTree/>},
-    {name: "factors", component: <PrimeFactorization/>},
-    {name: "series", component: <SerieDifferences/>},
-    {name: "about", component: <About/>},
+    {name: "sieve"},
+    {name: "tree"},
+    {name: "factors"},
+    {name: "series"},
+    {name: "primes"},
+    {name: "about"},
   ]
 
   return <div>
