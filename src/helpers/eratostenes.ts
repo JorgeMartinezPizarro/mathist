@@ -119,14 +119,14 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
     console.log("Sieved in " + duration(10) + ", now count and generate " + amount + " primes")
     console.log("Primes obtained and counted in " + duration(10))
     console.log("Total duration " +  duration(getTimeMicro() - elapsed))
-    return {primes: [BigInt(2)], time: getTimeMicro() - elapsed, length: 1, filename: ""}
+    return {primes: [2], time: getTimeMicro() - elapsed, length: 1, filename: ""}
   } 
   
   console.log("//////////////////////////////////////////////////////////////////////////////////////////")
   console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
   console.log("Let's sieve for less or equal than " + lastNumber)
   let memorySize = Math.round(lastNumber / 2);
-  let arrayOfPrimes = Array()  
+  let arrayOfPrimes: number[] = Array()  
   let count = 0
   let numberOfPrimes = 1
   let sieve = eratosthenes(lastNumber)
@@ -161,7 +161,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
 
 export interface SieveReport {
   filename: string;
-  primes: bigint[];
+  primes: number[]; // enough up to 10**17. Sieve cant get that long never!
   time: number;
   length: number;
 }
