@@ -1,4 +1,4 @@
-import { MAX_ALLOCATABLE_MATRIX_30GB, MAX_LENGTH_FOR_SIEVE_HEALTY } from '@/helpers/Constants'
+import { MAX_ALLOCATABLE_MATRIX_30GB, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY } from '@/helpers/Constants'
 import eratostenes from '@/helpers/eratostenes'
 import toHuman from '@/helpers/toHuman'
 
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url||"".toString())
     const LIMIT = parseInt(searchParams.get('LIMIT') || "x")
-    const amount = parseInt(searchParams.get('amount') || MAX_LENGTH_FOR_SIEVE_HEALTY.toString())
+    const amount = parseInt(searchParams.get('amount') || MAX_DISPLAY_SIEVE.toString())
     const excel = searchParams.get('excel') ? true : false;
     
     if (isNaN(amount) || isNaN(LIMIT)) {
