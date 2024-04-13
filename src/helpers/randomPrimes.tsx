@@ -14,9 +14,11 @@ const randomPrimes = (length: number, amount: number) => {
 
     const start = getTimeMicro();
 
+    // FALSE_BIG_PRIME is a coincidence!
+    
     const a = isPrime(bignumber(FALSE_BIG_PRIME.toString())) ? "is prime" : "is not prime"
 
-    const b = isMillerRabinProbablePrime(FALSE_BIG_PRIME) && isBaillieProbablePrime(FALSE_BIG_PRIME) ? "passed the tests" : " failed the tests"
+    const b = isMillerRabinProbablePrime(FALSE_BIG_PRIME) && isBaillieProbablePrime(FALSE_BIG_PRIME) ? "passed the tests" : "did not pass the tests"
     
     console.log("The number " + string(FALSE_BIG_PRIME) + " " + a + " but " + b)
     
@@ -28,7 +30,7 @@ const randomPrimes = (length: number, amount: number) => {
         const string: string = id(length)
         const number: bigint = BigInt(string)
         // Check the baillie test only if the number did not start with 0
-        if (string[0] !== "0" && isBaillieProbablePrime(number)) {
+        if (string[0] !== "0" && string[length-1] !== "2" && string[length-1] !== "4" && string[length-1] !== "6" && string[length-1] !== "8" && string[length-1] !== "0" && isBaillieProbablePrime(number)) {
             primes.push(number)
         }
         else {
@@ -36,11 +38,10 @@ const randomPrimes = (length: number, amount: number) => {
         }
     }
 
-    console.log("Failed attemps " + countFailedAttemps + ", now check with another primality test")
+    console.log("Failed attemps " + countFailedAttemps + " in " + duration(getTimeMicro() - elapsed) + ", now check with another primality test")
     elapsed = getTimeMicro();
     
     primes.forEach(prime => {
-        
         // Test with miller-rabin
         if (!isMillerRabinProbablePrime(prime)) {
             throw new Error("Invalid prime generated, what a bad luck!. Composite: " +  prime)
