@@ -110,7 +110,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
     console.log("Sieved in " + duration(10) + ", now count and generate " + amount + " primes")
     console.log("Primes obtained and counted in " + duration(10))
     console.log("Total duration " +  duration(getTimeMicro() - elapsed))
-    return {primes: [], time: getTimeMicro() - elapsed, length: 0}
+    return {primes: [], time: getTimeMicro() - elapsed, length: 0, filename: ""}
   }  
   if (lastNumber === 2) {
     console.log("//////////////////////////////////////////////////////////////////////////////////////////")
@@ -119,7 +119,7 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
     console.log("Sieved in " + duration(10) + ", now count and generate " + amount + " primes")
     console.log("Primes obtained and counted in " + duration(10))
     console.log("Total duration " +  duration(getTimeMicro() - elapsed))
-    return {primes: [[2]], time: getTimeMicro() - elapsed, length: 1}
+    return {primes: [BigInt(2)], time: getTimeMicro() - elapsed, length: 1, filename: ""}
   } 
   
   console.log("//////////////////////////////////////////////////////////////////////////////////////////")
