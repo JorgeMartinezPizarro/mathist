@@ -39,10 +39,16 @@ table tbody tr td span button {
 
 .multiLine {
   word-wrap: break-word;
+  line-height: 22px;
 }
 .multiLine span {
   margin: 0!important;
   padding: 0!important;
+}
+.multiLine button {
+  max-height: 32px;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .ellipsis {
@@ -115,6 +121,11 @@ a {
 }
 .main p {
   margin: 0 16px;
+  max-width: calc(100% - 48px);
+}
+.main div.MuiGrid-container {
+  margin: 0 16px;
+  max-width: calc(100% - 48px);
 }
 .icon {
   font-family: Arial;

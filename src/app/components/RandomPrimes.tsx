@@ -89,6 +89,7 @@ const RandomPrimes = () => {
                 label="Number"
                 type="string"
                 value={bigNumber}
+                disabled={loadingTest}
                 onChange={(event => {
                     // check it is base 3
                     const regex = new RegExp("[^0123456789$]");
@@ -101,7 +102,7 @@ const RandomPrimes = () => {
                         }
                 })}
             />
-            <Button disabled={loadingTest} onClick={handleTestIfPrime} variant="contained">GENERATE</Button>
+            <Button disabled={loadingTest} onClick={handleTestIfPrime} variant="contained">Test</Button>
             {loadingTest && <CircularProgress/>}
         </FormGroup>
         {errorTest && <><hr/><Alert severity="error">{errorTest}</Alert></>}

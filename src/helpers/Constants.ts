@@ -18,4 +18,4 @@ export const MAX_COMPUTATION_FACTORS = 2 ** 30;                     // Healthy l
 export const MAX_SERIES_DIFFERENCES_SIZE = 20;                      // Healthy size of the displayed number square
 export const MAX_DISPLAY_SIEVE = 10;                                // Healthy amount of primes displayed
 export const MAX_DIGITS_RANDOM_PRIMES = 600;                        // Healthy limit of few seconds generating the primes
-export const MAX_DIGITS_PRIMALY_TEST = 10000;                       // Healthy primaly test for less than a second
+export const MAX_DIGITS_PRIMALY_TEST = 5000;                        // Healthy primaly test for less than a second
