@@ -1,11 +1,9 @@
-// Here some ideas to extrapolate number operations to BigInt
 // https://golb.hplar.ch/2018/09/javascript-bigint.html
 // export { rand, isProbablePrime, probablePrime, nextProbablePrime, nextProbablePrimeBit, safePrimeRandom, safePrimeBit }
 import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "./primalyTests"
 import getTimeMicro from '@/helpers/getTimeMicro';
-
+import id from '@/helpers/id';
 import { MAX_COMPUTATION_FACTORS } from "@/helpers/Constants";
-import duration from "./duration";
 
 const zero: bigint = BigInt(0)
 const one: bigint = BigInt(1)
@@ -13,7 +11,7 @@ const two: bigint = BigInt(2)
 const three: bigint = BigInt(3)
 
 export default function factors(n: bigint ): Factorization {
-    console.log("/////////////////////////////////")
+    
     const start = getTimeMicro()
     
     if (n === one || n === zero) {
@@ -22,7 +20,8 @@ export default function factors(n: bigint ): Factorization {
             factors: [n],
             time: getTimeMicro()-start,
         }
-    } else if (n < zero) {
+    } 
+    else if (n < zero) {
         throw new Error("It works only with positive integers!")
     }
 
@@ -39,8 +38,7 @@ export default function factors(n: bigint ): Factorization {
             }
         }
         m = m / f.factor
-        console.log(f)
-        f = factor(m)        
+        f = factor(m)
     }
     console.log(f)
 
@@ -49,8 +47,6 @@ export default function factors(n: bigint ): Factorization {
         time: getTimeMicro() - start,
         message: ""
     }
-
-    
 }
 
 // How to get sqrt of a BigInt, found under the link below
@@ -59,10 +55,19 @@ function sqrt(value: bigint): bigint {
     if (value < zero) {
         throw 'square root of negative numbers is not supported'
     }
-    if (value < two) {
-        return value;
+    if (value === one) {
+        return one;
     }
-
+    if (value < two * two) {
+        return one;
+    }
+    if (value > two**two && value < three * three) {
+        return two;
+    }
+    if (value > three * three && value <  BigInt(16)) {
+        return three;
+    }
+    
     function newtonIteration(n: bigint, x0: bigint): bigint {
         const x1: bigint = n / x0 + x0 >> one;
         if (x0 === x1 || x0 === x1 - one) {
@@ -86,12 +91,66 @@ interface Factor {
     message: string;
 }
 
+
+
+const randomFactor = function(n: bigint): Factor {
+    
+    console.log("////////////////////////////")
+    console.log("Random factor of " + n)
+    const m: bigint = sqrt(n)
+    let count = 0;
+    const MAX = 10**3
+    if (isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
+        return {
+            factor: n,
+            message: ""
+        }
+    }
+    if ([zero, one, two, BigInt(3)].includes(n)) {
+        return {
+            factor: n,
+            message: "",
+        }
+    }
+    if (m === one) {
+        return {
+            factor: n,
+            message: "",
+        }
+    }
+    while (count < MAX) {
+        const randomPosibleDivisor: bigint = rand(m.toString().length)
+        
+        if (one < randomPosibleDivisor && randomPosibleDivisor <= m) {
+            if (n % randomPosibleDivisor === zero) {
+                return {
+                    factor: randomPosibleDivisor,
+                    message: "",
+                }
+            }
+            count++;
+        }
+    }
+
+    return {
+        factor: n,
+        message: "Max iterations 10**6, no divisors found",
+    }
+}
+
 // Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
 
 const factor = function(n: bigint): Factor {
     if (n > 10**10 && isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
         return {
             factor: n, 
+            message: "",
+        }
+    }
+
+    if ([zero, one].includes(n)) {
+        return {
+            factor: n,
             message: "",
         }
     }
@@ -108,10 +167,6 @@ const factor = function(n: bigint): Factor {
 
     const firstPrimes = [
         2, 3, 5, 7
-    ].map(n => BigInt(n));
-
-    const noFactors = [ 
-        0, 1
     ].map(n => BigInt(n));
 
     const x: bigint = n
@@ -141,4 +196,8 @@ const factor = function(n: bigint): Factor {
         factor: n,
         message: ""
     };
+}
+
+const rand = (length: number): bigint => {
+    return  BigInt(id(length))
 }

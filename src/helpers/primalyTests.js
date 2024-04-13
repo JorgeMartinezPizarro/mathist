@@ -1,6 +1,5 @@
 import { isProbablePrime as isBaillieProbablePrime } from "s-bpsw"
-import { isPrime } from "prime-lib"
-import { bignumber/*, isPrime*/ } from "mathjs"
+import { bignumber } from "mathjs"
 
 // Javascript program Miller-Rabin primality test
 // based on JavaScript code found at https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin/
@@ -113,7 +112,7 @@ function isMillerRabinProbablePrime( n, k=7)
 
 function isPrimeForSure(n) {
 	// TODO: brute force. All libraries fail for big numbers, aka 100 digits. Look for a suitable solution.
-	return isPrime(bignumber(n.toString()))
+	return false;
 }
 
 export { isPrimeForSure, isMillerRabinProbablePrime, isBaillieProbablePrime }
