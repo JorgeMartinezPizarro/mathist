@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const amount: number = parseInt(searchParams.get('amount') || MAX_DISPLAY_SIEVE.toString())
     const excel: boolean = searchParams.get('excel') ? true : false;
     const KEY: string = searchParams.get('KEY') || "";
-    const ENV: string = (process.env.MATHER_SECRET || "").trim();
+    const SECRET: string = (process.env.MATHER_SECRET || "").trim();
     
     if (isNaN(amount) || isNaN(LIMIT)) {
       return Response.json(
@@ -20,12 +20,10 @@ export async function GET(request: Request) {
       )
     }
     
-    console.log(JSON.stringify(process.env, null, 2));
-
     // USE ENV SECRET TO OVERCOME THE LIMITS
-    if (ENV !== KEY) {
+    if (SECRET !== KEY) {
       if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
-        // 1b Up to 64MB RAM 516MB disk, natural limit for the web, it takes 20s to compute.
+        // 1b Up to 64MB RAM 516MB disk, natural limit for the web, it takes 10s to compute.
         return Response.json(
           {error: "Max length " + MAX_LENGTH_FOR_SIEVE_HEALTY + ", " + toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16) + " RAM 515MB disk. For more ask the admin."}, 
           {status: 500}

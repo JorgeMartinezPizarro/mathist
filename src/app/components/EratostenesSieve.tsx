@@ -10,6 +10,7 @@ import toHuman from "@/helpers/toHuman";
 import NumberToLocale from "@/helpers/NumberToLocale";
 import NumberToString from "@/helpers/NumberToString";
 import Progress from "@/helpers/Progress";
+import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
 
 const EratostenesSieve = () => {
@@ -88,7 +89,7 @@ const EratostenesSieve = () => {
     return <>
         <p><Image src="/image6.png" priority={true} height={100} width={100} alt=""/></p>
         <hr/>
-        <p>Eratosthenes sieve of a given length, max is <NumberToString number={MAX_LENGTH_FOR_SIEVE_HEALTY}/> using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 20 seconds.</p>
+        <p>Eratosthenes sieve of a given length, max is <NumberToString number={MAX_LENGTH_FOR_SIEVE_HEALTY}/> using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 10 seconds.</p>
         <hr/>
         <p>Tested with <NumberToString number={MAX_ALLOCATABLE_MATRIX_30GB}/> using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 240GB of primes in around 12 hours, below some examples:</p>
         <hr/>
@@ -135,10 +136,10 @@ const EratostenesSieve = () => {
             <hr/>
             <p>Last <NumberToLocale number={primes.length} singular={"prime"} /> of the sieve:</p>
             <hr/>
-            <p className="inline-grid">[&nbsp;{primes.map((prime: number, index: number) => <>
-                <NumberToString number={prime} />
-                {index !== primes.length - 1 && <span>,&nbsp;</span>}
-            </>)}&nbsp;]</p>         
+            <p className="inline-grid">[&nbsp;{primes.map((prime: number, index: number) => <span key={prime}>
+                <span key={"number"}><NumberToString number={prime} /></span>
+                {index !== primes.length - 1 && <span key={"divider"}>,&nbsp;</span>}
+            </span>)}&nbsp;]</p>
         </>)}
         {(!error && duration > 0 && !length && !loading) && <>
             <hr/>
