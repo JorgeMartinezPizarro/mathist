@@ -7,6 +7,7 @@ import { useCallback, useState } from "react"
 import { MAX_COMPUTATION_FACTORS, MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
 import { PrimePower } from "@/helpers/factors"
 import NumberToString from "@/helpers/NumberToString"
+import Progress from "@/helpers/Progress"
 
 const PrimeFactorization = () => {
 
@@ -78,7 +79,7 @@ const PrimeFactorization = () => {
                 })}
             />
             <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">FACTORIZE</Button>
-            {loading && <CircularProgress/>}         
+            {loading ? <Progress /> : <span className="progress"/>}         
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
         <hr/>

@@ -1,6 +1,7 @@
 import { MAX_DIGITS_PRIMALY_TEST } from "@/helpers/Constants";
 import NumberToLocale from "@/helpers/NumberToLocale";
 import NumberToString from "@/helpers/NumberToString";
+import Progress from "@/helpers/Progress";
 import duration from "@/helpers/duration";
 import { RandomPrimesReport } from "@/helpers/randomPrimes";
 import { Alert, Button, CircularProgress, FormGroup, TextField } from "@mui/material";
@@ -104,7 +105,7 @@ const RandomPrimes = () => {
                 })}
             />
             <Button disabled={loadingTest} onClick={handleTestIfPrime} variant="contained">Test</Button>
-            {loadingTest && <CircularProgress/>}
+            {loadingTest ? <Progress /> : <span className="progress"/>}
         </FormGroup>
         {errorTest && <><hr/><Alert severity="error">{errorTest}</Alert></>}
         <hr/>
@@ -152,7 +153,7 @@ const RandomPrimes = () => {
                 })}
             />
             <Button onClick={handleSend} disabled={loading} variant="contained">GENERATE</Button>
-            {loading && <CircularProgress/>}
+            {loading ? <Progress /> : <span className="progress"/>}
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
 

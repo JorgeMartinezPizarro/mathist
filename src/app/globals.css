@@ -203,3 +203,11 @@ a, .inline-grid span {
 div[role="alert"] {
   margin: 0 16px;
 }
+
+.progress {
+  padding: 0!important;
+  margin: 0!important;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+}

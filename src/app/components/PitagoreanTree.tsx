@@ -2,6 +2,7 @@
 
 import { MAX_DIGITS_TRIPLE } from "@/helpers/Constants"
 import NumberToString from "@/helpers/NumberToString"
+import Progress from "@/helpers/Progress"
 import duration from "@/helpers/duration"
 import string from "@/helpers/string"
 import { TextField, Button, CircularProgress, Alert, FormGroup, Grid } from "@mui/material"
@@ -111,7 +112,7 @@ const PitagoreanTree = () => {
                 })}
             />
             <Button onClick={handleSend} variant="contained">GENERATE</Button>
-            {loading && <CircularProgress/>}
+            {loading ? <Progress /> : <span className="progress"/>}
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
         { !error && <>

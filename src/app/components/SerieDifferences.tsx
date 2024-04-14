@@ -6,6 +6,7 @@ import { CircularProgress, TextField, Button, FormGroup, Alert, Select, MenuItem
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 import string from "@/helpers/string"
 import NumberToString from "@/helpers/NumberToString"
+import Progress from "@/helpers/Progress"
 
 const SerieDifferences = () => {
   
@@ -70,7 +71,7 @@ const SerieDifferences = () => {
         <Button disabled={loading} onClick={()=> {
           handleSubmit()
         }} variant="contained">GENERATE</Button>
-        {loading && <CircularProgress />}
+        {loading ? <Progress /> : <span className="progress"/>}
       </FormGroup>
       
       {error && <><hr/><Alert severity="error">{error}</Alert></>}

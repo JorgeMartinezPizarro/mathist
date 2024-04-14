@@ -12,7 +12,7 @@ function NumberToString(props: NumberToStringProps) {
     const {number} = props;
     
     return (<>
-        <span title={"It is a " + number.toString().length + " digits number. Also " +  locale(BigInt(number))}>
+        <span title={number.toString().length > 5 ? "It is a " + number.toString().length + " digits number, " +  locale(BigInt(number)) : undefined}>
             {number.toString()}
         </span>
         

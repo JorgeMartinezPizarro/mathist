@@ -9,6 +9,7 @@ import {MAX_ALLOCATABLE_MATRIX_30GB, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEAL
 import toHuman from "@/helpers/toHuman";
 import NumberToLocale from "@/helpers/NumberToLocale";
 import NumberToString from "@/helpers/NumberToString";
+import Progress from "@/helpers/Progress";
 
 const EratostenesSieve = () => {
 
@@ -133,7 +134,7 @@ const EratostenesSieve = () => {
             />
             <Button disabled={loading} onClick={generateSieve} variant="contained">GENERATE</Button>
             <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
-            {loading && <CircularProgress />}
+            {loading ? <Progress /> : <span className="progress"/>}
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
         {!error && durationFull !== 0 && <>
@@ -149,7 +150,7 @@ const EratostenesSieve = () => {
             <p className="inline-grid">[&nbsp;{primes.map((prime: number, index: number) => <>
                 <NumberToString number={prime} />
                 {index !== primes.length - 1 && <span>,&nbsp;</span>}
-            </>)}]</p>         
+            </>)}&nbsp;]</p>         
         </>)}
         {(!error && duration > 0 && !length && !loading) && <>
             <hr/>

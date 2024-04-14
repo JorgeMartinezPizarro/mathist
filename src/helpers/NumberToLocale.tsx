@@ -23,7 +23,7 @@ const NumberToLocale = (props: NumberToLocaleProps) => {
 
     const {number, singular} = props;
     
-    return (<span style={{display: "inline-block"}} title={"It is a " + number.toString().length + " digits number. Also "}>
+    return (<span style={{display: "inline-block"}} title={number.toString().length > 20 ? "It is a " + number.toString().length + " digits number" +  locale(BigInt(number)) : undefined}>
         {
             (BigInt(number) < BigInt(numberToLocale.length) ? numberToLocale[parseInt(number.toString())] : number.toString()) +
             " " + 
