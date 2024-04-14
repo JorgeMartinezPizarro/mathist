@@ -105,7 +105,7 @@ const RandomPrimes = () => {
                 })}
             />
             <Button disabled={loadingTest} onClick={handleTestIfPrime} variant="contained">Test</Button>
-            {loadingTest ? <Progress /> : <span className="progress"/>}
+            <Progress loading={loadingTest} />
         </FormGroup>
         {errorTest && <><hr/><Alert severity="error">{errorTest}</Alert></>}
         <hr/>
@@ -153,7 +153,7 @@ const RandomPrimes = () => {
                 })}
             />
             <Button onClick={handleSend} disabled={loading} variant="contained">GENERATE</Button>
-            {loading ? <Progress /> : <span className="progress"/>}
+            <Progress loading={loading} />
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
 

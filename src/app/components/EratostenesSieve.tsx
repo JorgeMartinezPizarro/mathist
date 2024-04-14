@@ -134,7 +134,7 @@ const EratostenesSieve = () => {
             />
             <Button disabled={loading} onClick={generateSieve} variant="contained">GENERATE</Button>
             <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
-            {loading ? <Progress /> : <span className="progress"/>}
+            <Progress loading={loading}/>
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
         {!error && durationFull !== 0 && <>

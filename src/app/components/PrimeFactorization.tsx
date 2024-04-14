@@ -1,9 +1,9 @@
 'use client'
 
-import string from "@/helpers/string"
-import {default as d} from "@/helpers/duration"
 import { TextField, Button, CircularProgress, Alert, FormGroup } from "@mui/material"
 import { useCallback, useState } from "react"
+
+import {default as d} from "@/helpers/duration"
 import { MAX_COMPUTATION_FACTORS, MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
 import { PrimePower } from "@/helpers/factors"
 import NumberToString from "@/helpers/NumberToString"
@@ -79,7 +79,7 @@ const PrimeFactorization = () => {
                 })}
             />
             <Button type="submit" disabled={loading} onClick={submitNumber} variant="contained">FACTORIZE</Button>
-            {loading ? <Progress /> : <span className="progress"/>}         
+            <Progress loading={loading} />
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
         <hr/>
@@ -112,7 +112,7 @@ const PrimeFactorization = () => {
                 <hr/></>}
                 <p>Done in {d(duration)}</p>
             </>}            
-            {number.length === 0 && <><p>{string(BigInt(value)) + " = [?]"}</p></>}
+            {number.length === 0 && <><p><NumberToString number={BigInt(value)} />&nbsp;=&nbsp;[?]</p></>}
         </>}
     </>
 

@@ -1,13 +1,13 @@
 'use client'
 
+import { TextField, Button, CircularProgress, Alert, FormGroup, Grid } from "@mui/material"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+
 import { MAX_DIGITS_TRIPLE } from "@/helpers/Constants"
 import NumberToString from "@/helpers/NumberToString"
 import Progress from "@/helpers/Progress"
 import duration from "@/helpers/duration"
-import string from "@/helpers/string"
-import { TextField, Button, CircularProgress, Alert, FormGroup, Grid } from "@mui/material"
-import Image from "next/image"
-import { useEffect, useState } from "react"
 
 export interface TreeElement {
     triple: bigint[];
@@ -112,7 +112,7 @@ const PitagoreanTree = () => {
                 })}
             />
             <Button onClick={handleSend} variant="contained">GENERATE</Button>
-            {loading ? <Progress /> : <span className="progress"/>}
+            <Progress loading={loading} />
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}
         { !error && <>

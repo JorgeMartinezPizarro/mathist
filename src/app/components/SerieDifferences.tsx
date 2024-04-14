@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useCallback } from "react"
-import { CircularProgress, TextField, Button, FormGroup, Alert, Select, MenuItem } from "@mui/material"
+import { TextField, Button, FormGroup, Alert, Select, MenuItem } from "@mui/material"
 
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
-import string from "@/helpers/string"
 import NumberToString from "@/helpers/NumberToString"
 import Progress from "@/helpers/Progress"
 
@@ -71,7 +70,7 @@ const SerieDifferences = () => {
         <Button disabled={loading} onClick={()=> {
           handleSubmit()
         }} variant="contained">GENERATE</Button>
-        {loading ? <Progress /> : <span className="progress"/>}
+        <Progress loading={loading} />
       </FormGroup>
       
       {error && <><hr/><Alert severity="error">{error}</Alert></>}

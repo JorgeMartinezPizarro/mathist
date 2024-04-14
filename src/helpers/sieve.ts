@@ -6,6 +6,7 @@ import Bits from "./Bits";
 //
 //  amount  time  RAM
 //  =====   ===== ====
+//
 //  100m    500ms 5MB 
 //  1b      10s   64MB
 //  100b    50m   6GB 
@@ -14,6 +15,20 @@ import Bits from "./Bits";
 // Beyond 535b it will throw an error.
 // If your node has no enough memory it will throw an error earlier.
 //
+// Remove odds memory usage
+//
+//   1/2 = 50%
+//
+// Remove evens, times 3
+//
+//   1/2 * 5/6 = 41%
+//
+// Remove evens, times 3, 5 and 7
+//
+//   1/2 * 5/6 * 29/30 * 209/210 = 40%
+//
+// Conclusion: do not worth
+
 export default function sieve(lastNumber: number): Bits {
     
   if (lastNumber === 2) {
@@ -37,6 +52,7 @@ export default function sieve(lastNumber: number): Bits {
 
       return sieve;
   } catch (error) {
+    // TODO: GENERALIZE GET MESSAGE FROM ERROR
     let message
     if (error instanceof Error) message = error.message
     else message = String(error)
