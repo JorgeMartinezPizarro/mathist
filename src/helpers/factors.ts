@@ -48,8 +48,7 @@ export default function factors(n: bigint ): Factorization {
         m = m / f.factor
         f = factor(m)
     }
-    console.log(factors)
-
+    
     return {
         factors,
         time: getTimeMicro() - start,

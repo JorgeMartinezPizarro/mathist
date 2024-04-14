@@ -19,8 +19,6 @@ export async function GET(request: Request) {
         {status: 500}
       )
     }
-
-    console.log("USING SECRET " + KEY)
     
     // USE ENV SECRET TO OVERCOME THE LIMITS
     if (ENV !== KEY) {
