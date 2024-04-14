@@ -6,6 +6,7 @@ import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
 import eratosthenes from "@/helpers/sieve";
 import id from "@/helpers/id";
+import errorMessage from "./errorMessage";
 
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
   
@@ -66,11 +67,9 @@ function primesToExcel(LIMIT: number): SieveReport {
       try {
         fs.appendFileSync(path, line.join(',') + "\r\n");
       } catch (error) {
-        let message
-        if (error instanceof Error) message = error.message
-        else message = String(error)
-        console.log("Error writting to file " + path + ", " + message)
-        throw new Error("Error writting to file " + path + ", " + message)
+        const message = "Error writting to file " + path + ", " + errorMessage(error)
+        console.log(message)
+        throw new Error(message)
       }
       rows++;
       // Max excel file size

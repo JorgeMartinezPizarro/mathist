@@ -1,5 +1,6 @@
 import { MAX_SERIES_DIFFERENCES_SIZE } from '@/helpers/Constants';
 import differences from '@/helpers/differences';
+import errorMessage from '@/helpers/errorMessage';
 import series from '@/helpers/series';
 
 export async function GET(request: Request) {
@@ -20,9 +21,6 @@ export async function GET(request: Request) {
     const diff = differences(array)
     return Response.json(diff)
   } catch (error) {
-    let message
-    if (error instanceof Error) message = error.message
-    else message = String(error)
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }

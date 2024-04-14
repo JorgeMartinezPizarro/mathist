@@ -1,4 +1,5 @@
 import { MAX_DIGITS_PRIMALY_TEST } from '@/helpers/Constants'
+import errorMessage from '@/helpers/errorMessage';
 import getTimeMicro from '@/helpers/getTimeMicro'
 import { isBaillieProbablePrime, isMillerRabinProbablePrime } from '@/helpers/primalyTests'
 
@@ -27,9 +28,6 @@ export async function POST(request: Request) {
 
     return Response.json( {isPrime, number, time: getTimeMicro() - start} )
   } catch (error) {
-    let message
-    if (error instanceof Error) message = error.message
-    else message = String(error)
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }

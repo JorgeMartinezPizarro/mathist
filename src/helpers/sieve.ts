@@ -1,4 +1,5 @@
 import Bits from "./Bits";
+import errorMessage from "./errorMessage";
 
 // Enhanced eratosthenes sieve with odd numbers
 //
@@ -52,11 +53,7 @@ export default function sieve(lastNumber: number): Bits {
 
       return sieve;
   } catch (error) {
-    // TODO: GENERALIZE GET MESSAGE FROM ERROR
-    let message
-    if (error instanceof Error) message = error.message
-    else message = String(error)
-    const text = "sieve(" + lastNumber + "), " + message.toString().replaceAll("Error: ", "");
+    const text = "sieve(" + lastNumber + "), " + errorMessage(error);
     console.log(text)
     throw new Error(text);
   }

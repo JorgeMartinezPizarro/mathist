@@ -1,4 +1,5 @@
 import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_30GB } from "./Constants";
+import errorMessage from "./errorMessage";
 import toHuman from "./toHuman";
 
 // Up to 500b, posible sieve for up to 1t, requires 59GB RAM
@@ -24,11 +25,8 @@ export default class Bits {
         }
       }
     } catch (error) {
-      let message
-      if (error instanceof Error) message = error.message
-      else message = String(error)
       // use toHuman to show up what this sizes means
-      throw new Error("Bits(" + length + ") fails allocating " + toHuman(count * MAX_COLUMNS / 8) + " of "  + toHuman(length / 8) + " RAM, " + message.replaceAll("Error: ", ""))
+      throw new Error("Bits(" + length + ") fails allocating " + toHuman(count * MAX_COLUMNS / 8) + " of "  + toHuman(length / 8) + " RAM, " + errorMessage(error))
     }
     console.log("Allocated Bits(" + length + ") of size " + (length < 8 ? length + " bits" : toHuman(length / 8)))
     this.array = array

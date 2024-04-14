@@ -6,6 +6,7 @@ import { TextField, Button, FormGroup, Alert, Select, MenuItem } from "@mui/mate
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
 import NumberToString from "@/helpers/NumberToString"
 import Progress from "@/helpers/Progress"
+import errorMessage from "@/helpers/errorMessage"
 
 const SerieDifferences = () => {
   
@@ -26,13 +27,7 @@ const SerieDifferences = () => {
         setLoading(false)
       })
       .catch(error=> {
-        let message
-        if (error instanceof Error) message = error.message
-        else message = String(error)
-        if (message.indexOf("Failed to fetch") !== -1)
-            setError("Error generating excel, server disconnected")
-        else 
-            setError(message.replaceAll("Error: ", ""))
+        setError(errorMessage(error))
         setLoading(false)
       })
   }, [value])

@@ -1,4 +1,5 @@
 import { MAX_DIGITS_TRIPLE } from '@/helpers/Constants';
+import errorMessage from '@/helpers/errorMessage';
 import pitagoreanTriple from '@/helpers/pitagoreanTriple'
 
 export async function GET(request: Request) {
@@ -6,8 +7,6 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  
-  console.log(JSON.stringify(process.env.MATHER_SECRET, null, 2))
   
   try {
   
@@ -36,9 +35,6 @@ export async function POST(request: Request) {
     return Response.json(pitagoreanTriple(LIMIT))
   
   } catch (error) {
-    let message
-    if (error instanceof Error) message = error.message
-    else message = String(error)
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }

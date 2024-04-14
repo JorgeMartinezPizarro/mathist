@@ -1,4 +1,5 @@
 import { MAX_DIGITS_RANDOM_PRIMES } from '@/helpers/Constants'
+import errorMessage from '@/helpers/errorMessage';
 import randomPrimes from '@/helpers/randomPrimes'
 
 export async function GET(request: Request) {
@@ -22,9 +23,6 @@ export async function GET(request: Request) {
 
     return Response.json( randomPrimes(LIMIT, amount) )
   } catch (error) {
-    let message
-    if (error instanceof Error) message = error.message
-    else message = String(error)
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }

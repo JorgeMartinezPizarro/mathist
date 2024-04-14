@@ -3,9 +3,9 @@ import NumberToLocale from "@/helpers/NumberToLocale";
 import NumberToString from "@/helpers/NumberToString";
 import Progress from "@/helpers/Progress";
 import duration from "@/helpers/duration";
+import errorMessage from "@/helpers/errorMessage";
 import { RandomPrimesReport } from "@/helpers/randomPrimes";
-import { Alert, Button, CircularProgress, FormGroup, TextField } from "@mui/material";
-import { number } from "mathjs";
+import { Alert, Button, FormGroup, TextField } from "@mui/material";
 import { useState } from "react";
 
 const initialRandomPrimes = {
@@ -53,10 +53,7 @@ const RandomPrimes = () => {
             setLoadingTest(false)
         } catch (error) {
             setLoadingTest(false)
-            let message
-            if (error instanceof Error) message = error.message
-            else message = String(error)
-            setErrorTest(message)
+            setErrorTest(errorMessage(error))
         }
     }
 
@@ -74,10 +71,7 @@ const RandomPrimes = () => {
             setLoading(false)
         } catch (error) {
             setLoading(false)
-            let message
-            if (error instanceof Error) message = error.message
-            else message = String(error)
-            setError(message)
+            setError(errorMessage(error))
         }
             
                 

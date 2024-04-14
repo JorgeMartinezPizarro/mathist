@@ -10,6 +10,7 @@ import toHuman from "@/helpers/toHuman";
 import NumberToLocale from "@/helpers/NumberToLocale";
 import NumberToString from "@/helpers/NumberToString";
 import Progress from "@/helpers/Progress";
+import errorMessage from "@/helpers/errorMessage";
 
 const EratostenesSieve = () => {
 
@@ -53,14 +54,7 @@ const EratostenesSieve = () => {
             setLoading(false)
             setDurationFull(time)
         } catch (error) {
-            let message
-            if (error instanceof Error) message = error.message
-            else message = String(error)
-            setDurationFull(0)
-            if (message.indexOf("Failed to fetch") !== -1)
-                setError("Error generating excel, server disconnected")
-            else
-                setError(message.replaceAll("Error: ", ""))
+            setError(errorMessage(error))
             setLoading(false)
         }
     };
@@ -85,13 +79,7 @@ const EratostenesSieve = () => {
             setPrimes(primes)
         } catch(error) {
             setLoading(false)
-            let message
-            if (error instanceof Error) message = error.message
-            else message = String(error)
-            if (message.indexOf("Failed to fetch") !== -1)
-                setError("Error generating sieve, server disconnected")
-            else 
-                setError(message.replaceAll("Error: ", ""))
+            setError(errorMessage(error))
             setLength(0)
             setPrimes([])
         }
