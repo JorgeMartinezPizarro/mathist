@@ -20,6 +20,8 @@ export async function GET(request: Request) {
       )
     }
     
+    console.log(JSON.stringify(process.env, null, 2));
+
     // USE ENV SECRET TO OVERCOME THE LIMITS
     if (ENV !== KEY) {
       if (LIMIT > MAX_LENGTH_FOR_SIEVE_HEALTY) { 
