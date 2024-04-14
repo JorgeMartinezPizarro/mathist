@@ -5,6 +5,7 @@ interface ProgressProps {
 }
 
 function Progress(props: ProgressProps) {
+    // Allocate the view if not present to avoid layout changes on loading
     return props.loading ? 
         <span className="progress" >
             <CircularProgress size={26} className="circular"/>

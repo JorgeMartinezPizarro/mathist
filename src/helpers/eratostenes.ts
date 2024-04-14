@@ -36,7 +36,7 @@ function primesToExcel(LIMIT: number): SieveReport {
   root = "./public/files/"
   
   
-  const filename = "primes-to "+ LIMIT + "-#" + id(20) + ".csv"
+  const filename = "primes-to "+ LIMIT + "-hash-" + id(20) + ".csv"
   
   const path = root + filename;
 
