@@ -90,7 +90,7 @@ const PrimeFactorization = () => {
                     <span key="-1">&nbsp;=&nbsp;</span>
                     {number.map((n, id) => {
                         let response = [];
-                        if (message.includes("Factor " + n.toString() + " is not prime"))
+                        if (message.includes("Factor " + n.prime.toString() + " is not prime"))
                             response.push(<span key={id} style={{color: "red"}}><NumberToString number={n.prime} />{n.exponent > 1 ? ("**" + n.exponent) : ""}</span>)
                         else
                             response.push(<span key={id}><NumberToString number={n.prime} />{n.exponent > 1 ? ("**" + n.exponent) : ""}</span>)
