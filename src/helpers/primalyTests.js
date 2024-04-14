@@ -114,8 +114,8 @@ function isMillerRabinProbablePrime( n, k=7)
 // It works only for numbers, BigInt is too much for a deterministic check
 function isPrimeForSure(n) {
 	// TODO: brute force. All libraries fail for big numbers, aka 100 digits. Look for a suitable solution.
-	if (n > MAX_SAFE_INTEGER) {
-		throw new Error("Invalid length, isPrimeForSure works only with values below " + MAX_SAFE_INTEGER)
+	if (n > Number.MAX_SAFE_INTEGER) {
+		throw new Error("Invalid length, isPrimeForSure works only with values below " + Number.MAX_SAFE_INTEGER)
 	}
 	return isPrime(n)
 }

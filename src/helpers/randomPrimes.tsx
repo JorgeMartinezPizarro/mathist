@@ -16,6 +16,14 @@ export interface RandomPrimesReport {
 // Inspired in https://bigprimes.org/how-it-works
 const randomPrimes = (length: number, amount: number): RandomPrimesReport => {
     
+    if (length < 1 || amount < 1) {
+        return {
+            primes: [],
+            length: length,
+            time: 1,
+            amount: amount,
+        }
+    }
     const start = getTimeMicro();
     let elapsed = getTimeMicro();
     let countFailedAttemps = 0

@@ -52,7 +52,7 @@ const RandomPrimes = () => {
             setTestTime(response.time)
             setLoadingTest(false)
         } catch (error) {
-            setLoading(false)
+            setLoadingTest(false)
             let message
             if (error instanceof Error) message = error.message
             else message = String(error)
