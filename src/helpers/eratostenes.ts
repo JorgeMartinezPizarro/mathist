@@ -36,7 +36,7 @@ function primesToExcel(LIMIT: number): SieveReport {
   root = "./public/files/"
   
   
-  const filename = id(20) + ".csv"
+  const filename = "primes-to "+ LIMIT + "-#" + id(20) + ".csv"
   
   const path = root + filename;
 
@@ -86,7 +86,7 @@ function primesToExcel(LIMIT: number): SieveReport {
   console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
   
-  return {filename, time: getTimeMicro() - elapsed, length, primes: []};
+  return {filename: "/files/" + filename, time: getTimeMicro() - elapsed, length, primes: []};
 }
 
 // Count primes and return count and last amount primes
