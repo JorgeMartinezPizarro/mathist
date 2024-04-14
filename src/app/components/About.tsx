@@ -10,8 +10,6 @@ const About = () => {
         <p>The Tree and Series page are inspired by <a href="https://www.youtube.com/c/Mathologer">the Mathologer.</a></p>
         <hr/>
         <p>2**82589933 - 1 is the biggest known prime, a prime with 24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a>.</p>
-        <hr/>
-        <p>Numbers bigger than 10**32 are displayed partially.</p>
     </>
 }
 
