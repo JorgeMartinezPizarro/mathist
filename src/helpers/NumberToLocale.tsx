@@ -25,9 +25,9 @@ const NumberToLocale = (props: NumberToLocaleProps) => {
     
     return (<span style={{display: "inline-block"}} title={"It is a " + number.toString().length + " digits number. Also "}>
         {
-            (number < numberToLocale.length ? numberToLocale[parseInt(number.toString())] : number.toString()) +
+            (BigInt(number) < BigInt(numberToLocale.length) ? numberToLocale[parseInt(number.toString())] : number.toString()) +
             " " + 
-            (number === BigInt(1) ? singular : (singular + "s"))
+            (BigInt(number) === BigInt(1) ? singular : (singular + "s"))
         }
     </span>);
 }

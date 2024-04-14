@@ -1,4 +1,5 @@
 import { MAX_DIGITS_PRIMALY_TEST } from "@/helpers/Constants";
+import NumberToLocale from "@/helpers/NumberToLocale";
 import NumberToString from "@/helpers/NumberToString";
 import duration from "@/helpers/duration";
 import { RandomPrimesReport } from "@/helpers/randomPrimes";
@@ -158,7 +159,7 @@ const RandomPrimes = () => {
         {!error && randomPrimes.primes.length > 0 && <>
             <hr key={"first-lane"}/>
             <p key={"second-lane"}>
-                Generated {amount} primes with {length} digits in {duration(randomPrimes.time)}
+                Generated <NumberToLocale number={amount} singular="prime"/> with {length} digits in {duration(randomPrimes.time)}
             </p>
             {randomPrimes.primes.map(prime => 
                 <div key={prime + "-container"}>

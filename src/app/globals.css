@@ -37,6 +37,14 @@ table tbody tr td span button {
   margin: 0!important;
 }
 
+table.series tbody tr td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
 .multiLine {
   word-wrap: break-word;
   line-height: 22px;

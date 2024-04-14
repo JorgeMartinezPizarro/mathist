@@ -146,9 +146,9 @@ const EratostenesSieve = () => {
             <hr/>
             <p>Last <NumberToLocale number={primes.length} singular={"prime"} /> of the sieve:</p>
             <hr/>
-            <p className="inline-grid">[{primes.map((prime: number, index: number) => <>
+            <p className="inline-grid">[&nbsp;{primes.map((prime: number, index: number) => <>
                 <NumberToString number={prime} />
-                {index !== primes.length - 1 && <span>, </span>}
+                {index !== primes.length - 1 && <span>,&nbsp;</span>}
             </>)}]</p>         
         </>)}
         {(!error && duration > 0 && !length && !loading) && <>

@@ -83,7 +83,7 @@ const SerieDifferences = () => {
       {number.length > 0 &&  <>
         <hr />
         <div style={{overflowX: "auto"}}>
-          <table>
+          <table className="series">
             <tbody>
               {number.slice(0, MAX_SERIES_DIFFERENCES_SIZE).filter((el, id) => {
                 for (var idx = 0; idx<el.length; idx++) {

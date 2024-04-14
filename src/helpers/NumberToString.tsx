@@ -14,8 +14,6 @@ function NumberToString(props: NumberToStringProps) {
     return (<>
         <span title={"It is a " + number.toString().length + " digits number. Also " +  locale(BigInt(number))}>
             {number.toString()}
-            &nbsp;
-            {number.toString().length > 12 && <Button title="Click here to copy the number"><ContentCopyIcon onClick={() => {navigator.clipboard.writeText(number.toString())}} /></Button>}
         </span>
         
     
