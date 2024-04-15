@@ -44,8 +44,8 @@ export default function factors(n: bigint ): Factorization {
         if (f.message) {
             
             console.log(f.message)
-            const random = randomFactor(f.factor, 100000) // 100k
-            const fermat = fermatFactor(f.factor, 100000) // 100k
+            const random = randomFactor(f.factor, 100000) // 100k less than a sec
+            const fermat = fermatFactor(f.factor, 100000) // 100k less than a sec
             let message = f.message
             
             message += fermat.message

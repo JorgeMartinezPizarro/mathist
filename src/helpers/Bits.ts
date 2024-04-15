@@ -1,4 +1,4 @@
-import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_58GB } from "./Constants";
+import { MAX_ALLOCATABLE_ARRAY, MAX_SUPPORTED_SIEVE_LENGTH } from "./Constants";
 import errorMessage from "./errorMessage";
 import toHuman from "./toHuman";
 
@@ -14,8 +14,8 @@ export default class Bits {
     this.length = length
     const array = new Array(0)
     let count = 0
-    if (length > MAX_ALLOCATABLE_MATRIX_58GB) {
-      throw new Error("Value for Bits " + MAX_ALLOCATABLE_MATRIX_58GB)
+    if (length > MAX_SUPPORTED_SIEVE_LENGTH) {
+      throw new Error("Value for Bits " + MAX_SUPPORTED_SIEVE_LENGTH)
     }
     try {
       for (var i = MAX_ROWS - 1; i >= 0; i--) {

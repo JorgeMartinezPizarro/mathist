@@ -30,14 +30,10 @@ function primesToExcel(LIMIT: number): SieveReport {
   if (LIMIT < 2) {
     throw new Error("Generated an empty file ...")
   }
-  const elapsed = getTimeMicro()
 
-  let root;
-  root = "./public/files/"
-  
-  
-  const filename = "primes-to "+ LIMIT + "-hash-" + id(20) + ".csv"
-  
+  const elapsed = getTimeMicro()
+  const root = "./public/files/"
+  const filename = "primes-to-" + LIMIT + "-hash-" + id(20) + ".csv"
   const path = root + filename;
 
   let e = getTimeMicro();
@@ -51,7 +47,6 @@ function primesToExcel(LIMIT: number): SieveReport {
   e = getTimeMicro()
   
   // Create the file
-  
   fs.writeFileSync(path, "")
 
   if (sieve.length === 0) {

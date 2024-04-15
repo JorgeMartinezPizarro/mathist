@@ -111,7 +111,7 @@ const PitagoreanTree = () => {
                         }
                 })}
             />
-            <Button onClick={handleSend} variant="contained">GENERATE</Button>
+            <Button onClick={handleSend} disabled={loading} variant="contained">GENERATE</Button>
             <Progress loading={loading} />
         </FormGroup>
         {error && <><hr/><Alert severity="error">{error}</Alert></>}

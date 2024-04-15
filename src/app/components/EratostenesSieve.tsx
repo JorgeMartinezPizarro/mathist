@@ -5,7 +5,7 @@ import { useState } from "react"
 import Image from "next/image";
 
 import {default as d} from "@/helpers/duration"
-import {MAX_ALLOCATABLE_MATRIX_58GB, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
+import {MAX_SUPPORTED_SIEVE_LENGTH, MAX_HEALTHY_SIEVE_LENGTH} from "@/helpers/Constants"
 import toHuman from "@/helpers/toHuman";
 import NumberToLocale from "@/helpers/NumberToLocale";
 import NumberToString from "@/helpers/NumberToString";
@@ -88,9 +88,9 @@ const EratostenesSieve = () => {
     return <>
         <p><Image src="/image6.png" priority={true} height={100} width={100} alt=""/></p>
         <hr/>
-        <p>Eratosthenes sieve of a given length, max is <NumberToString number={MAX_LENGTH_FOR_SIEVE_HEALTY}/> using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 10 seconds.</p>
+        <p>Eratosthenes sieve of a given length, max is <NumberToString number={MAX_HEALTHY_SIEVE_LENGTH}/> using {toHuman(MAX_HEALTHY_SIEVE_LENGTH / 16)} RAM and generating 245MB of primes in a few seconds.</p>
         <hr/>
-        <p>Tested with <NumberToString number={MAX_ALLOCATABLE_MATRIX_58GB}/> using {toHuman(MAX_ALLOCATABLE_MATRIX_58GB / 16)} RAM and generating 450GB of primes in around 24 hours, below some examples:</p>
+        <p>Tested with <NumberToString number={MAX_SUPPORTED_SIEVE_LENGTH}/> using {toHuman(MAX_SUPPORTED_SIEVE_LENGTH / 16)} RAM and generating 450GB of primes in around 24 hours, below some examples:</p>
         <hr/>
         <p>
             <a href="https://mather.ideniox.com/stored/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
@@ -111,7 +111,7 @@ const EratostenesSieve = () => {
                 value={value}
                 onChange={(event => {
                     const regex = new RegExp("[^0123456789$]");
-                    if (event.target.value.length <= MAX_DIGITS_SIEVE && !regex.test(event.target.value)) {
+                    if (event.target.value.length <= MAX_HEALTHY_SIEVE_LENGTH.toString().length && !regex.test(event.target.value)) {
                         setValue(event.target.value)
                         setPrimes([])
                         setDurationFull(0)

@@ -1,18 +1,17 @@
 // Node limits
 export const MAX_ALLOCATABLE_ARRAY = 2 ** 31;                       // 2.1b More elements break node
 
-// Server limits
-export const MAX_ALLOCATABLE_MATRIX_58GB = 10**12;                  // 1t which takes 31GB RAM and generates 240GB primes
+// Supported limits
+export const MAX_SUPPORTED_SIEVE_LENGTH = 10**12;                   // 1t which takes 58GB RAM and generates 240GB primes. Tested on a 64GB RAM server.
 
 // Excel limits
 export const EXCEL_MAX_ROWS = 1048576;                              // FIX VALUE FROM EXCEL SPEC 
 export const EXCEL_MAX_COLS = 16384;                                // FIX VALUE FROM EXCEL SPEC
 
 // Web healthy limits
-export const MAX_LENGTH_FOR_SIEVE_HEALTY = 2 ** 30;                 // Healthy sieve of 1b in 20 seconds and 515MB
+export const MAX_HEALTHY_SIEVE_LENGTH = 5 * 10**8                // Healthy sieve of 500m in few seconds and 250MB
 export const MAX_DIGITS_TRIPLE = 180000;                            // Healthy computation of less than a sec
 export const MAX_LENGTH_TREE = 10;                                  // Healthy computation of just few seconds
-export const MAX_DIGITS_SIEVE = 10;                                 // Healthy computation of less than a minute
 export const MAX_DIGITS_FACTORIZATION = 50;                         // Healthy computation of less than a minute
 export const MAX_COMPUTATION_FACTORS = 5 * 10**8;                   // Healthy limit to check divisibility by in a few seconds
 export const MAX_SERIES_DIFFERENCES_SIZE = 20;                      // Healthy size of the displayed number square
