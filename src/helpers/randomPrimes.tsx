@@ -29,17 +29,19 @@ const randomPrimes = (length: number, amount: number): RandomPrimesReport => {
     let countFailedAttemps = 0
     // Generate really big primes, above 300 digits it takes long!
     const primes: bigint[] = []
-    const firstCheck = (number: bigint) => number > BigInt(10**6) ? isBaillieProbablePrime(number) : isPrimeForSure(parseInt(number.toString()))
+    // For low values the tests are not efficient, so we do a hard check
+    const firstCheck = (number: bigint) => number > BigInt(10**12) ? isBaillieProbablePrime(number) : isPrimeForSure(parseInt(number.toString()))
     while (primes.length < amount) {
         const string: string = id(length)
         const number: bigint = BigInt(string)
         // Check the baillie test only if the number did not start with 0
-        if (string[0] !== "0" && firstCheck(number)) {
-            primes.push(number)
-        }
-        else {
-            countFailedAttemps++;
-        }
+        if (string[0] !== "0" ) {
+            if (firstCheck(number)) {
+                primes.push(number)
+            } else {
+                countFailedAttemps++;
+            }
+        }        
     }
 
     console.log("Failed attemps " + countFailedAttemps + " in " + duration(getTimeMicro() - elapsed) + ", now check with another primality test")

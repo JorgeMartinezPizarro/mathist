@@ -1,16 +1,15 @@
 'use client'
 
-import { Button, CircularProgress, TextField, Alert, FormGroup } from "@mui/material"
+import { Button, TextField, Alert, FormGroup } from "@mui/material"
 import { useState } from "react"
 import Image from "next/image";
 
 import {default as d} from "@/helpers/duration"
-import {MAX_ALLOCATABLE_MATRIX_30GB, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
+import {MAX_ALLOCATABLE_MATRIX_58GB, MAX_DIGITS_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY} from "@/helpers/Constants"
 import toHuman from "@/helpers/toHuman";
 import NumberToLocale from "@/helpers/NumberToLocale";
 import NumberToString from "@/helpers/NumberToString";
 import Progress from "@/helpers/Progress";
-import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
 
 const EratostenesSieve = () => {
@@ -32,7 +31,7 @@ const EratostenesSieve = () => {
     const downloadCSV = async () => {
         try {
             const limit = parseInt(value)
-            const url = "/api/primes?LIMIT="+limit+"&amount="+limit+"&excel=true"
+            const url = "/api/primes?LIMIT="+limit+"&excel=true"
             setError(false)
             setLoading(true)
             setDuration(0)
@@ -91,7 +90,7 @@ const EratostenesSieve = () => {
         <hr/>
         <p>Eratosthenes sieve of a given length, max is <NumberToString number={MAX_LENGTH_FOR_SIEVE_HEALTY}/> using {toHuman(MAX_LENGTH_FOR_SIEVE_HEALTY / 16)} RAM and generating 515MB of primes in around 10 seconds.</p>
         <hr/>
-        <p>Tested with <NumberToString number={MAX_ALLOCATABLE_MATRIX_30GB}/> using {toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16)} RAM and generating 240GB of primes in around 12 hours, below some examples:</p>
+        <p>Tested with <NumberToString number={MAX_ALLOCATABLE_MATRIX_58GB}/> using {toHuman(MAX_ALLOCATABLE_MATRIX_58GB / 16)} RAM and generating 450GB of primes in around 24 hours, below some examples:</p>
         <hr/>
         <p>
             <a href="https://mather.ideniox.com/stored/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
@@ -100,7 +99,7 @@ const EratostenesSieve = () => {
             <a href="https://mather.ideniox.com/stored/primes-to-1b.csv" download="primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
             <a href="https://mather.ideniox.com/stored/primes-to-10b.csv" download="primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
             <a href="https://mather.ideniox.com/stored/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/stored/primes-to-500b.csv" download="primes-to-500b.csv">primes-to-500b.csv</a>
+            <a href="https://mather.ideniox.com/stored/primes-to-1t.csv" download="primes-to-1t.csv">primes-to-1t.csv</a>
         </p>
         <hr/>
         <FormGroup row={true}>

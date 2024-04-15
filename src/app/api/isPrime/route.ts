@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const number: bigint = BigInt(body.number);
     
     if (number.toString().length > MAX_DIGITS_PRIMALY_TEST) {
-      throw new Error("Invalid number length = " + number+ ", max allowed is 5000")
+      throw new Error("Invalid number length = " + number + ", max allowed is " + MAX_DIGITS_PRIMALY_TEST)
     }
 
     (BigInt.prototype as any).toJSON = function() {

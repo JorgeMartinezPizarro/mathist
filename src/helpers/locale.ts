@@ -1,28 +1,23 @@
 function locale(number: bigint) {
     
-    const thousand = BigInt(1000)         
-    const million = thousand * thousand
-    const billion = thousand * million
-    const trillion = thousand * billion
-    const quatrillion = thousand * trillion
-    const quintillion = thousand * quatrillion
+    const units = [
+        {value: BigInt(1000)**BigInt(6), unit: "-"}, 
+        {value: BigInt(1000)**BigInt(5), unit: "q"}, 
+        {value: BigInt(1000)**BigInt(4), unit: "t"}, 
+        {value: BigInt(1000)**BigInt(3), unit: "b"}, 
+        {value: BigInt(1000)**BigInt(2), unit: "m"}, 
+        {value: BigInt(1000),            unit: "k"}, 
+    ];
 
-    if (number > quintillion) {
+    if (number >= units[0].value) {
         return number.toString()[0] + "E" + (number.toString().length - 1)
     }
-    else if (number > quatrillion) {
-        return number  / quatrillion + "q"
-    } else if (number > trillion) {
-        return number  / trillion + "t"
-    } else if (number > billion) {
-        return number  / billion + "b"
-    } else if (number > million) {
-        return number / million + "m"
-    } else if (number > thousand) {
-        return number / thousand + "k"
-    }
-    return number + ""
     
+    for (var i = 1; i<units.length; i++)
+        if (number >= units[i].value)
+            return number  / units[i].value + "" + units[i].unit
+    
+    return number + ""
 }
 
 export default locale;

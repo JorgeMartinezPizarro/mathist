@@ -1,10 +1,10 @@
-import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_30GB } from "./Constants";
+import { MAX_ALLOCATABLE_ARRAY, MAX_ALLOCATABLE_MATRIX_58GB } from "./Constants";
 import errorMessage from "./errorMessage";
 import toHuman from "./toHuman";
 
-// Up to 500b, posible sieve for up to 1t, requires 59GB RAM
-export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY                             // 2b columns
-export const MAX_ROWS = MAX_ALLOCATABLE_MATRIX_30GB / MAX_ALLOCATABLE_ARRAY; // 250 rows
+// Up to 500b, posible sieve for up to 1t, requires 58GB RAM
+export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY            // 2b columns
+export const MAX_ROWS = 250;                                // 250 rows
 
 export default class Bits {
   private array: BitView[] = new Array(0)
@@ -14,8 +14,8 @@ export default class Bits {
     this.length = length
     const array = new Array(0)
     let count = 0
-    if (length > MAX_ALLOCATABLE_MATRIX_30GB) {
-      throw new Error("Value for Bits " + MAX_ALLOCATABLE_MATRIX_30GB)
+    if (length > MAX_ALLOCATABLE_MATRIX_58GB) {
+      throw new Error("Value for Bits " + MAX_ALLOCATABLE_MATRIX_58GB)
     }
     try {
       for (var i = MAX_ROWS - 1; i >= 0; i--) {

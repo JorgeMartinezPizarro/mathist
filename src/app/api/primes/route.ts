@@ -1,4 +1,4 @@
-import { MAX_ALLOCATABLE_MATRIX_30GB, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY } from '@/helpers/Constants'
+import { MAX_ALLOCATABLE_MATRIX_58GB, MAX_DISPLAY_SIEVE, MAX_LENGTH_FOR_SIEVE_HEALTY } from '@/helpers/Constants'
 import eratostenes from '@/helpers/eratostenes'
 import errorMessage from '@/helpers/errorMessage'
 import toHuman from '@/helpers/toHuman'
@@ -29,22 +29,25 @@ export async function GET(request: Request) {
           {status: 500}
         )
       } 
-      if (LIMIT > MAX_ALLOCATABLE_MATRIX_30GB) {
-        // 535b, up to 31GB RAM 240GB disk (x500), common sense limit, it takes 12h to compute.
-        // Actually we can use up to 60GB to generate up to 1t.
-        return Response.json(
-          {error: "Max length " + MAX_ALLOCATABLE_MATRIX_30GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_30GB / 16) + " RAM 240GB disk."},
-          {status: 500}
-        )
-      }
+    }
+    
+    if (LIMIT > MAX_ALLOCATABLE_MATRIX_58GB) {
+      // 1t, up to 58GB RAM 450GB disk (x1000), common sense limit, it takes 24h to compute.
+      return Response.json(
+        {error: "Max length " + MAX_ALLOCATABLE_MATRIX_58GB + ", " + toHuman(MAX_ALLOCATABLE_MATRIX_58GB / 16) + " RAM 500GB disk."},
+        {status: 500}
+      )
     }
     
     (BigInt.prototype as any).toJSON = function() {
       return this.toString()
     }
 
+    console.log(LIMIT, amount)
+
     return Response.json( eratostenes(LIMIT, amount, excel) )
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }
+
