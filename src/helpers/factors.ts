@@ -11,6 +11,9 @@ const three: bigint = BigInt(3)
 export default function factors(n: bigint ): Factorization {
     
     const start = getTimeMicro()
+
+    console.log("///////////////////////////////////////////////")
+    console.log("Getting factors of " + n)
     
     if (n === one || n === zero) {
         return {
@@ -38,15 +41,39 @@ export default function factors(n: bigint ): Factorization {
             })
         }
         
-        if (f.message !== "") {
+        if (f.message) {
+            
+            console.log(f.message)
+            const random = randomFactor(f.factor, 100000) // 100k
+            const fermat = fermatFactor(f.factor, 100000) // 100k
+            let message = f.message
+            
+            message += fermat.message
+            if (fermat.factor !== m) {
+                factors.push({
+                    prime: fermat.factor,
+                    exponent: 1,
+                })
+                message += (fermat.factor + " is not a prime maybe.")    
+            }
+                        
+            message += random.message
+            if (fermat.factor === m && random.factor !== m) {
+                factors.push({
+                    prime: random.factor,
+                    exponent: 1,
+                })
+                message += (random.factor + " is not a prime maybe.")
+            }
+            
             return {
                 factors,
-                message: f.message,
+                message: message.replaceAll(".", ". "),
                 time: getTimeMicro() - start,
             }
         }
         m = m / f.factor
-        f = factor(m)
+        f = factor(m, f.factor)
     }
     
     return {
@@ -60,7 +87,7 @@ export default function factors(n: bigint ): Factorization {
 // https://stackoverflow.com/a/53684036
 function sqrt(value: bigint): bigint {
     if (value < zero) {
-        throw 'square root of negative numbers is not supported'
+        throw 'Square root of negative numbers is not supported'
     }
     // The method give incorrect values for small numbers, so check it separately
     if ([zero, one].includes(value))  {
@@ -107,19 +134,18 @@ interface Factor {
     message: string;
 }
 
-const randomFactor = function(n: bigint): Factor {
-    console.log("////////////////////////////")
-    console.log("Random factor of " + n)
+const randomFactor = function(n: bigint, maxTries: number): Factor {
+    const start = getTimeMicro()
     const m: bigint = sqrt(n)
     let count = 0;
-    const MAX = 10**3
+    
     if (isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
         return {
             factor: n,
             message: ""
         }
     }
-    if ([zero, one, two, BigInt(3)].includes(n)) {
+    if ([zero, one, two, three].includes(n)) {
         return {
             factor: n,
             message: "",
@@ -131,7 +157,7 @@ const randomFactor = function(n: bigint): Factor {
             message: "",
         }
     }
-    while (count < MAX) {
+    while (count < maxTries) {
         const randomPosibleDivisor: bigint = rand(m.toString().length)
         
         if (one < randomPosibleDivisor && randomPosibleDivisor <= m) {
@@ -144,16 +170,75 @@ const randomFactor = function(n: bigint): Factor {
             count++;
         }
     }
+    const message = "After " + maxTries + " iterations, no random factors found."
 
     return {
         factor: n,
-        message: "Max iterations 10**6, no divisors found",
+        message,
     }
 }
 
-// Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
+function fermatFactor(n: bigint, maxTries: number): Factor
+    {
+        const start = getTimeMicro()
+        // since fermat's factorization applicable 
+        // for odd positive integers only 
+        if(n <= zero)
+        {
+            return {
+                factor: n,
+                message: ""
+            };
+        }
+       
+        // check if n is a even number 
+        if((n % two) == zero)
+        {
+            return {
+                factor: two,
+                message: ""
+            };
+        }
+               
+        let a = sqrt(n);
+        const t = a * a
+        // if n is a perfect root, 
+        // then both its square roots are its factors 
+        if(t == n) {
+            return {
+                factor: a,
+                message: ""
+            };
+        }
+        let b;
 
-export const factor = function(n: bigint): Factor {
+        let count = 0;
+
+        while(count < maxTries)
+        {
+            let b1 = n - t;
+            b = sqrt(b1);
+               
+            if(b * b === b1)
+                return {
+                    factor: a + b,
+                    message: ""
+                };
+            else
+                a += one;
+            count++
+        }
+        const message = "After " + maxTries + " iterations, no fermat factors found."
+        
+        return {
+            factor: n,
+            message,
+        };
+    }
+
+// Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
+// TODO: use start to continue dividing by last prime found
+export const factor = function(n: bigint, lastFactorFound: bigint = BigInt(11)): Factor {
     if (n > 10**10 && isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
         return {
             factor: n, 
@@ -189,15 +274,17 @@ export const factor = function(n: bigint): Factor {
     }
     
     const m = sqrt(n);
+
     for (let i: bigint = initialPrime; i <= m; i += ringSize) {
         if (i > MAX_COMPUTATION_FACTORS) {
             return {
                 factor: n,
-                message:"Factor " + n + " is not prime"
+                message: "The factor " + n + " is not prime. Failed to factor with brute force after " + MAX_COMPUTATION_FACTORS + " divisions."
             }
         }
         for (const a of dividers) {
-            if (x % (i + a) === zero) {
+            // Only check divisibility by biggers than last prime to save time
+            if (i + a > lastFactorFound && x % (i + a) === zero) {
                 return {
                     factor: i + a,
                     message: ""

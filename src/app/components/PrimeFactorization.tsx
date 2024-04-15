@@ -4,7 +4,7 @@ import { TextField, Button, CircularProgress, Alert, FormGroup } from "@mui/mate
 import { useCallback, useState } from "react"
 
 import {default as d} from "@/helpers/duration"
-import { MAX_COMPUTATION_FACTORS, MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
+import { MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
 import { PrimePower } from "@/helpers/factors"
 import NumberToString from "@/helpers/NumberToString"
 import Progress from "@/helpers/Progress"
@@ -90,7 +90,8 @@ const PrimeFactorization = () => {
                     <span key="-1">&nbsp;=&nbsp;</span>
                     {number.map((n, id) => {
                         let response = [];
-                        if (message.includes("Factor " + n.prime.toString() + " is not prime"))
+                        
+                        if (message.includes(n.prime.toString() + " is not prime"))
                             response.push(<span key={id} style={{color: "red"}}><NumberToString number={n.prime} />{n.exponent > 1 ? ("**" + n.exponent) : ""}</span>)
                         else
                             response.push(<span key={id}><NumberToString number={n.prime} />{n.exponent > 1 ? ("**" + n.exponent) : ""}</span>)
@@ -100,12 +101,7 @@ const PrimeFactorization = () => {
                     })}
                 </p>
                 <hr />
-                {message.includes("Factor ") && message.includes(" is not prime") && <>
-                    <Alert severity="error">
-                        Numbers in red are composite numbers. That happens when at least 2 prime factors are bigger than <NumberToString number={MAX_COMPUTATION_FACTORS} />
-                    </Alert>
-                <hr/></>}
-                { message && (!message.includes("Factor ") || !message.includes(" is not prime")) && <>
+                {message && <>
                     <Alert severity="error">
                         {message}
                     </Alert>
