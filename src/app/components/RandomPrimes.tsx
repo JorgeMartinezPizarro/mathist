@@ -104,10 +104,10 @@ const RandomPrimes = () => {
         {errorTest && <><hr/><Alert severity="error">{errorTest}</Alert></>}
         <hr/>
         { testTime > 0 && <>
-            <p>The number entered with {bigNumber.length} digits {isPrime ? "is probably prime" : "is not prime"}, it took {duration(testTime)}</p>
+            <p>The number entered with <NumberToLocale number={bigNumber.length} singular="digit"/>{isPrime ? " is prime" : " is not prime"}, it took {duration(testTime)}</p>
             <hr/>
         </>}
-        <p>Write a length and amount to generate random primes:</p>
+        <p>Write length and amount to generate random primes:</p>
         <hr/>
         <FormGroup row={true}>
             <TextField
