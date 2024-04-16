@@ -154,7 +154,7 @@ const RandomPrimes = () => {
         {!error && randomPrimes.primes.length > 0 && <>
             <hr key={"first-lane"}/>
             <p key={"second-lane"}>
-                Generated <NumberToLocale number={amount} singular="prime"/> with {length} digits in {duration(randomPrimes.time)}
+                Generated <NumberToLocale number={amount} singular="prime"/> with <NumberToLocale number={length} singular="digit" /> in {duration(randomPrimes.time)}
             </p>
             {randomPrimes.primes.map(prime => 
                 <div key={prime + "-container"}>

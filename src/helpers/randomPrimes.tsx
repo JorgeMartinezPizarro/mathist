@@ -38,7 +38,7 @@ const randomPrimes = (length: number, amount: number): RandomPrimesReport => {
         const firstDigit: string = string[0]
         const lastDigit: string = string.slice(-1)[0]
         // Ignore even numbers, multiples of 5 and numbers starting with 0
-        if (firstDigit !== "0" && !["0", "2", "4", "5", "6", "8"].includes(lastDigit) ) {
+        if (length === 1 || firstDigit !== "0" && !["0", "2", "4", "5", "6", "8"].includes(lastDigit) ) {
             // Test with baillie
             const number: bigint = BigInt(string)
             if (firstCheck(number)) {
