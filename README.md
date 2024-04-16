@@ -2,7 +2,7 @@
 
 Mathist is a math website, using the power of BigInt and mathjs to do the calculations. It is deployed under [mather.ideniox.com](https://mather.ideniox.com).
 
-## Local
+## Start
 
 To get it running locally, you need to install the latest `node` and `npm`.
 
@@ -19,11 +19,13 @@ npm run build
 npm run start
 ```
 
-Running in production will fail the `sieve` to `DOWNLOAD`, `public/files` generated on the fly are not accessible. I used docker-compose to tackle this issue:
+Open [localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Docker
+
+Running in production `npm run start` will fail the `sieve` to `DOWNLOAD`, since `public/files` generated on the fly are not accessible. I a apache2 file server to serve files inside the docker volumes:
 
 ```
-version: '2'
-
 services:
   files:
     image: httpd:latest
@@ -33,7 +35,7 @@ services:
     ports:
       - 2900:80
 
-  mather0:
+  mather:
     image: jorgemartinezpizarro/mathist:latest
     restart: always
     ports:
@@ -43,10 +45,6 @@ services:
 
 ```
 and redirect the /files/ requests to port 2900.
-
-Open [localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Docker
 
 There is a version of mathist dockerized under [hub.docker.com](https://hub.docker.com/repository/docker/jorgemartinezpizarro/mathist).
 
