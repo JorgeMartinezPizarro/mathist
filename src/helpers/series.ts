@@ -1,6 +1,7 @@
 import { isInteger } from "mathjs";
-import eratostenes from "./eratostenes";
-import factorial from "./factorial";
+
+import eratostenes from "@/helpers/eratostenes";
+import factorial from "@/helpers/factorial";
 
 export default function series(LIMIT: number, name: string): bigint[] {
   let array: bigint[] = [];

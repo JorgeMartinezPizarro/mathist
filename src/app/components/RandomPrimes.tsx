@@ -1,7 +1,7 @@
 import { Alert, Button, FormGroup, TextField } from "@mui/material";
 import { useState } from "react";
 
-import { MAX_DIGITS_PRIMALY_TEST } from "@/helpers/Constants";
+import { MAX_DIGITS_PRIMALY_TEST } from "@/Constants";
 import NumberToLocale from "@/widgets/NumberToLocale";
 import NumberToString from "@/widgets/NumberToString";
 import Progress from "@/widgets/Progress";

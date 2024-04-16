@@ -1,4 +1,4 @@
-import { MAX_DIGITS_FACTORIZATION } from '@/helpers/Constants';
+import { MAX_DIGITS_FACTORIZATION } from '@/Constants';
 import errorMessage from '@/helpers/errorMessage';
 import factors from '@/helpers/factors'
 

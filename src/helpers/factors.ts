@@ -1,7 +1,7 @@
 import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "@/helpers/primalyTests"
 import getTimeMicro from '@/helpers/getTimeMicro';
 import id from '@/helpers/id';
-import { MAX_COMPUTATION_FACTORS } from "@/helpers/Constants";
+import { MAX_COMPUTATION_FACTORS } from "@/Constants";
 import { Factor, Factorization, PrimePower } from "@/types"
 
 const zero: bigint = BigInt(0)

@@ -1,5 +1,5 @@
-import Bits from "./Bits";
-import errorMessage from "./errorMessage";
+import Bits from "@/helpers/Bits";
+import errorMessage from "@/helpers/errorMessage";
 
 // Enhanced eratosthenes sieve with odd numbers
 //

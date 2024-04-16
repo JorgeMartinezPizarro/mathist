@@ -1,4 +1,4 @@
-import { MAX_DIGITS_PRIMALY_TEST } from '@/helpers/Constants'
+import { MAX_DIGITS_PRIMALY_TEST } from '@/Constants'
 import errorMessage from '@/helpers/errorMessage';
 import getTimeMicro from '@/helpers/getTimeMicro'
 import { isBaillieProbablePrime, isMillerRabinProbablePrime } from '@/helpers/primalyTests'

@@ -1,4 +1,4 @@
-import { MAX_LENGTH_TREE } from '@/helpers/Constants';
+import { MAX_LENGTH_TREE } from '@/Constants';
 import errorMessage from '@/helpers/errorMessage';
 import pitagoreanTree from '@/helpers/pitagoreanTree'
 

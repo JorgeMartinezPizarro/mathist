@@ -1,4 +1,4 @@
-import { MAX_SERIES_DIFFERENCES_SIZE } from '@/helpers/Constants';
+import { MAX_SERIES_DIFFERENCES_SIZE } from '@/Constants';
 import differences from '@/helpers/differences';
 import errorMessage from '@/helpers/errorMessage';
 import series from '@/helpers/series';

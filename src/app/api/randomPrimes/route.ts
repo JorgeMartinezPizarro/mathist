@@ -1,4 +1,4 @@
-import { MAX_DIGITS_RANDOM_PRIMES } from '@/helpers/Constants'
+import { MAX_DIGITS_RANDOM_PRIMES } from '@/Constants'
 import errorMessage from '@/helpers/errorMessage';
 import randomPrimes from '@/helpers/randomPrimes'
 

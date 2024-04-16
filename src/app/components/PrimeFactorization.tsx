@@ -1,13 +1,13 @@
 'use client'
 
-import { TextField, Button, CircularProgress, Alert, FormGroup } from "@mui/material"
+import { TextField, Button, Alert, FormGroup } from "@mui/material"
 import { useCallback, useState } from "react"
 
 import {default as d} from "@/helpers/duration"
-import { MAX_DIGITS_FACTORIZATION } from "@/helpers/Constants"
-import { PrimePower } from "@/helpers/factors"
-import NumberToString from "@/helpers/NumberToString"
-import Progress from "@/helpers/Progress"
+import { MAX_DIGITS_FACTORIZATION } from "@/Constants"
+import { PrimePower } from "@/types"
+import NumberToString from "@/widgets/NumberToString"
+import Progress from "@/widgets/Progress"
 
 const PrimeFactorization = () => {
 

@@ -1,9 +1,7 @@
-
-
-import { isMillerRabinProbablePrime, isBaillieProbablePrime, isPrimeForSure } from "./primalyTests"
+import { isMillerRabinProbablePrime, isBaillieProbablePrime, isPrimeForSure } from "@/helpers/primalyTests"
 import id from '@/helpers/id';
-import getTimeMicro from "./getTimeMicro";
-import duration from "./duration";
+import getTimeMicro from "@/helpers/getTimeMicro";
+import duration from "@/helpers/duration";
 import { RandomPrimesReport } from "@/types";
 
 

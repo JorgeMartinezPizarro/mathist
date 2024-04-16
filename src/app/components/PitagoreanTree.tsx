@@ -4,7 +4,7 @@ import { TextField, Button, Alert, FormGroup, Grid } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
-import { MAX_DIGITS_TRIPLE } from "@/helpers/Constants"
+import { MAX_DIGITS_TRIPLE } from "@/Constants"
 import NumberToString from "@/widgets/NumberToString"
 import Progress from "@/widgets/Progress"
 import duration from "@/helpers/duration"

@@ -1,6 +1,6 @@
-import { MAX_ALLOCATABLE_ARRAY, MAX_SUPPORTED_SIEVE_LENGTH } from "./Constants";
-import errorMessage from "./errorMessage";
-import toHuman from "./toHuman";
+import { MAX_ALLOCATABLE_ARRAY, MAX_SUPPORTED_SIEVE_LENGTH } from "@/Constants";
+import errorMessage from "@/helpers/errorMessage";
+import toHuman from "@/helpers/toHuman";
 
 // Up to 500b, posible sieve for up to 1t, requires 58GB RAM
 export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY            // 2b columns

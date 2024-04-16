@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useCallback } from "react"
-import { TextField, Button, FormGroup, Alert, Select, MenuItem } from "@mui/material"
+import { TextField, Button, FormGroup, Alert, MenuItem } from "@mui/material"
 
-import { MAX_SERIES_DIFFERENCES_SIZE } from "@/helpers/Constants"
-import NumberToString from "@/helpers/NumberToString"
-import Progress from "@/helpers/Progress"
+import { MAX_SERIES_DIFFERENCES_SIZE } from "@/Constants"
+import NumberToString from "@/widgets/NumberToString"
+import Progress from "@/widgets/Progress"
 import errorMessage from "@/helpers/errorMessage"
 
 const SerieDifferences = () => {

@@ -1,5 +1,5 @@
-import getTimeMicro from "./getTimeMicro"
-import { childrenAt, pitagoreanTriple as pt } from "./pitagoreanTree"
+import getTimeMicro from "@/helpers/getTimeMicro"
+import { childrenAt, pitagoreanTriple as pt } from "@/helpers/pitagoreanTree"
 
 export default function pitagoreanTriple(n: string) {
     

@@ -1,4 +1,4 @@
-import { MAX_DIGITS_TRIPLE } from '@/helpers/Constants';
+import { MAX_DIGITS_TRIPLE } from '@/Constants';
 import errorMessage from '@/helpers/errorMessage';
 import pitagoreanTriple from '@/helpers/pitagoreanTriple'
 

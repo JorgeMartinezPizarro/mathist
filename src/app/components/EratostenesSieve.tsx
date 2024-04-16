@@ -5,7 +5,7 @@ import { useState } from "react"
 import Image from "next/image";
 
 import {default as d} from "@/helpers/duration"
-import {MAX_SUPPORTED_SIEVE_LENGTH, MAX_HEALTHY_SIEVE_LENGTH} from "@/helpers/Constants"
+import {MAX_SUPPORTED_SIEVE_LENGTH, MAX_HEALTHY_SIEVE_LENGTH} from "@/Constants"
 import toHuman from "@/helpers/toHuman";
 import NumberToLocale from "@/widgets/NumberToLocale";
 import NumberToString from "@/widgets/NumberToString";

@@ -1,5 +1,5 @@
 import { TreeElement } from "@/types"
-import getTimeMicro from "./getTimeMicro"
+import getTimeMicro from "@/helpers/getTimeMicro"
 
 export default function pitagoreanTree(n: bigint) {
     
