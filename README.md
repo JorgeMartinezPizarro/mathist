@@ -1,12 +1,13 @@
 ## About
 
-Mathist is a math website, using the power of BigInt and mathjs to do the calculations. It is deployed under [mather.ideniox.com](https://mather.ideniox.com).
+Mathist is a math website, using the power of `BigInt`, `mathjs` and `s-bpsw` to do the calculations. 
+It is deployed under [mather.ideniox.com](https://mather.ideniox.com).
 
 ## Start
 
 To get it running locally, you need to install the latest `node` and `npm`.
 
-To run a develop version :
+To run a develop version:
 
 ```
 npm run dev
@@ -23,7 +24,8 @@ Open [localhost:3000](http://localhost:3000) with your browser to see the result
 
 ## Docker
 
-Running in production `npm run start` will fail the `sieve` to `DOWNLOAD`, since `public/files` generated on the fly are not accessible. I a apache2 file server to serve files inside the docker volumes:
+Running in production `npm run start` will fail the `sieve` to `DOWNLOAD`, since `public/files` generated on the fly are not accessible. 
+I use an apache2 file server to serve files inside the docker volumes, an example `docker-compose.yml:
 
 ```
 services:
@@ -42,9 +44,8 @@ services:
       - 3000:3000
     volumes:
       - ./VOLUMES_PATH:/app/public/files
-
 ```
-and redirect the /files/ requests to port 2900.
+and redirect the /files/ requests to port 2900 with your favorite webserver, `nginx` or `apache2`.
 
 There is a version of mathist dockerized under [hub.docker.com](https://hub.docker.com/repository/docker/jorgemartinezpizarro/mathist).
 
