@@ -25,6 +25,19 @@ Open [localhost:3000](http://localhost:3000) with your browser to see the result
 
 ## Docker
 
+There is a version of mathist dockerized under [hub.docker.com](https://hub.docker.com/repository/docker/jorgemartinezpizarro/mathist).
+
+To run it you need `docker` installed on your system and run:
+
+```
+docker run -d jorgemartinezpizarro/mathist:latest
+```
+
+To generate your own docker image, run:
+
+```
+docker build .
+```
 Running in production `npm run start` will fail the `sieve` to `DOWNLOAD`, since `public/files` generated on the fly are not accessible. 
 
 I use an apache2 file server to serve files inside the docker volumes, an example `docker-compose.yml`:
@@ -46,18 +59,24 @@ services:
     volumes:
       - ./VOLUMES_PATH:/app/public/files
 ```
-and redirect the `/files/` requests to port `2900` with your favorite webserver, `nginx` or `apache2`.
+To start the containers use `docker compose up -d`.
 
-There is a version of mathist dockerized under [hub.docker.com](https://hub.docker.com/repository/docker/jorgemartinezpizarro/mathist).
+To make it work, redirect the `/files/` requests to port `2900` with your favorite webserver, `nginx` or `apache2`.
 
-To run it you need `docker` installed on your system and run:
-
+A full example with `nginx`:
 ```
-docker run -d jorgemartinezpizarro/mathist:latest
-```
-
-To generate your own docker image, run:
-
-```
-docker build .
+server {
+        server_name YOUR_DOMAIN;
+        location /files {
+                proxy_pass http://localhost:2900;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+        }
+        location / {
+                proxy_pass http://localhost:3000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+        }
+        listen 80;
+}
 ```
