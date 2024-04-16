@@ -48,7 +48,7 @@ services:
   files:
     image: httpd:latest
     volumes:
-      -  ./VOLUMES_PATH:/usr/local/apache2/htdocs/files
+      -  /VOLUMES_PATH:/usr/local/apache2/htdocs/files
     restart: always
     ports:
       - 2900:80
@@ -59,14 +59,10 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./VOLUMES_PATH:/app/public/files
+      - /VOLUMES_PATH:/app/public/files
 ```
 
-To start the containers use `docker compose up -d`.
-
-To make it work, redirect the `/files/` requests to port `2900` with your favorite webserver, `nginx` or `apache2`.
-
-A full example with `nginx`:
+and the `/etc/nginx/sites-available/default` nginx config file:
 
 ```
 server {
@@ -84,3 +80,7 @@ server {
         listen 80;
 }
 ```
+
+For this to work you need to set up a valid value for `YOUR_DOMAIN` and `VOLUME_PATH`.
+
+To start the containers use `docker compose up -d`.
