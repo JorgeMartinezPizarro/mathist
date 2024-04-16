@@ -1,6 +1,6 @@
 {
-  "name": "maths",
-  "version": "0.1.0",
+  "name": "mather",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "set MATHER_SECRET=111111 && next dev",
@@ -9,8 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.15",
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.15.14",

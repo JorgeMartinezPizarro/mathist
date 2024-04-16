@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer, Button, Divider } from '@mui/material';
 import { redirect } from "next/navigation";
-import MenuIcon from '@mui/icons-material/Menu';
-import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
+import { SubdirectoryArrowRight, Menu } from '@mui/icons-material';
 
 import About from "@/app/components/About";
 import PrimeFactorization from "@/app/components/PrimeFactorization";
@@ -39,7 +38,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
 
   return <>
     <div className="header">
-      <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><MenuIcon/></Button>
+      <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><Menu/></Button>
       <span className="title">{currentElement?.name}</span>
     </div>
     <Drawer open={open} onClose={toggleDrawer(false)}>
@@ -51,7 +50,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
               <ListItemButton onClick={(e) => {e.stopPropagation(); redirect("/" + element.name)}}>
                 <ListItemIcon>
                   <a href={"/" + element.name}>
-                    <SubdirectoryArrowRightIcon className="icon"/>
+                    <SubdirectoryArrowRight className="icon"/>
                     <Button className="item" ><span>{element.name}</span></Button>
                   </a>
                 </ListItemIcon>

@@ -1,10 +1,9 @@
 'use client' // Error components must be Client Components
  
 import { Alert, Box, Button, Drawer, List, ListItem, ListItemButton, ListItemIcon } from '@mui/material';
-import { useEffect, useState } from 'react'
-import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
+import { useState } from 'react'
+import { SubdirectoryArrowRight, Menu } from '@mui/icons-material';
 import { redirect } from "next/navigation";
-import MenuIcon from '@mui/icons-material/Menu';
  
 export default function Error({
   error,
@@ -29,7 +28,7 @@ export default function Error({
 
   return <div>
     <div className="header">
-      <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><MenuIcon/></Button>
+      <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><Menu/></Button>
       <span className="title">Error</span>
     </div>
     <Drawer open={open} onClose={toggleDrawer(false)}>
@@ -41,7 +40,7 @@ export default function Error({
               <ListItemButton onClick={(e) => {e.stopPropagation(); redirect("/" + element.name)}}>
                 <ListItemIcon>
                   <a href={"/" + element.name}>
-                    <SubdirectoryArrowRightIcon className="icon"/>
+                    <SubdirectoryArrowRight className="icon"/>
                     <Button className="item" ><span>{element.name}</span></Button>
                   </a>
                 </ListItemIcon>

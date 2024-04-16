@@ -1,6 +1,3 @@
-import { Button } from "@mui/material";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-
 import locale from "./locale";
 
 interface NumberToStringProps {

@@ -3,15 +3,7 @@
 import { useState } from 'react';
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer, Button, Divider, Alert } from '@mui/material';
 import { redirect } from "next/navigation";
-import MenuIcon from '@mui/icons-material/Menu';
-import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
-
-import About from "@/app/components/About";
-import PrimeFactorization from "@/app/components/PrimeFactorization";
-import PitagoreanTree from "@/app/components/PitagoreanTree";
-import SerieDifferences from "@/app/components/SerieDifferences";
-import EratostenesSieve from "@/app/components/EratostenesSieve";
-import { notFound } from 'next/navigation'
+import { Menu, SubdirectoryArrowRight } from '@mui/icons-material';
 
 export default function Custom404() {
 
@@ -32,7 +24,7 @@ export default function Custom404() {
 
   return <div>
     <div className="header">
-      <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><MenuIcon/></Button>
+      <Button className="drawer" variant="contained" onClick={toggleDrawer(true)}><Menu/></Button>
       <span className="title">NOT FOUND</span>
     </div>
     <Drawer open={open} onClose={toggleDrawer(false)}>
@@ -44,7 +36,7 @@ export default function Custom404() {
               <ListItemButton onClick={(e) => {e.stopPropagation(); redirect("/" + element.name)}}>
                 <ListItemIcon>
                   <a href={"/" + element.name}>
-                    <SubdirectoryArrowRightIcon className="icon"/>
+                    <SubdirectoryArrowRight className="icon"/>
                     <Button className="item" ><span>{element.name}</span></Button>
                   </a>
                 </ListItemIcon>
