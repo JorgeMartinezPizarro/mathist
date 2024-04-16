@@ -25,7 +25,7 @@ Open [localhost:3000](http://localhost:3000) with your browser to see the result
 ## Docker
 
 Running in production `npm run start` will fail the `sieve` to `DOWNLOAD`, since `public/files` generated on the fly are not accessible. 
-I use an apache2 file server to serve files inside the docker volumes, an example `docker-compose.yml:
+I use an apache2 file server to serve files inside the docker volumes, an example `docker-compose.yml`:
 
 ```
 services:
@@ -45,7 +45,7 @@ services:
     volumes:
       - ./VOLUMES_PATH:/app/public/files
 ```
-and redirect the /files/ requests to port 2900 with your favorite webserver, `nginx` or `apache2`.
+and redirect the `/files/` requests to port `2900` with your favorite webserver, `nginx` or `apache2`.
 
 There is a version of mathist dockerized under [hub.docker.com](https://hub.docker.com/repository/docker/jorgemartinezpizarro/mathist).
 
