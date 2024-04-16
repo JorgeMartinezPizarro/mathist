@@ -8,7 +8,7 @@ import { RandomPrimesReport } from "@/helpers/randomPrimes";
 import { Alert, Button, FormGroup, TextField } from "@mui/material";
 import { useState } from "react";
 
-const initialRandomPrimes = {
+const initialRandomPrimes: RandomPrimesReport = {
     primes: [],
     length: 0,
     time: 0,
@@ -17,16 +17,16 @@ const initialRandomPrimes = {
 
 const RandomPrimes = () => {
 
-    const [loading, setLoading] = useState(false)
-    const [loadingTest, setLoadingTest] = useState(false)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [loadingTest, setLoadingTest] = useState<boolean>(false)
     const [randomPrimes, setRandomPrimes] = useState<RandomPrimesReport>(initialRandomPrimes)
-    const [length, setLength] = useState(40)
-    const [testTime, setTestTime] = useState(0)
-    const [bigNumber, setBigNumber] = useState("1111111111111111111")
-    const [amount, setAmount] = useState(10)
+    const [length, setLength] = useState<string>("40")
+    const [testTime, setTestTime] = useState<number>(0)
+    const [bigNumber, setBigNumber] = useState<string>("1111111111111111111")
+    const [amount, setAmount] = useState<string>("10")
     const [error, setError] = useState<string>("")
     const [errorTest, setErrorTest] = useState<string>("")
-    const [isPrime, setIsPrime] = useState(false);
+    const [isPrime, setIsPrime] = useState<boolean>(false);
 
     const handleTestIfPrime = async () => {
         try {
@@ -62,7 +62,7 @@ const RandomPrimes = () => {
             setRandomPrimes(initialRandomPrimes)
             setLoading(true)
             setError("")
-            const promise = await fetch("/api/randomPrimes?length="+length + "&amount=" + amount)
+            const promise = await fetch("/api/randomPrimes?length=" + length + "&amount=" + amount)
             const response = await promise.json()
             if (response.error) {
                 throw new Error(response.error.toString())
@@ -73,9 +73,8 @@ const RandomPrimes = () => {
             setLoading(false)
             setError(errorMessage(error))
         }
-            
-                
     }
+
     return <>
         <p>Enter a number to test if it is prime. Max value is 10**{MAX_DIGITS_PRIMALY_TEST}-1.</p>
         <hr/>
@@ -117,11 +116,11 @@ const RandomPrimes = () => {
                 value={length}
                 disabled={loading}
                 onChange={(event => {
-                    // check it is base 3
+                    // check it is an integer
                     const regex = new RegExp("[^0123456789$]");
                     if (!regex.test(event.target.value))
                         try {
-                            setLength(parseInt(event.target.value))
+                            setLength(event.target.value)
                             setRandomPrimes(initialRandomPrimes)
                         } catch (e) {
 
@@ -135,11 +134,11 @@ const RandomPrimes = () => {
                 disabled={loading}
                 value={amount}
                 onChange={(event => {
-                    // check it is base 3
+                    // check it an integer
                     const regex = new RegExp("[^0123456789$]");
                     if (!regex.test(event.target.value))
                         try {
-                            setAmount(parseInt(event.target.value))
+                            setAmount(event.target.value)
                             setRandomPrimes(initialRandomPrimes)
                         } catch (e) {
 
@@ -154,7 +153,7 @@ const RandomPrimes = () => {
         {!error && randomPrimes.primes.length > 0 && <>
             <hr key={"first-lane"}/>
             <p key={"second-lane"}>
-                Generated <NumberToLocale number={amount} singular="prime"/> with <NumberToLocale number={length} singular="digit" /> in {duration(randomPrimes.time)}
+                Generated <NumberToLocale number={parseInt(amount)} singular="prime"/> with <NumberToLocale number={parseInt(length)} singular="digit" /> in {duration(randomPrimes.time)}
             </p>
             {randomPrimes.primes.map(prime => 
                 <div key={prime + "-container"}>
