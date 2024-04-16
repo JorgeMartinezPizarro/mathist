@@ -1,6 +1,6 @@
 ## About
 
-Mathist is a math website, using the power of `BigInt`, `mathjs` and `s-bpsw` to do the calculations. 
+Mathist is a math website, developed using `nextjs` and using `BigInt`, `mathjs` and `s-bpsw` to do the computations. 
 
 It is deployed under [mather.ideniox.com](https://mather.ideniox.com).
 
