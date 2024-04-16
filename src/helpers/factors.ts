@@ -1,7 +1,8 @@
-import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "./primalyTests"
+import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "@/helpers/primalyTests"
 import getTimeMicro from '@/helpers/getTimeMicro';
 import id from '@/helpers/id';
 import { MAX_COMPUTATION_FACTORS } from "@/helpers/Constants";
+import { Factor, Factorization, PrimePower } from "@/types"
 
 const zero: bigint = BigInt(0)
 const one: bigint = BigInt(1)
@@ -115,23 +116,6 @@ function sqrt(value: bigint): bigint {
     }
 
     return newtonIteration(value, one);
-}
-
-export interface PrimePower {
-    prime: bigint;
-    exponent: number;
-}
-
-interface Factorization {
-
-    factors: PrimePower[];
-    message: string;
-    time: number;
-}
-
-interface Factor {
-    factor: bigint;
-    message: string;
 }
 
 const randomFactor = function(n: bigint, maxTries: number): Factor {

@@ -4,13 +4,8 @@ import { isMillerRabinProbablePrime, isBaillieProbablePrime, isPrimeForSure } fr
 import id from '@/helpers/id';
 import getTimeMicro from "./getTimeMicro";
 import duration from "./duration";
+import { RandomPrimesReport } from "@/types";
 
-export interface RandomPrimesReport {
-    primes: bigint[];
-    time: number;
-    length: number;
-    amount: number;
-  }
 
 // The random generator
 // Inspired in https://bigprimes.org/how-it-works

@@ -1,4 +1,4 @@
-import { TreeElement } from "@/app/components/PitagoreanTree"
+import { TreeElement } from "@/types"
 import getTimeMicro from "./getTimeMicro"
 
 export default function pitagoreanTree(n: bigint) {

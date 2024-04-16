@@ -1,29 +1,14 @@
 'use client'
 
-import { TextField, Button, CircularProgress, Alert, FormGroup, Grid } from "@mui/material"
+import { TextField, Button, Alert, FormGroup, Grid } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
 import { MAX_DIGITS_TRIPLE } from "@/helpers/Constants"
-import NumberToString from "@/helpers/NumberToString"
-import Progress from "@/helpers/Progress"
+import NumberToString from "@/widgets/NumberToString"
+import Progress from "@/widgets/Progress"
 import duration from "@/helpers/duration"
-
-export interface TreeElement {
-    triple: bigint[];
-    square: bigint[][];
-}
-
-export interface Tree {
-    tree: TreeElement[][];
-    time: number;
-}
-
-export interface Triple {
-    triple: bigint[];
-    square: bigint[][];
-    time: number;
-}
+import { Tree, Triple } from "@/types"
 
 const PitagoreanTree = () => {
     const [tree, setTree] = useState<Tree>({tree: [], time: 0})

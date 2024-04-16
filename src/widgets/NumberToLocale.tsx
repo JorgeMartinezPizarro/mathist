@@ -1,4 +1,4 @@
-import locale from "./locale";
+import locale from "@/helpers/locale";
 
 interface NumberToLocaleProps {
     number: bigint|number;

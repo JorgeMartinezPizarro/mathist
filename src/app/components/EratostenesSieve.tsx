@@ -7,9 +7,9 @@ import Image from "next/image";
 import {default as d} from "@/helpers/duration"
 import {MAX_SUPPORTED_SIEVE_LENGTH, MAX_HEALTHY_SIEVE_LENGTH} from "@/helpers/Constants"
 import toHuman from "@/helpers/toHuman";
-import NumberToLocale from "@/helpers/NumberToLocale";
-import NumberToString from "@/helpers/NumberToString";
-import Progress from "@/helpers/Progress";
+import NumberToLocale from "@/widgets/NumberToLocale";
+import NumberToString from "@/widgets/NumberToString";
+import Progress from "@/widgets/Progress";
 import errorMessage from "@/helpers/errorMessage";
 
 const EratostenesSieve = () => {

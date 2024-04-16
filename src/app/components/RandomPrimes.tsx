@@ -1,12 +1,13 @@
-import { MAX_DIGITS_PRIMALY_TEST } from "@/helpers/Constants";
-import NumberToLocale from "@/helpers/NumberToLocale";
-import NumberToString from "@/helpers/NumberToString";
-import Progress from "@/helpers/Progress";
-import duration from "@/helpers/duration";
-import errorMessage from "@/helpers/errorMessage";
-import { RandomPrimesReport } from "@/helpers/randomPrimes";
 import { Alert, Button, FormGroup, TextField } from "@mui/material";
 import { useState } from "react";
+
+import { MAX_DIGITS_PRIMALY_TEST } from "@/helpers/Constants";
+import NumberToLocale from "@/widgets/NumberToLocale";
+import NumberToString from "@/widgets/NumberToString";
+import Progress from "@/widgets/Progress";
+import duration from "@/helpers/duration";
+import errorMessage from "@/helpers/errorMessage";
+import { RandomPrimesReport } from "@/types";
 
 const initialRandomPrimes: RandomPrimesReport = {
     primes: [],
