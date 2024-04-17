@@ -19,7 +19,8 @@ export async function GET(request: Request) {
 
     const array = series(2 * length - 1, name)
     const diff = differences(array)
-    return Response.json(diff)
+    const result = diff.slice(0, length).map(subDiff => subDiff.slice(0, length))
+    return Response.json(result)
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }

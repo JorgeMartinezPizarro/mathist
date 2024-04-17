@@ -80,14 +80,14 @@ const SerieDifferences = () => {
         <div style={{overflowX: "auto"}}>
           <table className="series">
             <tbody>
-              {number.slice(0, MAX_SERIES_DIFFERENCES_SIZE).filter((el, id) => {
+              {number.filter((el, id) => {
                 for (var idx = 0; idx<el.length; idx++) {
                   if (BigInt(el[idx].toString()) !== BigInt(0))
                     return true
                 }
                 return false
               }).map((row, i) => 
-                <tr key={JSON.stringify(row)}>{row.slice(0, MAX_SERIES_DIFFERENCES_SIZE).map((nr, j) => 
+                <tr key={JSON.stringify(row)}>{row.map((nr, j) => 
                   <td className={i === j ? "diagonal" : ""} key={j}><NumberToString number={nr} /></td>
                 )}</tr>
               )}

@@ -4,7 +4,7 @@ import { isPrime } from "mathjs";
 
 // Javascript program Miller-Rabin primality test
 // based on JavaScript code found at https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin/
-
+// https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
 // Utility function to do
 // modular exponentiation.
 // It returns (x^y) % p

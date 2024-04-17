@@ -6,6 +6,10 @@ import { Factor, Factorization, PrimePower } from "@/types"
 
 const [zero, one, two, three]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
+// TODO implement the gnfs algorithm
+//
+// https://stackoverflow.com/questions/2267146/what-is-the-fastest-integer-factorization-algorithm
+//
 export default function factors(n: bigint ): Factorization {
     
     const start = getTimeMicro()
@@ -32,25 +36,9 @@ export default function factors(n: bigint ): Factorization {
     while (f.factor > one) {
         if (f.message === "The factor " + f.factor + " is not prime.") {
             // Enought with trial division, now try brent algorithm
-            console.log("Give up with bruce force, try brent factoring algorithm")
-            const brentFactor = brentFactorization(f.factor)
-            console.log("Found a factor " + brentFactor)
-            if (brentFactor !== f.factor) {
-                let c = 1
-                let p = brentFactor
-                let rest = f.factor / p
-                if (isBaillieProbablePrime(p) && isMillerRabinProbablePrime(p)) {
-                    addPrime(factors, p)
-                }
-                while (!isBaillieProbablePrime(p) || !isMillerRabinProbablePrime(p)) {
-                    addPrime(factors, p)
-                    rest = rest / p;
-                    p = brentFactorization(rest)
-                    c++
-                }
-                
-                addPrime(factors, rest)
-            }
+            console.log("Give up with bruce force, try another factoring algorithms")
+            // brentFactorization or gnfsFindFactor
+            addFactorsWithMethod(factors, f.factor, brentFactorization)
             return {
                 factors,
                 message: "",
@@ -66,6 +54,28 @@ export default function factors(n: bigint ): Factorization {
         factors,
         time: getTimeMicro() - start,
         message: ""
+    }
+}
+
+function addFactorsWithMethod(factors: PrimePower[], factor: bigint, factorizationMethod: any) {
+    const computedFactor = factorizationMethod(factor)
+    console.log("Found a factor " + computedFactor)
+    if (computedFactor !== factor) {
+        let c = 1
+        let p: bigint = computedFactor
+        let rest = factor / p
+        if (isBaillieProbablePrime(p) && isMillerRabinProbablePrime(p)) {
+            addPrime(factors, p)
+        }
+        while (p > two && (!isBaillieProbablePrime(p) || !isMillerRabinProbablePrime(p))) {
+            console.log("Found another factor " + p)
+            addPrime(factors, p)
+            rest = rest / p;
+            p = factorizationMethod(rest)
+            c++
+        }
+        
+        addPrime(factors, rest)
     }
 }
 
@@ -154,7 +164,7 @@ export const factor = function(n: bigint): Factor {
     
     const m = sqrt(n);
 
-    for (let i: bigint = BigInt(11); i <= m; i += ringSize) {
+    for (let i: bigint = initialPrime; i <= m; i += ringSize) {
         if (i > MAX_COMPUTATION_FACTORS) {
             return {
                 factor: n,
