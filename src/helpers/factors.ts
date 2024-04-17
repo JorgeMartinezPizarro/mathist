@@ -36,8 +36,8 @@ export default function factors(n: bigint ): Factorization {
     while (f.factor > one) {
         if (f.message === "The factor " + f.factor + " is not prime.") {
             // Enought with trial division, now try brent algorithm
-            console.log("Give up with bruce force, try another factoring algorithms")
-            // brentFactorization or gnfsFindFactor
+            console.log("Give up with bruce force, try the Brent factoring algorithm")
+            // brentFactorization
             addFactorsWithMethod(factors, f.factor, brentFactorization)
             return {
                 factors,
@@ -156,10 +156,8 @@ export const factor = function(n: bigint): Factor {
         2, 3, 5, 7
     ].map(n => BigInt(n));
 
-    const x: bigint = n
-    
     for (var i = 0; i < firstPrimes.length; i++) {
-        if (x % firstPrimes[i] === zero) return {factor: firstPrimes[i], message: ""};
+        if (n % firstPrimes[i] === zero) return {factor: firstPrimes[i], message: ""};
     }
     
     const m = sqrt(n);
@@ -168,12 +166,12 @@ export const factor = function(n: bigint): Factor {
         if (i > MAX_COMPUTATION_FACTORS) {
             return {
                 factor: n,
-                message: "The factor " + n + " is not prime."
+                message: "The factor " + n + " is not prime. We give up by i = " + i
             }
         }
         for (const a of dividers) {
             // Only check divisibility by biggers than last prime to save time
-            if (x % (i + a) === zero) {
+            if (n % (i + a) === zero) {
                 console.log("Found a factor " + (i + a))
                 return {
                     factor: i + a,
