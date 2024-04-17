@@ -90,7 +90,7 @@ const EratostenesSieve = () => {
         <hr/>
         <p>Eratosthenes sieve of a given length, max is <NumberToString number={MAX_HEALTHY_SIEVE_LENGTH}/> using {toHuman(MAX_HEALTHY_SIEVE_LENGTH / 16)} RAM and generating 245MB of primes in a few seconds.</p>
         <hr/>
-        <p>Tested with <NumberToString number={MAX_SUPPORTED_SIEVE_LENGTH}/> using {toHuman(MAX_SUPPORTED_SIEVE_LENGTH / 16)} RAM and generating 451GB of primes in around 36 hours, below some examples:</p>
+        <p>Tested with <NumberToString number={MAX_SUPPORTED_SIEVE_LENGTH}/> using {toHuman(MAX_SUPPORTED_SIEVE_LENGTH / 16)} RAM and generating 452GB of primes in around 36 hours, below some examples:</p>
         <hr/>
         <p>
             <a href="https://mather.ideniox.com/stored/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
