@@ -34,11 +34,11 @@ export default function factors(n: bigint ): Factorization {
     let m = n
     let f: Factor = factor(n)
     while (f.factor > one) {
-        if (f.message === "The factor " + f.factor + " is not prime.") {
+        if (f.message.includes("The factor " + f.factor + " is not prime.")) {
             // Enought with trial division, now try brent algorithm
             console.log("Give up with bruce force, try the Brent factoring algorithm")
-            // brentFactorization
-            addFactorsWithMethod(factors, f.factor, brentFactorization)
+            // brentFactor
+            addFactorsWithMethod(factors, f.factor, brentFactor)
             return {
                 factors,
                 message: "",
@@ -164,9 +164,11 @@ export const factor = function(n: bigint): Factor {
 
     for (let i: bigint = initialPrime; i <= m; i += ringSize) {
         if (i > MAX_COMPUTATION_FACTORS) {
+            const message = "The factor " + n + " is not prime. We give up by i = " + i;
+            console.log(message)
             return {
                 factor: n,
-                message: "The factor " + n + " is not prime. We give up by i = " + i
+                message, 
             }
         }
         for (const a of dividers) {
@@ -186,7 +188,7 @@ export const factor = function(n: bigint): Factor {
     };
 }
 
-const brentFactorization = (n: bigint): bigint => {
+const brentFactor = (n: bigint): bigint => {
     
     const s = sqrt(n)
 
@@ -203,7 +205,7 @@ const brentFactorization = (n: bigint): bigint => {
     let y = two;
     let d = one;
 
-    const f = (x: bigint): bigint => (x * x * x + three) % n;
+    const f = (x: bigint): bigint => (x * x + one) % n;
 
     while (d === one) {
         x = f(x);
@@ -221,6 +223,11 @@ const brentFactorization = (n: bigint): bigint => {
             y = (y * y + one) % n;
             d = gcd(abs(x - y), n);
         }
+    }
+
+    if (d === n) {
+        console.log("The factor " + n + " is not prime. Failed brent.")
+        return d;
     }
 
     return min(d, n/d);
