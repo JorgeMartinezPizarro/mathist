@@ -30,22 +30,12 @@ export default function factors(n: bigint ): Factorization {
     let m = n
     let f: Factor = factor(n)
     while (f.factor > one) {
-        if (factors.length > 0 && factors.slice(-1)[0].prime === f.factor) {
-            factors[factors.length - 1].exponent++
-        } else {
-            factors.push({
-                prime: f.factor,
-                exponent: 1,
-            })
-        }
-        
         if (f.message === "The factor " + f.factor + " is not prime.") {
             // Enought with trial division, now try brent algorithm
             console.log("Give up with bruce force, try brent factoring algorithm")
             const brentFactor = brentFactorization(f.factor)
             console.log("Found a factor " + brentFactor)
             if (brentFactor !== f.factor) {
-                factors.pop();
                 let c = 1
                 let p = brentFactor
                 let rest = f.factor / p
@@ -67,6 +57,7 @@ export default function factors(n: bigint ): Factorization {
                 time: getTimeMicro() - start,
             }
         }
+        addPrime(factors, f.factor)
         m = m / f.factor
         f = factor(m)
     }
