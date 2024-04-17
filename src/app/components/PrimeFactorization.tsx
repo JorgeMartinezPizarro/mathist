@@ -27,7 +27,7 @@ const PrimeFactorization = () => {
 
     const submitNumber = useCallback(() => {
         
-        const url = "/api/factors?"+ ( new URLSearchParams( {LIMIT: value} ) ).toString()
+        const url = "/api/factors?LIMIT=" + value
         setLoading(true)
         setError(false)
         setNumber([])
