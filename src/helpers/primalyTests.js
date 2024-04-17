@@ -1,3 +1,4 @@
+// Use js to import - export from s-bpsw cause types do not exist
 import { isProbablePrime as isBaillieProbablePrime } from "s-bpsw"
 import { isPrime } from "mathjs";
 

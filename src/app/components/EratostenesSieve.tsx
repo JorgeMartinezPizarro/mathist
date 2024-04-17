@@ -86,7 +86,7 @@ const EratostenesSieve = () => {
     }
     
     return <>
-        <p><Image src="/image6.png" priority={true} height={100} width={100} alt=""/></p>
+        <p><Image src="/image6.png" priority={true} height={100} width={100 * 217 / 260} alt=""/></p>
         <hr/>
         <p>Eratosthenes sieve of a given length, max is <NumberToString number={MAX_HEALTHY_SIEVE_LENGTH}/> using {toHuman(MAX_HEALTHY_SIEVE_LENGTH / 16)} RAM and generating 245MB of primes in a few seconds.</p>
         <hr/>

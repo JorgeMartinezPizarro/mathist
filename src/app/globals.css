@@ -211,3 +211,9 @@ div[role="alert"] {
   height: 30px;
   display: inline-block;
 }
+
+img {
+  margin: 8px;
+  width: auto;
+  height: 100px;
+}

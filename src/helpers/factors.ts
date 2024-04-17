@@ -1,13 +1,10 @@
+import gcd from "@/helpers/gcd"
 import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "@/helpers/primalyTests"
 import getTimeMicro from '@/helpers/getTimeMicro';
-import id from '@/helpers/id';
 import { MAX_COMPUTATION_FACTORS } from "@/Constants";
 import { Factor, Factorization, PrimePower } from "@/types"
 
-const zero: bigint = BigInt(0)
-const one: bigint = BigInt(1)
-const two: bigint = BigInt(2)
-const three: bigint = BigInt(3)
+const [zero, one, two, three]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
 export default function factors(n: bigint ): Factorization {
     
@@ -42,45 +39,54 @@ export default function factors(n: bigint ): Factorization {
             })
         }
         
-        if (f.message) {
-            
-            console.log(f.message)
-            const random = randomFactor(f.factor, 100000) // 100k less than a sec
-            const fermat = fermatFactor(f.factor, 100000) // 100k less than a sec
-            let message = f.message
-            
-            message += fermat.message
-            if (fermat.factor !== m) {
-                factors.push({
-                    prime: fermat.factor,
-                    exponent: 1,
-                })
-                message += (fermat.factor + " is not a prime maybe.")    
+        if (f.message === "The factor " + f.factor + " is not prime.") {
+            // Enought with trial division, now try brent algorithm
+            console.log("Give up with bruce force, try brent factoring algorithm")
+            const brentFactor = brentFactorization(f.factor)
+            console.log("Found a factor " + brentFactor)
+            if (brentFactor !== f.factor) {
+                factors.pop();
+                let c = 1
+                let p = brentFactor
+                let rest = f.factor / p
+                if (isBaillieProbablePrime(p) && isMillerRabinProbablePrime(p)) {
+                    addPrime(factors, p)
+                }
+                while (!isBaillieProbablePrime(p) || !isMillerRabinProbablePrime(p)) {
+                    addPrime(factors, p)
+                    rest = rest / p;
+                    p = brentFactorization(rest)
+                    c++
+                }
+                
+                addPrime(factors, rest)
             }
-                        
-            message += random.message
-            if (fermat.factor === m && random.factor !== m) {
-                factors.push({
-                    prime: random.factor,
-                    exponent: 1,
-                })
-                message += (random.factor + " is not a prime maybe.")
-            }
-            
             return {
                 factors,
-                message: message.replaceAll(".", ". "),
+                message: "",
                 time: getTimeMicro() - start,
             }
         }
         m = m / f.factor
-        f = factor(m, f.factor)
+        f = factor(m)
     }
     
     return {
         factors,
         time: getTimeMicro() - start,
         message: ""
+    }
+}
+
+function addPrime(factors: PrimePower[], factor: bigint): void {
+    
+    if (factors.length > 0 && factors.slice(-1)[0].prime === factor) {
+        factors[factors.length - 1].exponent++;
+    } else {
+        factors.push({
+            prime: factor,
+            exponent: 1
+        })
     }
 }
 
@@ -118,111 +124,9 @@ function sqrt(value: bigint): bigint {
     return newtonIteration(value, one);
 }
 
-const randomFactor = function(n: bigint, maxTries: number): Factor {
-    const start = getTimeMicro()
-    const m: bigint = sqrt(n)
-    let count = 0;
-    
-    if (isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
-        return {
-            factor: n,
-            message: ""
-        }
-    }
-    if ([zero, one, two, three].includes(n)) {
-        return {
-            factor: n,
-            message: "",
-        }
-    }
-    if (m === one) {
-        return {
-            factor: n,
-            message: "",
-        }
-    }
-    while (count < maxTries) {
-        const randomPosibleDivisor: bigint = rand(m.toString().length)
-        
-        if (one < randomPosibleDivisor && randomPosibleDivisor <= m) {
-            if (n % randomPosibleDivisor === zero) {
-                return {
-                    factor: randomPosibleDivisor,
-                    message: "",
-                }
-            }
-            count++;
-        }
-    }
-    const message = "After " + maxTries + " iterations, no random factors found."
-
-    return {
-        factor: n,
-        message,
-    }
-}
-
-function fermatFactor(n: bigint, maxTries: number): Factor
-    {
-        const start = getTimeMicro()
-        // since fermat's factorization applicable 
-        // for odd positive integers only 
-        if(n <= zero)
-        {
-            return {
-                factor: n,
-                message: ""
-            };
-        }
-       
-        // check if n is a even number 
-        if((n % two) == zero)
-        {
-            return {
-                factor: two,
-                message: ""
-            };
-        }
-               
-        let a = sqrt(n);
-        const t = a * a
-        // if n is a perfect root, 
-        // then both its square roots are its factors 
-        if(t == n) {
-            return {
-                factor: a,
-                message: ""
-            };
-        }
-        let b;
-
-        let count = 0;
-
-        while(count < maxTries)
-        {
-            let b1 = n - t;
-            b = sqrt(b1);
-               
-            if(b * b === b1)
-                return {
-                    factor: a + b,
-                    message: ""
-                };
-            else
-                a += one;
-            count++
-        }
-        const message = "After " + maxTries + " iterations, no fermat factors found."
-        
-        return {
-            factor: n,
-            message,
-        };
-    }
-
 // Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
-// TODO: use start to continue dividing by last prime found
-export const factor = function(n: bigint, lastFactorFound: bigint = BigInt(11)): Factor {
+export const factor = function(n: bigint): Factor {
+
     if (n > 10**10 && isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
         return {
             factor: n, 
@@ -259,16 +163,17 @@ export const factor = function(n: bigint, lastFactorFound: bigint = BigInt(11)):
     
     const m = sqrt(n);
 
-    for (let i: bigint = initialPrime; i <= m; i += ringSize) {
+    for (let i: bigint = BigInt(11); i <= m; i += ringSize) {
         if (i > MAX_COMPUTATION_FACTORS) {
             return {
                 factor: n,
-                message: "The factor " + n + " is not prime. Failed to factor with brute force after " + MAX_COMPUTATION_FACTORS + " divisions."
+                message: "The factor " + n + " is not prime."
             }
         }
         for (const a of dividers) {
             // Only check divisibility by biggers than last prime to save time
-            if (i + a > lastFactorFound && x % (i + a) === zero) {
+            if (x % (i + a) === zero) {
+                console.log("Found a factor " + (i + a))
                 return {
                     factor: i + a,
                     message: ""
@@ -282,6 +187,48 @@ export const factor = function(n: bigint, lastFactorFound: bigint = BigInt(11)):
     };
 }
 
-const rand = (length: number): bigint => {
-    return  BigInt(id(length))
+const brentFactorization = (n: bigint): bigint => {
+    
+    const s = sqrt(n)
+
+    // If it is a square return the root
+    if (s * s - n === zero) {
+        return s;
+    }
+ 
+    if (n <= 0) throw new Error("Invalid n = " + n)
+
+    if (n % two === zero) return two; // If n is even, return 2 and n/2
+
+    let x = two;
+    let y = two;
+    let d = one;
+
+    const f = (x: bigint): bigint => (x * x + one) % n;
+
+    while (d === one) {
+        x = f(x);
+        y = f(f(y));
+        d = gcd(abs(x - y), n);
+    }
+
+    if (d === n) {
+        // Retry with different starting point if failed
+        x = two;
+        y = two;
+        d = one;
+        while (d === one) {
+            x = (x * x + one) % n;
+            y = (y * y + one) % n;
+            d = gcd(abs(x - y), n);
+        }
+    }
+
+    return d;
+}
+
+const abs = (n: bigint): bigint => {
+    if (n < zero)
+        return -n;
+    return n;
 }
