@@ -199,13 +199,13 @@ const brentFactorization = (n: bigint): bigint => {
  
     if (n <= 0) throw new Error("Invalid n = " + n)
 
-    if (n % two === zero) return two; // If n is even, return 2 and n/2
+    if (n % two === zero) return two; // If n is even, return 2
 
     let x = two;
     let y = two;
     let d = one;
 
-    const f = (x: bigint): bigint => (x * x + one) % n;
+    const f = (x: bigint): bigint => (x * x * x + three) % n;
 
     while (d === one) {
         x = f(x);
@@ -225,11 +225,11 @@ const brentFactorization = (n: bigint): bigint => {
         }
     }
 
-    return d;
+    return min(d, n/d);
 }
 
-const abs = (n: bigint): bigint => {
-    if (n < zero)
-        return -n;
-    return n;
-}
+const max = (a: bigint, b: bigint) => a > b ? a : b;
+
+const min = (a: bigint, b: bigint) => a > b ? b : a;
+
+const abs = (n: bigint): bigint => n < zero ? -n : n;
