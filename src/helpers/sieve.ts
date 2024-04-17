@@ -8,13 +8,15 @@ import errorMessage from "@/helpers/errorMessage";
 //  amount  time  RAM
 //  =====   ===== ====
 //
-//  100m    500ms 5MB 
-//  1b      10s   64MB
-//  100b    50m   6GB 
-//  500b    10h   30GB
+//  100m    500ms  5MB 
+//  1b      10s    64MB
+//  10b     3m     640MB
+//  100b    50m    6GB 
+//  1t      36h    58GB
 //
-// Beyond 535b it will throw an error.
-// If your node has no enough memory it will throw an error earlier.
+// If your node has no enough memory it will throw an error.
+//
+// Posible improvements: 
 //
 // Remove odds memory usage
 //
@@ -28,7 +30,7 @@ import errorMessage from "@/helpers/errorMessage";
 //
 //   1/2 * 5/6 * 29/30 * 209/210 = 40%
 //
-// Conclusion: do not worth
+// Conclusion: do not worth to go beyond
 
 export default function sieve(lastNumber: number): Bits {
     
@@ -39,14 +41,14 @@ export default function sieve(lastNumber: number): Bits {
   try {
       // Initialization
       const memorySize = Math.round(lastNumber / 2);
-      const sieve = new Bits(memorySize);
       const upperLimit = Math.round(Math.sqrt(lastNumber));
-      
+      const sieve = new Bits(memorySize);
+           
       // Hard process crossing all odd composite numbers
       for (var i = 3; i <= upperLimit; i += 2) {
           if (sieve.get((i -1) / 2) === false) {
-              for (var j = i*i; j <= lastNumber; j += 2*i) {
-                  sieve.set((j-1)/2, true);
+              for (var j = i * i; j <= lastNumber; j += 2 * i) {
+                  sieve.set((j - 1) / 2, true);
               }
           }
       }
