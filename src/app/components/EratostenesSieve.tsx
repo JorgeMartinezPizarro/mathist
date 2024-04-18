@@ -133,7 +133,8 @@ const EratostenesSieve = () => {
         </>}
         {!error && (primes.length > 0) && !loading && (<>
             <hr/>
-            <p>Total of primes smaller or equal than <NumberToString number={BigInt(value)} /> is {length === -1 ? "unknown" : <NumberToString number={length} />}, it took {d(duration)}</p>
+            {length !== -1 && <p>Total of primes smaller or equal than <NumberToString number={BigInt(value)} /> is <NumberToString number={length} />, it took {d(duration)}. Used eratosthenes sieve.</p>}
+            {length === -1 && <p>Ten primes up to <NumberToString number={BigInt(value)} /> found using the segmented sieve in {d(duration)} </p>}
             <hr/>
             <p>Last <NumberToLocale number={primes.length} singular={"prime"} /> of the sieve:</p>
             <hr/>

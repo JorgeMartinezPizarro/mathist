@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE} from "@/Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH} from "@/Constants";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
@@ -27,8 +27,8 @@ export function partialEratostenes(LIMIT: bigint) {
 }
 
 function lastTeenPrimes(LIMIT: bigint) {
-  if (LIMIT > BigInt(10**18)) {
-    throw new Error("Value out of Range!")
+  if (LIMIT > MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH) {
+    throw new Error("Value out of range " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
   }
 
   const high = LIMIT;
