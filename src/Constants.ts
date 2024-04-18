@@ -9,8 +9,8 @@ export const EXCEL_MAX_ROWS = 1048576;                              // FIX VALUE
 export const EXCEL_MAX_COLS = 16384;                                // FIX VALUE FROM EXCEL SPEC
 
 // Web healthy limits
-export const MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH = 10**16            // Healthy sieve of 500m in few seconds and 250MB beyond it use segmented sieve.
-export const MAX_HEALTHY_SIEVE_LENGTH = 5 * 10**8
+export const MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH = 10**16            // with segmented sieve it runs up to 10**16 is less than a sec
+export const MAX_HEALTHY_SIEVE_LENGTH = 10**8                       // 100m run in les than a sec.
 export const MAX_DIGITS_TRIPLE = 180000;                            // Healthy computation of less than a sec
 export const MAX_LENGTH_TREE = 10;                                  // Healthy computation of just few seconds
 export const MAX_DIGITS_FACTORIZATION = 21;                         // Healthy computation of just few seconds
