@@ -5,7 +5,7 @@ import { useState } from "react"
 import Image from "next/image";
 
 import {default as d} from "@/helpers/duration"
-import {MAX_SUPPORTED_SIEVE_LENGTH, MAX_HEALTHY_SIEVE_LENGTH} from "@/Constants"
+import { MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH } from "@/Constants"
 import toHuman from "@/helpers/toHuman";
 import NumberToLocale from "@/widgets/NumberToLocale";
 import NumberToString from "@/widgets/NumberToString";
@@ -30,8 +30,7 @@ const EratostenesSieve = () => {
     
     const downloadCSV = async () => {
         try {
-            const limit = parseInt(value)
-            const url = "/api/primes?LIMIT="+limit+"&excel=true"
+            const url = "/api/primes?LIMIT="+value+"&excel=true"
             setError(false)
             setLoading(true)
             setDuration(0)
@@ -44,9 +43,12 @@ const EratostenesSieve = () => {
             if (error) {
                 throw new Error(error.toString())
             }
+            if (filename === "") {
+                throw new Error("Failed to generate the file with primes.")
+            }
             const link = document.createElement("a");
             link.href = filename;
-            link.download = "primes-to-" + limit.toString() + ".csv";
+            link.download = "primes-to-" + value + ".csv";
             document.body.appendChild(link);
             link.click();        
             document.body.removeChild(link);
@@ -61,7 +63,7 @@ const EratostenesSieve = () => {
 
     const generateSieve = async () => {
         try {
-            const url = "/api/primes?LIMIT="+value.toString()
+            const url = "/api/primes?LIMIT="+value
             setLoading(true)
             setError(false)
             setPrimes([])
@@ -88,9 +90,9 @@ const EratostenesSieve = () => {
     return <>
         <p><Image src="/image6.png" priority={true} height={100} width={100 * 217 / 260} alt=""/></p>
         <hr/>
-        <p>Eratosthenes sieve of a given length, max is <NumberToString number={MAX_HEALTHY_SIEVE_LENGTH}/> using {toHuman(MAX_HEALTHY_SIEVE_LENGTH / 16)} RAM and generating 245MB of primes in a few seconds.</p>
+        <p>Eratosthenes sieve of a given length.</p>
         <hr/>
-        <p>Tested with <NumberToString number={MAX_SUPPORTED_SIEVE_LENGTH}/> using {toHuman(MAX_SUPPORTED_SIEVE_LENGTH / 16)} RAM and generating 452GB of primes in around 36 hours, below some examples:</p>
+        <p>Used to generate prime lists up to 1 trillion. Below some prime files generated:</p>
         <hr/>
         <p>
             <a href="https://mather.ideniox.com/stored/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
@@ -111,7 +113,7 @@ const EratostenesSieve = () => {
                 value={value}
                 onChange={(event => {
                     const regex = new RegExp("[^0123456789$]");
-                    if (event.target.value.length <= MAX_HEALTHY_SIEVE_LENGTH.toString().length && !regex.test(event.target.value)) {
+                    if (event.target.value.length <= MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH.toString().length && !regex.test(event.target.value)) {
                         setValue(event.target.value)
                         setPrimes([])
                         setDurationFull(0)
@@ -131,7 +133,7 @@ const EratostenesSieve = () => {
         </>}
         {!error && (primes.length > 0) && !loading && (<>
             <hr/>
-            <p>Total of primes smaller or equal than <NumberToString number={BigInt(value)} /> is <NumberToString number={length} />, it took {d(duration)}</p>
+            <p>Total of primes smaller or equal than <NumberToString number={BigInt(value)} /> is {length === -1 ? "unknown" : <NumberToString number={length} />}, it took {d(duration)}</p>
             <hr/>
             <p>Last <NumberToLocale number={primes.length} singular={"prime"} /> of the sieve:</p>
             <hr/>

@@ -6,14 +6,90 @@ import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
 import eratosthenes from "@/helpers/sieve";
 import id from "@/helpers/id";
-import errorMessage from "./errorMessage";
+import errorMessage from "@/helpers/errorMessage";
+import { SieveReport } from "@/types";
+import Bits from "@/helpers/Bits";
+import { sqrt } from "./m";
 
+// TODO: research https://stackoverflow.com/questions/39312107/implementing-the-page-segmented-sieve-of-eratosthenes-in-javascript
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
-  
+
   if (excel) {
     return primesToExcel(LIMIT)
   } 
+  
   return primes(LIMIT, amount)
+  
+}
+
+export function partialEratostenes(LIMIT: bigint) {
+  return lastTeenPrimes(LIMIT)
+}
+
+function lastTeenPrimes(LIMIT: bigint) {
+  if (LIMIT > BigInt(10**18)) {
+    throw new Error("Value out of Range!")
+  }
+
+  const high = LIMIT;
+  // Up to 10**18, 1000 elements ensure 10 primes
+  const low = high > BigInt(10**3) ? high - BigInt(10**3) : BigInt(1)
+
+  return segmentedSieve(low, high)
+}
+
+// Segment the sieve into steps of size sqrt of high. 
+function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
+  if (high > 10 ** 18) {
+    throw new Error("This algorithm need memory sqrt(high), 10**8 basic sieve takes some seconds.")
+  }
+  console.log("/////////////////////////////////////////////////////////////////////////////")
+  const start = getTimeMicro();
+  const sieveSize = Math.floor(Math.sqrt(Number(high))) + 1;
+  const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
+  const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
+  console.log("Start segmented sieve for primes from " + low + " to " + high + " with number of segments " + numSegments + " with max memory usage " + toHuman(2 * sieveSize / 16))
+  const primesToRoot = primes(sieveSize, sieveSize).primes;
+  
+  let primesInRange: Array<bigint> = []; // Primes found in the given range
+  
+  console.log("Start first segment ...")
+  let elapsed = getTimeMicro();
+  let count = 0;
+  // Iterate over each segment
+  for (let segment = 0; segment < numSegments; segment++) {
+      const start = low + BigInt(segment) * BigInt(segmentSize);
+      const end = low + BigInt(segment + 1) * BigInt(segmentSize);
+      const sieve = new Bits(segmentSize)
+      // Sieve the segment using primes from the base sieve
+      for (const t of primesToRoot) {
+          const p = BigInt(t)
+          const startIdx = p >= start ? p : start + (p - start % p) % p; // Start at the smallest multiple of p >= start
+          for (let j = startIdx; j < end; j += p) {
+              sieve.set(Number(j - start), true); // Mark multiples of prime as composite
+          }
+      }
+      // Store primes found in this segment
+      for (let i = 0; i < segmentSize; i++) {
+          if (!sieve.get(i) && (start + BigInt(i)) !== BigInt(1)) { // Skip 1 as it's not a prime
+              primesInRange.push(start + BigInt(i));
+              count++
+          }
+      }
+      primesInRange = primesInRange.slice(-maxLength);
+      process.stdout.write("\r");
+      process.stdout.write("\r");
+      process.stdout.write("Segment done, processed " + Math.round(100 * ((segment + 1) / numSegments)) + "%.")
+  }
+
+  console.log("\nDone in " + duration(getTimeMicro() - elapsed))
+
+  return {
+    primes: primesInRange,
+    filename: "",
+    time: getTimeMicro() - start,
+    length: -1
+  }
 }
 
 // Create excel file with primes up to LIMIT
@@ -153,9 +229,3 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
   return {filename: "", primes: arrayOfPrimes.slice(0, amount).reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes};
 }
 
-export interface SieveReport {
-  filename: string;
-  primes: number[]; // enough up to 10**17. Sieve cant get that long never!
-  time: number;
-  length: number;
-}

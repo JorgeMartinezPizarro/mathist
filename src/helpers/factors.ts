@@ -3,8 +3,9 @@ import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "@/helpers/pr
 import getTimeMicro from '@/helpers/getTimeMicro';
 import { MAX_COMPUTATION_FACTORS } from "@/Constants";
 import { Factor, Factorization, PrimePower } from "@/types"
+import { abs, min, sqrt } from "./m";
 
-const [zero, one, two, three]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
+const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
 // TODO implement the gnfs algorithm
 //
@@ -69,7 +70,7 @@ function addFactorsWithMethod(factors: PrimePower[], factor: bigint, factorizati
         }
         while (p > two && (!isBaillieProbablePrime(p) || !isMillerRabinProbablePrime(p))) {
             console.log("Found another factor " + p)
-            addPrime(factors, p)
+            //addPrime(factors, p)
             rest = rest / p;
             p = factorizationMethod(rest)
             c++
@@ -89,40 +90,6 @@ function addPrime(factors: PrimePower[], factor: bigint): void {
             exponent: 1
         })
     }
-}
-
-// How to get sqrt of a BigInt, found under the link below
-// https://stackoverflow.com/a/53684036
-function sqrt(value: bigint): bigint {
-    if (value < zero) {
-        throw 'Square root of negative numbers is not supported'
-    }
-    // The method give incorrect values for small numbers, so check it separately
-    if ([zero, one].includes(value))  {
-        return value;
-    }
-    if (value < two * two) {
-        return one;
-    }
-    if (value < three * three) {
-        return two;
-    }
-    if (value <  BigInt(16)) {
-        return three;
-    }
-    if (value < BigInt(25)) {
-        return BigInt(4);
-    }
-    
-    function newtonIteration(n: bigint, x0: bigint): bigint {
-        const x1: bigint = n / x0 + x0 >> one;
-        if (x0 === x1 || x0 === x1 - one) {
-            return x0;
-        }
-        return newtonIteration(n, x1);
-    }
-
-    return newtonIteration(value, one);
 }
 
 // Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
@@ -219,8 +186,8 @@ const brentFactor = (n: bigint): bigint => {
         y = two;
         d = one;
         while (d === one) {
-            x = (x * x + one) % n;
-            y = (y * y + one) % n;
+            x = f(x) % n;
+            y = f(y) % n;
             d = gcd(abs(x - y), n);
         }
     }
@@ -230,11 +197,13 @@ const brentFactor = (n: bigint): bigint => {
         return d;
     }
 
+    const primeFactor = min(d, n / d)
+
+    if (!isMillerRabinProbablePrime(primeFactor) || !isBaillieProbablePrime(primeFactor)) {
+        throw new Error("THE FACTOR IS NOT PRIME")
+    }
+
     return min(d, n/d);
 }
 
-const max = (a: bigint, b: bigint) => a > b ? a : b;
 
-const min = (a: bigint, b: bigint) => a > b ? b : a;
-
-const abs = (n: bigint): bigint => n < zero ? -n : n;
