@@ -4,6 +4,10 @@ import errorMessage from '@/helpers/errorMessage'
 import toHuman from '@/helpers/toHuman'
 
 export async function GET(request: Request) {
+  (BigInt.prototype as any).toJSON = function() {
+    return this.toString()
+  }
+  
   // Add start - end principle. Use prime tests to generate big partial prime lists.
   try {
     const { searchParams } = new URL(request.url||"".toString())
@@ -42,9 +46,6 @@ export async function GET(request: Request) {
       )
     }
     
-    (BigInt.prototype as any).toJSON = function() {
-      return this.toString()
-    }
 
     return Response.json( eratostenes(LIMIT, amount, excel) )
   } catch (error) {
