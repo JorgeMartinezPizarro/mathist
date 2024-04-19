@@ -1,17 +1,9 @@
 import fs from "fs"
-import readline from 'node:readline/promises'
-import stream from 'stream';
-import nthline from "nthline"
+import nthline from "@/helpers/nthline"
 
-import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH, EXCEL_MAX_COLS } from '@/Constants'
-import eratostenes, { partialEratostenes, segmentedSieve } from '@/helpers/eratostenes'
+import { EXCEL_MAX_COLS } from '@/Constants'
 import errorMessage from '@/helpers/errorMessage'
-import toHuman from '@/helpers/toHuman'
 import getTimeMicro from "@/helpers/getTimeMicro";
-import duration from "@/helpers/duration";
-import { number } from "mathjs";
-
-
 
 export async function GET(request: Request) {
   (BigInt.prototype as any).toJSON = function() {
@@ -36,7 +28,8 @@ export async function GET(request: Request) {
     console.log("Get element " + row + " x " + col)
     const start = getTimeMicro()
     
-    const filePath = "/app/files/primes-to-100b.csv"
+    // USE ENVIRONMENT VARIABLE FOR DISTINCT FILES IN LOCAL OR SERVER
+    const filePath = "/app/files/primes-to-1t.csv"
     //const filePath = "/Users/USUARIO/Downloads/primes-to-100b.csv";
     
     if (!fs.existsSync(filePath)) {
