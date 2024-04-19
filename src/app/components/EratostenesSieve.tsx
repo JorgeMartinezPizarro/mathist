@@ -90,7 +90,7 @@ const EratostenesSieve = () => {
     return <>
         <p><Image src="/image6.png" priority={true} height={100} width={100 * 217 / 260} alt=""/></p>
         <hr/>
-        <p>Eratosthenes sieve of a given length up to 10 quatrillion.</p>
+        <p>Eratosthenes sieve of a given length up to 10 quatrillion. Over 100 million we use segmented sieve.</p>
         <hr/>
         <p>Used to generate prime lists up to 1 trillion. Below some prime files generated:</p>
         <hr/>
