@@ -10,6 +10,7 @@ import errorMessage from "@/helpers/errorMessage";
 import { SieveReport } from "@/types";
 import Bits from "@/helpers/Bits";
 import { sqrt } from "./m";
+import { isMillerRabinProbablePrime } from "./primalyTests";
 
 // TODO: research https://stackoverflow.com/questions/39312107/implementing-the-page-segmented-sieve-of-eratosthenes-in-javascript
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
@@ -28,7 +29,7 @@ export function partialEratostenes(LIMIT: bigint) {
 
 function lastTeenPrimes(LIMIT: bigint) {
   if (LIMIT > MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH) {
-    throw new Error("Value out of range " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
+    throw new Error("Segmented sieve can be run with a max value of " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
   }
 
   const high = LIMIT;
@@ -39,9 +40,11 @@ function lastTeenPrimes(LIMIT: bigint) {
 }
 
 // Segment the sieve into steps of size sqrt of high. 
-function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
+export function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
   if (high > 10 ** 18) {
     throw new Error("This algorithm need memory sqrt(high), 10**8 basic sieve takes some seconds.")
+  } else if (high - low > 10**10) {
+    throw new Error("It would take a lot of time!")
   }
   console.log("/////////////////////////////////////////////////////////////////////////////")
   const start = getTimeMicro();
@@ -49,13 +52,15 @@ function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10): Siev
   const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
   console.log("Start segmented sieve for primes from " + low + " to " + high + " with number of segments " + numSegments + " with max memory usage " + toHuman(2 * sieveSize / 16))
+  
+  // TODO: instead of getting the primes and iterate over them, iterate over the original sieve and catch the primes.
+  // TODO the count is wrong!
   const primesToRoot = primes(sieveSize, sieveSize).primes;
   
   let primesInRange: Array<bigint> = []; // Primes found in the given range
   
   console.log("Start first segment ...")
   let elapsed = getTimeMicro();
-  let count = 0;
   // Iterate over each segment
   for (let segment = 0; segment < numSegments; segment++) {
       const start = low + BigInt(segment) * BigInt(segmentSize);
@@ -72,10 +77,12 @@ function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10): Siev
       // Store primes found in this segment
       for (let i = 0; i < segmentSize; i++) {
           if (!sieve.get(i) && (start + BigInt(i)) !== BigInt(1)) { // Skip 1 as it's not a prime
-              primesInRange.push(start + BigInt(i));
-              count++
+              if (start + BigInt(i) < high && start + BigInt(i) > low) {
+                primesInRange.push(start + BigInt(i));
+              }
           }
       }
+      
       primesInRange = primesInRange.slice(-maxLength);
       process.stdout.write("\r");
       process.stdout.write("\r");

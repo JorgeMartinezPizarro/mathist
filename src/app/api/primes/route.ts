@@ -1,15 +1,20 @@
 import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH } from '@/Constants'
-import eratostenes, { partialEratostenes } from '@/helpers/eratostenes'
+import eratostenes, { partialEratostenes, segmentedSieve } from '@/helpers/eratostenes'
 import errorMessage from '@/helpers/errorMessage'
 import toHuman from '@/helpers/toHuman'
+import countPrimesTo from '@/helpers/ss'
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<Response> {
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
   }
 
   // Add start - end principle. Use prime tests to generate big partial prime lists.
   try {
+
+    //console.log(countPrimesTo(10**12))
+    //console.log(segmentedSieve(BigInt(0), BigInt(10**8)))
+
     const { searchParams } = new URL(request.url||"".toString())
     const LIMIT_BI: bigint = BigInt(searchParams.get('LIMIT') || "")
     const LIMIT = Number(LIMIT_BI)
@@ -44,12 +49,10 @@ export async function GET(request: Request) {
         {error: "Max length is " + MAX_SUPPORTED_SIEVE_LENGTH + ", which takes " + toHuman(MAX_SUPPORTED_SIEVE_LENGTH / 16) + " RAM and 452GB disk."},
         {status: 500}
       )
-    }
-    
+    }    
 
     return Response.json( eratostenes(LIMIT, amount, excel) )
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }
-
