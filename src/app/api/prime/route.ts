@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     console.log("Get element " + row + " x " + col)
     const start = getTimeMicro()
     
-    const filePath = "/var/www/html/files/primes-to-10b.csv"//"/Users/USUARIO/Downloads/primes-to-1b.csv";
+    const filePath = "/app/files/primes-to-10b.csv"//"/Users/USUARIO/Downloads/primes-to-1b.csv";
     function readLines(params: any) {
       const { input } = params;
       const output = new stream.PassThrough({ objectMode: true });
