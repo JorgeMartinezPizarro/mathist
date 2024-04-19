@@ -9,8 +9,7 @@ import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
 import { SieveReport } from "@/types";
 import Bits from "@/helpers/Bits";
-import { sqrt } from "./m";
-import { isMillerRabinProbablePrime } from "./primalyTests";
+
 
 // TODO: research https://stackoverflow.com/questions/39312107/implementing-the-page-segmented-sieve-of-eratosthenes-in-javascript
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
