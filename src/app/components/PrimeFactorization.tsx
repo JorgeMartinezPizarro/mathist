@@ -54,7 +54,7 @@ const PrimeFactorization = () => {
 
     return <>
         <hr />
-        <p>Enter a number below to factorize it. The max number can be entered is 10**{MAX_DIGITS_FACTORIZATION} - 1.</p>
+        <p>Enter a number below to factorize it. The max number can be entered is 100 quintillion - 1.</p>
         <hr />
         <FormGroup row={true}>
             <TextField

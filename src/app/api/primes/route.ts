@@ -38,7 +38,7 @@ export async function GET(request: Request): Promise<Response> {
     if (process.env.MATHER_SECRET !== KEY && LIMIT > MAX_HEALTHY_SIEVE_LENGTH) { 
       // 500m up to 30MB RAM 245MB disk, natural limit for the web, it takes 3s to compute.
       return Response.json(
-        {error: "Max length is " + MAX_HEALTHY_SIEVE_LENGTH + ", which takes " + toHuman(MAX_HEALTHY_SIEVE_LENGTH / 16) + " RAM and 49MB disk. For more ask the admin."},
+        {error: "Max length for generate prime download is " + MAX_HEALTHY_SIEVE_LENGTH + ", which takes " + toHuman(MAX_HEALTHY_SIEVE_LENGTH / 16) + " RAM and 49MB disk. For more ask the admin."},
         {status: 500}
       )
     } 
