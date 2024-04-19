@@ -31,7 +31,7 @@ export default function factors(n: bigint ): Factorization {
         throw new Error("It works only with positive integers!")
     }
 
-    const factors: PrimePower[] = []
+    let factors: PrimePower[] = []
     let m = n
     let f: Factor = factor(n)
     while (f.factor > one) {
@@ -40,6 +40,7 @@ export default function factors(n: bigint ): Factorization {
             console.log("Give up with bruce force, try the Brent factoring algorithm")
             // brentFactor
             addFactorsWithMethod(factors, f.factor, brentFactor)
+            factors.sort((a: PrimePower,b: PrimePower ) => Number(a.prime - b.prime))
             return {
                 factors,
                 message: "",
@@ -50,6 +51,8 @@ export default function factors(n: bigint ): Factorization {
         m = m / f.factor
         f = factor(m)
     }
+
+
     
     return {
         factors,
@@ -68,12 +71,13 @@ function addFactorsWithMethod(factors: PrimePower[], factor: bigint, factorizati
         if (isBaillieProbablePrime(p) && isMillerRabinProbablePrime(p)) {
             addPrime(factors, p)
         }
-        while (p > two && (!isBaillieProbablePrime(p) || !isMillerRabinProbablePrime(p))) {
-            console.log("Found another factor " + p)
-            //addPrime(factors, p)
-            rest = rest / p;
+        while (p > two && !isMillerRabinProbablePrime(rest) && isMillerRabinProbablePrime(p)) {
+            
             p = factorizationMethod(rest)
+            rest = rest / p;
             c++
+            console.log("Found another factor " + p)
+            addPrime(factors, p)
         }
         
         addPrime(factors, rest)
