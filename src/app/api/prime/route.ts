@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     if (LIMIT === 0) {
       return Response.json({error: "It returns a prime given a positive integer position. 0 is not a positive integer."}, {status: 500})
     }
-    if (isNaN(LIMIT)) {
+    if (isNaN(LIMIT) || LIMIT > 10**9) { // More than primes below 1t, ie 36b
       throw new Error("Invalid LIMIT " + LIMIT)
     }
     const row = (LIMIT -1 )% EXCEL_MAX_COLS  

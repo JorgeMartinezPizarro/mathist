@@ -124,7 +124,10 @@ export const factor = function(n: bigint): Factor {
     ].map(n => BigInt(n));
 
     for (var i = 0; i < firstPrimes.length; i++) {
-        if (n % firstPrimes[i] === zero) return {factor: firstPrimes[i], message: ""};
+        if (n % firstPrimes[i] === zero) {
+            console.log("Found a factor " + firstPrimes[i])
+            return {factor: firstPrimes[i], message: ""};
+        }
     }
     
     const m = sqrt(n);
