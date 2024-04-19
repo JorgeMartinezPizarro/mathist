@@ -2,18 +2,13 @@ import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH
 import eratostenes, { partialEratostenes, segmentedSieve } from '@/helpers/eratostenes'
 import errorMessage from '@/helpers/errorMessage'
 import toHuman from '@/helpers/toHuman'
-import countPrimesTo from '@/helpers/ss'
 
 export async function GET(request: Request): Promise<Response> {
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
   }
 
-  // Add start - end principle. Use prime tests to generate big partial prime lists.
   try {
-
-    //console.log(countPrimesTo(10**12))
-    //console.log(segmentedSieve(BigInt(0), BigInt(10**8)))
 
     const { searchParams } = new URL(request.url||"".toString())
     const LIMIT_BI: bigint = BigInt(searchParams.get('LIMIT') || "")
@@ -22,8 +17,6 @@ export async function GET(request: Request): Promise<Response> {
     const excel: boolean = searchParams.get('excel') ? true : false;
     const KEY: string = searchParams.get('KEY') || "";
     
-    // TODO: Split the requests excel, eratostenes or partialEratostenes
-
     if (isNaN(amount) || isNaN(LIMIT)) {
       return Response.json(
         {error: "Invalid parameters amount = " + amount + ", LIMIT = " + LIMIT},

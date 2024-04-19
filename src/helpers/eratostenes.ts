@@ -24,10 +24,6 @@ export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_
 }
 
 export function partialEratostenes(LIMIT: bigint) {
-  return lastTeenPrimes(LIMIT)
-}
-
-function lastTeenPrimes(LIMIT: bigint) {
   if (LIMIT > MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH) {
     throw new Error("Segmented sieve can be run with a max value of " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
   }
