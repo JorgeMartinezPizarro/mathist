@@ -1,6 +1,7 @@
 import fs from "fs"
 import readline from 'node:readline/promises'
 import stream from 'stream';
+import nthline from "nthline"
 
 import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH, EXCEL_MAX_COLS } from '@/Constants'
 import eratostenes, { partialEratostenes, segmentedSieve } from '@/helpers/eratostenes'
@@ -35,45 +36,16 @@ export async function GET(request: Request) {
     console.log("Get element " + row + " x " + col)
     const start = getTimeMicro()
     
-    const filePath = "/app/files/primes-to-10b.csv"//"/Users/USUARIO/Downloads/primes-to-1b.csv";
-    function readLines(params: any) {
-      const { input } = params;
-      const output = new stream.PassThrough({ objectMode: true });
-      const rl = readline.createInterface({ input });
-      rl.on("line", line => { 
-        output.write(line);
-      });
-
-      rl.on("close", () => {
-        output.push(null);
-      }); 
-      return output;
-    }
-
-    if (!fs.existsSync(filePath)) {
-      throw new Error("File not found!")
-    }
-
-    const input = fs.createReadStream(filePath);
-    let prime: number = NaN
-    let count = 0;
-    let lineSize = EXCEL_MAX_COLS
-    let primeSize = 0;
+    //const filePath = "/app/files/primes-to-10b.csv"
+    const filePath = "/Users/USUARIO/Downloads/primes-to-100b.csv";
     
-    for await (const line of readLines({ input })) {
-        const array = line.split(",") 
-        primeSize += array.length
-        if (count === col) {
-          prime = array[row]
-          lineSize = array.length
-          break;
-        }
-        count++
+    if (!fs.existsSync(filePath)) {
+      throw new Error("File not found " + filePath)
     }
 
-    if (isNaN(prime)) {
-      throw new Error("Prime " + LIMIT + "-th not found in the file. Max value allowed is " + primeSize)
-    }
+    const line = await nthline(col, filePath)
+    const array = line.split(",")
+    let prime: number = array[row]
     
     return Response.json({
       time: getTimeMicro() - start, 
