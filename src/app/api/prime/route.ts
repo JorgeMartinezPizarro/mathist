@@ -36,8 +36,8 @@ export async function GET(request: Request) {
     console.log("Get element " + row + " x " + col)
     const start = getTimeMicro()
     
-    //const filePath = "/app/files/primes-to-10b.csv"
-    const filePath = "/Users/USUARIO/Downloads/primes-to-100b.csv";
+    const filePath = "/app/files/primes-to-100b.csv"
+    //const filePath = "/Users/USUARIO/Downloads/primes-to-100b.csv";
     
     if (!fs.existsSync(filePath)) {
       throw new Error("File not found " + filePath)
