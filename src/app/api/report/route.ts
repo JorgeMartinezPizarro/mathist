@@ -1,4 +1,3 @@
-import { MAX_DISPLAY_SIEVE } from '@/Constants'
 import eratostenes, { segmentedEratostenes, lastTenEratostenes } from '@/helpers/eratostenes'
 import errorMessage from '@/helpers/errorMessage'
 import { ln } from '@/helpers/math'
@@ -77,16 +76,16 @@ const printPrecentPrimes = (digits: number): string => {
 }
 
 const checkPrimeCounts = (n: number): string[] => {
-      
-  console.log("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
-  console.log("Checking prime functions for " + n.toString()[0] + "E" + (n.toString().length - 1))
+  
+  let stringArray: string[] = [];
+  stringArray.push("Checking prime functions for " + n.toString()[0] + "E" + (n.toString().length - 1))
   // 37607912018 primes up to 1t
   const limit = n
   const c = countPrimes(limit)
   const e = eratostenes(limit)
   const se = segmentedEratostenes(limit)
   const lp = lastTenEratostenes(BigInt(limit))
-  let stringArray: string[] = [];
+  
 
   if (!arrayEquals(lp.primes, se.primes) || 
       !arrayEquals(se.primes, e.primes)

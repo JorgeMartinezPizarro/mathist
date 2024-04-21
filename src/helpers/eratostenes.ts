@@ -104,7 +104,7 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
   
   process.stdout.write("\r");
   process.stdout.write("\r");
-  process.stdout.write("PS Sieved 0.000% in " + (duration(getTimeMicro() - startx)) + "      ")
+  process.stdout.write("PS: Sieved 0.000% in " + (duration(getTimeMicro() - startx)) + "      ")
   let count = 0
   // Iterate over each segment
   for (let segment = 0; segment < numSegments; segment++) {
@@ -132,12 +132,12 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
       primesInRange = primesInRange.slice(-maxLength);
       process.stdout.write("\r");
       process.stdout.write("\r");
-      process.stdout.write("PS Sieved " + percent(BigInt(segment + 1), BigInt(numSegments)) + " in " + (duration(getTimeMicro() - startx)) + "      ")
+      process.stdout.write("PS: Sieved " + percent(BigInt(segment + 1), BigInt(numSegments)) + " in " + (duration(getTimeMicro() - startx)) + "      ")
   }
 
   process.stdout.write("\r");
   process.stdout.write("\r");
-  process.stdout.write("PS Sieved 100.00% in " + (duration(getTimeMicro() - startx)) + "      \n")
+  process.stdout.write("PS: Sieved 100.00% in " + (duration(getTimeMicro() - startx)) + "      \n")
 
   return {
     isPartial: true,
