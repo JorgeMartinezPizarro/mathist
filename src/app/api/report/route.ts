@@ -36,7 +36,7 @@ export async function GET(request: Request): Promise<Response> {
     const stringArray = [
       ...[6,7,8,].map(i => printPrecentPrimes(i)),
       ...[10,11,13,14,20,30,50,100,500,1000,10000].map(i => printPrecentPrimesEstimated(i)),
-      ...[10**8, 10**9, 10**10, 10**11, 10**12].reduce(
+      ...[10**8, 10**9, 10**10, 10**11].reduce(
         (acc: string[], i: number): string[] => [...acc, ...checkPrimeCounts(i)], 
         []
       )
