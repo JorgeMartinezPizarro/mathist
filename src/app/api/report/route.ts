@@ -34,7 +34,7 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const stringArray = [
-      ...[3, 4, 5, 6,7,8].map(i => printPrecentPrimes(i)),
+      ...[1, 2, 3, 4, 5, 6,7,8].map(i => printPrecentPrimes(i)),
       ...[9, 10,11,12,13,14,15,20,50,100,1000,10000].map(i => printPrecentPrimesEstimated(i)),
       ...[10**7, 10**8, 10**9, 10**10, 10**11, 10**12].reduce(
         (acc: string[], i: number): string[] => [...acc, ...checkPrimeCounts(i)], 
@@ -48,7 +48,7 @@ export async function GET(request: Request): Promise<Response> {
     stringArray.forEach(string => fs.appendFileSync(filename, "<p>" + string + "</p>"))
     fs.appendFileSync(filename, "</body></html>")
     // The whole report takes about 5 minutes to generate.
-    return Response.json( {stringArray} )
+    return Response.json( {time: getTimeMicro() - start, message: "report generated under /files/report.html"} )
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
