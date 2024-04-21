@@ -71,7 +71,7 @@ export function segmentedEratostenes(n: number, amount: number = MAX_DISPLAY_SIE
 
   process.stdout.write("\r");
   process.stdout.write("\r");
-  process.stdout.write("SS: Sieved 100% in " + (duration(getTimeMicro() - startx)) + "                 \n")
+  process.stdout.write("SS: Sieved 100.000% in " + (duration(getTimeMicro() - startx)) + "                 \n")
 
   return {
     primes: result,

@@ -43,7 +43,7 @@ export async function GET(request: Request): Promise<Response> {
     ]
     
     stringArray.push("It took " + duration(getTimeMicro() - start) + " to generate the report!")
-    const filename = "./public/report.html"
+    const filename = "./public/files/report.html"
     fs.writeFileSync(filename, "<html><head></head><body>")
     stringArray.forEach(string => fs.appendFileSync(filename, "<p>" + string + "</p>"))
     fs.appendFileSync(filename, "</body></html>")
