@@ -1,15 +1,15 @@
 "use strict";
 
-import { columnTransformDependencies } from "mathjs";
+import duration from "@/helpers/duration";
+import getTimeMicro from "@/helpers/getTimeMicro";
+import percent from "@/helpers/percent";
+
+// Code from solution https://stackoverflow.com/questions/39312107/implementing-the-page-segmented-sieve-of-eratosthenes-in-javascript
 
 const WHLPRMS = new Uint32Array([2,3,5,7,11,13,17,19]);
 const FRSTSVPRM = 23;
 const WHLODDCRC = 105 | 0;
 const WHLHITS = 48 | 0;
-const WHLODDGAPS = new Uint8Array([
-  3, 1, 3, 2, 1, 2, 3, 3, 1, 3, 2, 1, 3, 2, 3, 4,
-  2, 1, 2, 1, 2, 4, 3, 2, 3, 1, 2, 3, 1, 3, 3, 2,
-  1, 2, 3, 1, 3, 2, 1, 2, 1, 5, 1, 5, 1, 2, 1, 2 ]);
 const RESIDUES = new Uint32Array([
   23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
   73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 121, 127,
@@ -164,24 +164,27 @@ function fillSieveBuffer(lwi, sb) {
   }
 }
 
-// a mutable cancelled flag...
-let cancelled = false;
+export default function countPrimes(LIMIT, cache = 2 * 1024**2) { // 2MB cache. counter up to 10**12 in 7903 s
 
-export default function countPrimesTo(LIMIT) {
-
-  console.log("Get the count of primes to " + LIMIT)
-  if ((LIMIT < 0) || (LIMIT > 10**15)) {
-    throw new Error("Value out of range " + LIMIT)
+  const separator = new Array(10).fill(" ").join("")
+  if ((LIMIT < 0) || (LIMIT > 10**14)) { // 10**12 takes 8 minutes, 10**13 80 minutes, 1.2 h, 10**14 800 minutes, 12 hours and 10**15 120 hours, around 4 days
+    throw new Error("Value out of range " + LIMIT + " it takes days to compute.")
   }
-  const SIEVEBUFFERSZ = 1024 * 1024 * 1 // 1MB buffer
-  let startx = +Date.now();
+
+  const SIEVEBUFFERSZ = cache;
+  let startx = getTimeMicro();
   let count = 0;
+
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  // GordonBGood super fast sieve
+  process.stdout.write("GS: Sieved 0.000% in " + duration(getTimeMicro() - startx)+ separator)
+  
   for (let i = 0; i < WHLPRMS.length; ++i) {
     if (WHLPRMS[i] > LIMIT) break;
-    if (LIMIT < 1000)
-        console.log("Prime found " + WHLPRMS[i])
     ++count;
   }
+  
   if (LIMIT >= FRSTSVPRM) {
     const cmpsts = makeSieveBuffer(SIEVEBUFFERSZ);
     const bparr = function () {
@@ -205,10 +208,6 @@ export default function countPrimesTo(LIMIT) {
     let strts = new Uint32Array(bparr.length);
     let lwi = 0;
     const pgfnc = function () {
-      if (cancelled) {
-        cancelled = false;
-        return;
-      }
       const smlllmt = lwi + 4194304;
       const lmt = (smlllmt < lwilmt) ? smlllmt : lwilmt;
       for (; lwi <= lmt; lwi += SIEVEBUFFERSZ) {
@@ -221,31 +220,27 @@ export default function countPrimesTo(LIMIT) {
       if (lwi <= lwilmt) {
         process.stdout.write("\r");
         process.stdout.write("\r");
-        process.stdout.write("Sieved " + ((lwi / lwilmt * 100).toFixed(3)) + "%.")
+        process.stdout.write("GS: Sieved " + percent(BigInt(Math.round(lwi)), BigInt(Math.round(lwilmt))) + " in " + duration(getTimeMicro() - startx)+ separator)
         pgfnc();
+      } else {
+        process.stdout.write("\r");
+        process.stdout.write("\r");
+        process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + separator + "\n")
       }
       
-      const elpsdx = +Date.now() - startx;
-    
+      const elpsdx = getTimeMicro() - startx;
+      
       return {
         length: count,
         time: elpsdx
       }
     };
-    const x = pgfnc();
-    process.stdout.write("\r");
-    process.stdout.write("\r");
-    process.stdout.write("Sieved 100%.\n")
     
-    return x;
+    return pgfnc();
+  }
+
+  return {
+    length: count,
+    time: getTimeMicro() - startx
   }
 }
-
-const cancelclick = function () {
-  cancelled = true;
-}
-
-const strtclick = function () {
-  cancelled = false;
-  doit();
-};

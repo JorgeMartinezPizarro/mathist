@@ -1,4 +1,17 @@
+import { Decimal } from 'decimal.js';
+
 const [zero, one, two, three]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
+
+export function ln(a: bigint): bigint {
+    // Initialize Decimal instance with the number
+    const num = new Decimal(a.toString());
+
+    // Compute the natural logarithm
+    const result = num.ln();
+    // log(a) < MAX_SAFE_INTEGER, more than that is ridiculously big
+    // Return the result as a string
+    return BigInt(Math.round(Number(result.toString())));
+}
 
 // How to get sqrt of a BigInt, found under the link below
 // https://stackoverflow.com/a/53684036

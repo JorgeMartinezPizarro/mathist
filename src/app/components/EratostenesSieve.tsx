@@ -20,6 +20,8 @@ const EratostenesSieve = () => {
 
     const [duration, setDuration] = useState(1)
 
+    const [isPartial, setIsPartial] = useState(false)
+
     const [durationFull, setDurationFull] = useState(0)
 
     const [length, setLength] = useState(1)
@@ -53,6 +55,7 @@ const EratostenesSieve = () => {
             link.click();        
             document.body.removeChild(link);
             setLength(l)
+            setIsPartial(true)
             setLoading(false)
             setDurationFull(time)
         } catch (error) {
@@ -71,7 +74,7 @@ const EratostenesSieve = () => {
             setDurationFull(0)
             const promise = await fetch(url)
             const response = await promise.json()
-            const {primes, time, length, error} = response
+            const {primes, time, length, error, isPartial} = response
             if (error) {
                 throw new Error(error.toString())
             }
@@ -79,6 +82,7 @@ const EratostenesSieve = () => {
             setLength(length)
             setLoading(false)
             setPrimes(primes)
+            setIsPartial(isPartial)
         } catch(error) {
             setLoading(false)
             setError(errorMessage(error))
@@ -133,8 +137,8 @@ const EratostenesSieve = () => {
         </>}
         {!error && (primes.length > 0) && !loading && (<>
             <hr/>
-            {length !== -1 && <p>Total of primes smaller or equal than <NumberToString number={BigInt(value)} /> is <NumberToString number={length} />, it took {d(duration)}. Used eratosthenes sieve.</p>}
-            {length === -1 && <p>Ten primes up to <NumberToString number={BigInt(value)} /> found using the segmented sieve in {d(duration)} </p>}
+            {!isPartial && <p>Total of primes smaller or equal than <NumberToString number={BigInt(value)} /> is <NumberToString number={length} />, it took {d(duration)}. Used eratosthenes sieve.</p>}
+            {isPartial && <p>Ten primes up to <NumberToString number={BigInt(value)} /> found using the segmented sieve in {d(duration)} </p>}
             <hr/>
             <p>Last <NumberToLocale number={primes.length} singular={"prime"} /> of the sieve:</p>
             <hr/>

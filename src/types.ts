@@ -40,6 +40,7 @@ export interface Factor {
 }
 
 export interface SieveReport {
+    isPartial: boolean;
     filename: string;
     primes: number[] | bigint[]; // With segmented sieve we can obtain bigints!
     time: number;

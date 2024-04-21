@@ -1,5 +1,8 @@
 import Bits from "@/helpers/Bits";
 import errorMessage from "@/helpers/errorMessage";
+import percent from "./percent";
+import getTimeMicro from "./getTimeMicro";
+import duration from "./duration";
 
 // Enhanced eratosthenes sieve with odd numbers
 //
@@ -34,6 +37,7 @@ import errorMessage from "@/helpers/errorMessage";
 
 export default function sieve(lastNumber: number): Bits {
     
+  const startx = getTimeMicro()
   if (lastNumber === 2) {
     return new Bits(0)
   }
@@ -43,15 +47,24 @@ export default function sieve(lastNumber: number): Bits {
       const memorySize = Math.round(lastNumber / 2);
       const upperLimit = Math.round(Math.sqrt(lastNumber));
       const sieve = new Bits(memorySize);
-           
+      process.stdout.write("\r");
+      process.stdout.write("\r");
+      process.stdout.write("CS: Sieved 0.000% in " + duration(getTimeMicro() - startx) + "        ")     
       // Hard process crossing all odd composite numbers
       for (var i = 3; i <= upperLimit; i += 2) {
-          if (sieve.get((i -1) / 2) === false) {
-              for (var j = i * i; j <= lastNumber; j += 2 * i) {
-                  sieve.set((j - 1) / 2, true);
-              }
+        if (sieve.get((i -1) / 2) === false) {
+          for (var j = i * i; j <= lastNumber; j += 2 * i) {
+            sieve.set((j - 1) / 2, true);
           }
+        }
+        process.stdout.write("\r");
+        process.stdout.write("\r");
+        process.stdout.write("CS: Sieved " + percent(BigInt(Math.round(i)), BigInt(Math.round(upperLimit))) + " in " + duration(getTimeMicro() - startx) + "        ")
       }
+
+      process.stdout.write("\r");
+      process.stdout.write("\r");
+      process.stdout.write("CS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "              \n")
 
       return sieve;
   } catch (error) {

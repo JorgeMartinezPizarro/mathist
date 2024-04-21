@@ -19,3 +19,4 @@ export const MAX_SERIES_DIFFERENCES_SIZE = 20;                      // Healthy s
 export const MAX_DISPLAY_SIEVE = 10;                                // Healthy amount of primes displayed
 export const MAX_DIGITS_RANDOM_PRIMES = 400;                        // Healthy limit of few seconds generating the primes
 export const MAX_DIGITS_PRIMALY_TEST = 3000;                        // Healthy primaly test for less than a second
+

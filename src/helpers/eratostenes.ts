@@ -9,9 +9,8 @@ import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
 import { SieveReport } from "@/types";
 import Bits from "@/helpers/Bits";
+import percent from "@/helpers/percent";
 
-
-// TODO: research https://stackoverflow.com/questions/39312107/implementing-the-page-segmented-sieve-of-eratosthenes-in-javascript
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
 
   if (excel) {
@@ -22,28 +21,78 @@ export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_
   
 }
 
-export function partialEratostenes(LIMIT: bigint) {
+export function lastTenEratostenes(LIMIT: bigint) {
   if (LIMIT > MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH) {
     throw new Error("Segmented sieve can be run with a max value of " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
   }
 
   const high = LIMIT;
-  // Up to 10**18, 1000 elements ensure 10 primes
-  const low = high > BigInt(10**3) ? high - BigInt(10**3) : BigInt(1)
+  // Up to 10**18, 10000 elements ensure 10 primes
+  const low = high > BigInt(10**4) ? high - BigInt(10**4) : BigInt(1)
 
-  return segmentedSieve(low, high)
+  return segmentedEratostenesPartial(low, high)
+}
+
+export function segmentedEratostenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
+  // segment size
+  const S = 1024 * 512
+  let result: number[] = []
+  const startx = getTimeMicro()
+  const primos: number[] = [];
+  const nsqrt = Math.floor(Math.sqrt(n));
+  const firstPrimes = primes(nsqrt + 1, nsqrt + 1).primes
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("SS: Sieved 000.000% in " + (duration(getTimeMicro() - startx)) + "       ")
+  let resultado = 0;
+  const bloque: boolean[] = Array(S).fill(true);
+  for (let k = 0; k * S <= n; k++) {
+      bloque.fill(true);
+      const start = k * S;
+      for (const p of firstPrimes) {
+          const startIdx = Math.max(Math.floor((start + Number(p) - 1) / Number(p)), Number(p)) * Number(p) - start;
+          for (let j = startIdx; j < S; j += Number(p))
+              bloque[j] = false;
+      }
+      if (k === 0)
+          bloque[0] = bloque[1] = false;
+      for (let i = 0; i < S && start + i <= n; i++) {
+          if (bloque[i]) {
+              resultado++;
+              result.push(start + i)
+          }
+      }
+
+      result = result.slice(-amount)
+      process.stdout.write("\r");
+      process.stdout.write("\r");
+      process.stdout.write("SS: Sieved " + percent(BigInt(k), BigInt(n)/BigInt(S)) + " in " + (duration(getTimeMicro() - startx)) + "       ")
+  }
+
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("SS: Sieved 100% in " + (duration(getTimeMicro() - startx)) + "                 \n")
+
+  return {
+    primes: result,
+    length: resultado,
+    filename: "",
+    time: getTimeMicro() - startx,
+    isPartial: false
+  };
 }
 
 // Segment the sieve into steps of size sqrt of high. 
-export function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
+// TODO: understand deeply countPrimes.js and apply the same principle here. Our version is way slower!
+export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
   if (high > 10 ** 18) {
     throw new Error("This algorithm need memory sqrt(high), 10**8 basic sieve takes some seconds.")
   } else if (high - low > 10**10) {
     throw new Error("It would take a lot of time!")
   }
   console.log("/////////////////////////////////////////////////////////////////////////////")
-  const start = getTimeMicro();
-  const sieveSize = Math.floor(Math.sqrt(Number(high))) + 1;
+  const startx: number = getTimeMicro();
+  const sieveSize = Math.max(5 * 10**7, Math.floor(Math.sqrt(Number(high))) + 1); // 50MB size
   const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
   console.log("Start segmented sieve for primes from " + low + " to " + high + " with number of segments " + numSegments + " with max memory usage " + toHuman(2 * sieveSize / 16))
@@ -55,7 +104,7 @@ export function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10
   let primesInRange: Array<bigint> = []; // Primes found in the given range
   
   console.log("Start first segment ...")
-  let elapsed = getTimeMicro();
+  let count = 0
   // Iterate over each segment
   for (let segment = 0; segment < numSegments; segment++) {
       const start = low + BigInt(segment) * BigInt(segmentSize);
@@ -72,7 +121,8 @@ export function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10
       // Store primes found in this segment
       for (let i = 0; i < segmentSize; i++) {
           if (!sieve.get(i) && (start + BigInt(i)) !== BigInt(1)) { // Skip 1 as it's not a prime
-              if (start + BigInt(i) < high && start + BigInt(i) > low) {
+              if (start + BigInt(i) <= high && start + BigInt(i) >= low) {
+                count++;
                 primesInRange.push(start + BigInt(i));
               }
           }
@@ -81,16 +131,19 @@ export function segmentedSieve(low: bigint, high: bigint, maxLength: number = 10
       primesInRange = primesInRange.slice(-maxLength);
       process.stdout.write("\r");
       process.stdout.write("\r");
-      process.stdout.write("Segment done, processed " + Math.round(100 * ((segment + 1) / numSegments)) + "%.")
+      process.stdout.write("Sieved " + percent(BigInt(segment + 1), BigInt(numSegments)) + " in " + (duration(getTimeMicro() - startx)) + "      ")
   }
 
-  console.log("\nDone in " + duration(getTimeMicro() - elapsed))
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("Sieved 100.00% in " + (duration(getTimeMicro() - startx)) + "      \n")
 
   return {
+    isPartial: true,
     primes: primesInRange,
     filename: "",
-    time: getTimeMicro() - start,
-    length: -1
+    time: getTimeMicro() - startx,
+    length: count
   }
 }
 
@@ -159,7 +212,7 @@ function primesToExcel(LIMIT: number): SieveReport {
   console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
   
-  return {filename: "/files/" + filename, time: getTimeMicro() - elapsed, length, primes: []};
+  return {filename: "/files/" + filename, time: getTimeMicro() - elapsed, length, primes: [], isPartial: false};
 }
 
 // Count primes and return count and last amount primes
@@ -179,33 +232,30 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
     console.log("//////////////////////////////////////////////////////////////////////////////////////////")
     console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
     console.log("Let's sieve for less or equal than " + lastNumber)
-    console.log("Sieved in " + duration(10) + ", now count and generate " + amount + " primes")
     console.log("Primes obtained and counted in " + duration(10))
     console.log("Total duration " +  duration(getTimeMicro() - elapsed))
-    return {primes: [], time: getTimeMicro() - elapsed, length: 0, filename: ""}
+    return {primes: [], time: getTimeMicro() - elapsed, length: 0, filename: "", isPartial: false}
   }  
   if (lastNumber === 2) {
     console.log("//////////////////////////////////////////////////////////////////////////////////////////")
     console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
     console.log("Let's sieve for less or equal than " + lastNumber)
-    console.log("Sieved in " + duration(10) + ", now count and generate " + amount + " primes")
     console.log("Primes obtained and counted in " + duration(10))
     console.log("Total duration " +  duration(getTimeMicro() - elapsed))
-    return {primes: [2], time: getTimeMicro() - elapsed, length: 1, filename: ""}
+    return {primes: [2], time: getTimeMicro() - elapsed, length: 1, filename: "", isPartial: false}
   } 
   
   console.log("//////////////////////////////////////////////////////////////////////////////////////////")
   console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
   console.log("Let's sieve for less or equal than " + lastNumber)
+  
   let memorySize = Math.round(lastNumber / 2);
   let arrayOfPrimes: number[] = Array()  
   let count = 0
   let numberOfPrimes = 1
   let sieve = eratosthenes(lastNumber)
-  
-  console.log("Sieved in " + duration(getTimeMicro() - elapsed) + ", now count and generate " + amount + " primes")
-
   let e = getTimeMicro()
+
   // Basically push primes until get an amount
   for (var i = memorySize; i >= 1; i-- ) {
     if (i * 2 + 1 <= lastNumber && !sieve.get(i)) {
@@ -228,6 +278,6 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
 
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
 
-  return {filename: "", primes: arrayOfPrimes.slice(0, amount).reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes};
+  return {filename: "", primes: arrayOfPrimes.slice(0, amount).reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes, isPartial: false};
 }
 

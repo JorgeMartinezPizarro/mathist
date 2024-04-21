@@ -3,7 +3,7 @@ import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "@/helpers/pr
 import getTimeMicro from '@/helpers/getTimeMicro';
 import { MAX_COMPUTATION_FACTORS } from "@/Constants";
 import { Factor, Factorization, PrimePower } from "@/types"
-import { abs, min, sqrt } from "./m";
+import { abs, min, sqrt } from "@/helpers/math";
 
 const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
@@ -31,7 +31,7 @@ export default function factors(n: bigint ): Factorization {
         throw new Error("It works only with positive integers!")
     }
 
-    let factors: PrimePower[] = []
+    const factors: PrimePower[] = []
     let m = n
     let f: Factor = factor(n)
     while (f.factor > one) {
@@ -52,8 +52,6 @@ export default function factors(n: bigint ): Factorization {
         f = factor(m)
     }
 
-
-    
     return {
         factors,
         time: getTimeMicro() - start,

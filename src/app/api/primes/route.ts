@@ -1,17 +1,11 @@
-import fs from "fs"
-import readline from 'node:readline/promises'
-import stream from 'stream';
-
 import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH } from '@/Constants'
-import eratostenes, { partialEratostenes, segmentedSieve } from '@/helpers/eratostenes'
+import eratostenes, { lastTenEratostenes } from '@/helpers/eratostenes'
 import errorMessage from '@/helpers/errorMessage'
 import toHuman from '@/helpers/toHuman'
-import getTimeMicro from "@/helpers/getTimeMicro";
-import duration from "@/helpers/duration";
-
-
+import getTimeMicro from '@/helpers/getTimeMicro'
 
 export async function GET(request: Request): Promise<Response> {
+  
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
   }
@@ -33,7 +27,7 @@ export async function GET(request: Request): Promise<Response> {
     };
 
     if (process.env.MATHER_SECRET !== KEY && !excel && LIMIT_BI > MAX_HEALTHY_SIEVE_LENGTH) {
-      return Response.json( partialEratostenes(LIMIT_BI) )
+      return Response.json( lastTenEratostenes(LIMIT_BI) )
     } 
     // USE ENV MATHER_SECRET TO OVERCOME THE GUI LIMITS
     if (process.env.MATHER_SECRET !== KEY && LIMIT > MAX_HEALTHY_SIEVE_LENGTH) { 
