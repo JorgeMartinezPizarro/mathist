@@ -34,9 +34,9 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const stringArray = [
-      ...[6,7,8,].map(i => printPrecentPrimes(i)),
-      ...[10,11,13,14,20,30,50,100,500,1000,10000].map(i => printPrecentPrimesEstimated(i)),
-      ...[10**8, 10**9, 10**10, 10**11].reduce(
+      ...[3, 4, 5, 6,7,8].map(i => printPrecentPrimes(i)),
+      ...[9, 10,11,12,13,14,15,20,50,100,1000,10000].map(i => printPrecentPrimesEstimated(i)),
+      ...[10**7, 10**8, 10**9, 10**10, 10**11, 10**12].reduce(
         (acc: string[], i: number): string[] => [...acc, ...checkPrimeCounts(i)], 
         []
       )
@@ -88,7 +88,7 @@ const checkPrimeCounts = (n: number): string[] => {
   // 37607912018 primes up to 1t
   const limit = n
   const c = countPrimes(limit)
-  const e = eratostenes(limit)
+  const e = n <= 10**11 ? eratostenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
   const se = segmentedEratostenes(limit)
   const lp = lastTenEratostenes(BigInt(limit))
   
@@ -109,6 +109,8 @@ const checkPrimeCounts = (n: number): string[] => {
     stringArray.push("Something is wrong counting primes to " + limit)
   }
 
+  stringArray.push("It took " + duration(lp.time) + " to generate the last 10 primes")
+  
   stringArray.push("It took " + duration(e.time) + " to generate the full sieve at once and iterate over all primes")
 
   stringArray.push("It took " + duration(se.time) + " to generate the full sieve with segments and iterate over all primes")

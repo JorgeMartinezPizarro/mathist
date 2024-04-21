@@ -10,6 +10,7 @@ import errorMessage from "@/helpers/errorMessage";
 import { SieveReport } from "@/types";
 import Bits from "@/helpers/Bits";
 import percent from "@/helpers/percent";
+import { sqrt } from "./math";
 
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
 
@@ -27,8 +28,9 @@ export function lastTenEratostenes(LIMIT: bigint) {
   }
 
   const high = LIMIT;
+  const t = sqrt(LIMIT)
   // Up to 10**18, 10000 elements ensure 10 primes
-  const low = high > BigInt(10**4) ? high - BigInt(10**4) : BigInt(1)
+  const low = high > t ? high - t : BigInt(1)
 
   return segmentedEratostenesPartial(low, high)
 }
@@ -92,7 +94,7 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
   }
   console.log("/////////////////////////////////////////////////////////////////////////////")
   const startx: number = getTimeMicro();
-  const sieveSize = Math.max(5 * 10**7, Math.floor(Math.sqrt(Number(high))) + 1); // 50MB size
+  const sieveSize = Math.min(10**8, Math.floor(Math.sqrt(Number(high))) + 1); // 50MB size
   const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
   
