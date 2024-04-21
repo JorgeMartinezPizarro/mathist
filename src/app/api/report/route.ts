@@ -27,7 +27,7 @@ export async function GET(request: Request): Promise<Response> {
 
     const KEY: string = searchParams.get('KEY') || "";
 
-    if (KEY !== process.env.MATHER_SECRET) {
+    if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
     

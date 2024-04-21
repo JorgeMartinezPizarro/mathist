@@ -26,7 +26,7 @@ export async function GET(request: Request): Promise<Response> {
       )
     };
 
-    if (process.env.MATHER_SECRET !== KEY && !excel && LIMIT_BI > MAX_HEALTHY_SIEVE_LENGTH) {
+    if (process.env.MATHER_SECRET?.trim() !== KEY && !excel && LIMIT_BI > MAX_HEALTHY_SIEVE_LENGTH) {
       return Response.json( lastTenEratostenes(LIMIT_BI) )
     } 
     // USE ENV MATHER_SECRET TO OVERCOME THE GUI LIMITS

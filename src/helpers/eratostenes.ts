@@ -95,7 +95,6 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
   const sieveSize = Math.max(5 * 10**7, Math.floor(Math.sqrt(Number(high))) + 1); // 50MB size
   const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
-  console.log("Start segmented sieve for primes from " + low + " to " + high + " with number of segments " + numSegments + " with max memory usage " + toHuman(2 * sieveSize / 16))
   
   // TODO: instead of getting the primes and iterate over them, iterate over the original sieve and catch the primes.
   // TODO the count is wrong!
@@ -103,7 +102,9 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
   
   let primesInRange: Array<bigint> = []; // Primes found in the given range
   
-  console.log("Start first segment ...")
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("PS Sieved 0.000% in " + (duration(getTimeMicro() - startx)) + "      ")
   let count = 0
   // Iterate over each segment
   for (let segment = 0; segment < numSegments; segment++) {
@@ -131,12 +132,12 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
       primesInRange = primesInRange.slice(-maxLength);
       process.stdout.write("\r");
       process.stdout.write("\r");
-      process.stdout.write("Sieved " + percent(BigInt(segment + 1), BigInt(numSegments)) + " in " + (duration(getTimeMicro() - startx)) + "      ")
+      process.stdout.write("PS Sieved " + percent(BigInt(segment + 1), BigInt(numSegments)) + " in " + (duration(getTimeMicro() - startx)) + "      ")
   }
 
   process.stdout.write("\r");
   process.stdout.write("\r");
-  process.stdout.write("Sieved 100.00% in " + (duration(getTimeMicro() - startx)) + "      \n")
+  process.stdout.write("PS Sieved 100.00% in " + (duration(getTimeMicro() - startx)) + "      \n")
 
   return {
     isPartial: true,
