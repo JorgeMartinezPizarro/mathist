@@ -10,7 +10,7 @@ import errorMessage from "@/helpers/errorMessage";
 import { SieveReport } from "@/types";
 import Bits from "@/helpers/Bits";
 import percent from "@/helpers/percent";
-import { sqrt } from "./math";
+import { max, min, sqrt } from "./math";
 
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
 
@@ -28,7 +28,7 @@ export function lastTenEratostenes(LIMIT: bigint) {
   }
 
   const high = LIMIT;
-  const t = sqrt(LIMIT)
+  const t = BigInt(10**3)
   // Up to 10**18, 10000 elements ensure 10 primes
   const low = high > t ? high - t : BigInt(1)
 
