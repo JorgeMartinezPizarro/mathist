@@ -1,3 +1,5 @@
+import fs from "fs"
+
 import eratostenes, { segmentedEratostenes, lastTenEratostenes } from '@/helpers/eratostenes'
 import errorMessage from '@/helpers/errorMessage'
 import { ln } from '@/helpers/math'
@@ -34,13 +36,17 @@ export async function GET(request: Request): Promise<Response> {
     const stringArray = [
       ...[6,7,8,].map(i => printPrecentPrimes(i)),
       ...[10,11,13,14,20,30,50,100,500,1000,10000].map(i => printPrecentPrimesEstimated(i)),
-      ...[10**8, 10**9, 10**10, 10**11].reduce(
+      ...[10**8, 10**9, 10**10, 10**11, 10**12].reduce(
         (acc: string[], i: number): string[] => [...acc, ...checkPrimeCounts(i)], 
         []
       )
     ]
     
     stringArray.push("It took " + duration(getTimeMicro() - start) + " to generate the report!")
+    const filename = "./public/report.html"
+    fs.writeFileSync(filename, "<html><head></head><body>")
+    stringArray.forEach(string => fs.appendFileSync(filename, "<p>" + string + "</p>"))
+    fs.appendFileSync(filename, "</body></html>")
     // The whole report takes about 5 minutes to generate.
     return Response.json( {stringArray} )
   } catch (error) {
