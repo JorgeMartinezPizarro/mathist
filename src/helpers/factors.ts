@@ -1,10 +1,9 @@
 import gcd from "@/helpers/gcd"
-import { isMillerRabinProbablePrime, isBaillieProbablePrime } from "@/helpers/primalyTests"
+import isProbablePrime from "@/helpers/isProbablePrime"
 import getTimeMicro from '@/helpers/getTimeMicro';
+import { abs, min, sqrt } from "@/helpers/math";
 import { MAX_COMPUTATION_FACTORS } from "@/Constants";
 import { Factor, Factorization, PrimePower } from "@/types"
-import { abs, min, sqrt } from "@/helpers/math";
-import Eratosthenes from "./Eratosthenes";
 
 const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
@@ -67,10 +66,10 @@ function addFactorsWithMethod(factors: PrimePower[], factor: bigint, factorizati
         let c = 1
         let p: bigint = computedFactor
         let rest = factor / p
-        if (isBaillieProbablePrime(p) && isMillerRabinProbablePrime(p)) {
+        if (isProbablePrime(p)) {
             addPrime(factors, p)
         }
-        while (p > two && !isMillerRabinProbablePrime(rest) && isMillerRabinProbablePrime(p)) {
+        while (p > two && !isProbablePrime(rest) && isProbablePrime(p)) {
             
             p = factorizationMethod(rest)
             rest = rest / p;
@@ -98,7 +97,7 @@ function addPrime(factors: PrimePower[], factor: bigint): void {
 // Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
 export const factor = function(n: bigint): Factor {
 
-    if (n > 10**10 && isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)) {
+    if (n > 10**10 && isProbablePrime(n)) {
         return {
             factor: n, 
             message: "",
@@ -200,12 +199,11 @@ const brentFactor = (n: bigint): bigint => {
 
     if (d === n) {
         throw new Error("Factor found itself ... failed brent")
-        return d;
     }
 
     const factor = min(d, n / d)
     
-    if (!isMillerRabinProbablePrime(factor) || !isBaillieProbablePrime(factor)) {
+    if (!isProbablePrime(factor)) {
         throw new Error("Factor is not prime, should we iterate to find more?")
     }
 

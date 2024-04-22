@@ -18,7 +18,7 @@ import Bits from "@/helpers/Bits";
 // Excel works up to 10**8 48MB less than a second.
 // Primes works well up to 10**16 generating last primes in less than a second.
 //
-export default function eratosthenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
+function eratosthenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
   if (excel) {
     return primesToExcel(LIMIT)
   } 
@@ -26,7 +26,7 @@ export default function eratosthenes(LIMIT: number, amount: number = MAX_DISPLAY
   return classicOrSegmentedEratosthenes(LIMIT, amount)
 }
 
-export function lastTenEratosthenes(LIMIT: bigint): SieveReport {
+function lastTenEratosthenes(LIMIT: bigint): SieveReport {
   if (LIMIT > MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH) {
     throw new Error("Segmented sieve can be run with a max value of " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
   }
@@ -91,7 +91,7 @@ function classicEratosthenesIterator(n: number, callback: any): void {
   }
 }
 
-export function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
+function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
   
   let result: number[] = []
   const startx = getTimeMicro()
@@ -270,7 +270,7 @@ function primesToExcel(LIMIT: number): SieveReport {
 }
 
 // Count primes and return count and last amount primes using classic or segmented sieve depending on the size
-export function classicOrSegmentedEratosthenes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
+function classicOrSegmentedEratosthenes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
   const elapsed = getTimeMicro()
 
   if (isNaN(lastNumber)) {
@@ -329,3 +329,6 @@ export function classicOrSegmentedEratosthenes(lastNumber: number, amount: numbe
   return {filename: "", primes: arrayOfPrimes.slice(-amount), time: getTimeMicro() - elapsed, length: numberOfPrimes, isPartial: false};
 }
 
+export default eratosthenes;
+
+export { lastTenEratosthenes, segmentedEratosthenes, classicOrSegmentedEratosthenes }

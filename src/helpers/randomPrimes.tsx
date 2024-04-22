@@ -1,4 +1,4 @@
-import { isMillerRabinProbablePrime, isBaillieProbablePrime, isPrimeForSure } from "@/helpers/primalyTests"
+import { isMillerRabinProbablePrime, isBaillieProbablePrime, isPrimeForSure } from "@/helpers/isProbablePrime"
 import id from '@/helpers/id';
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";

@@ -1,6 +1,6 @@
 import { isInteger } from "mathjs";
 
-import Eratosthenes from "@/helpers/Eratosthenes";
+import eratosthenes from "@/helpers/eratosthenes";
 import factorial from "@/helpers/factorial";
 
 export default function series(LIMIT: number, name: string): bigint[] {
@@ -29,7 +29,7 @@ export default function series(LIMIT: number, name: string): bigint[] {
 
   if (name === "prime") {
     const int = Math.floor( 2 * LIMIT * Math.log(LIMIT))
-    aux = Eratosthenes(int, int).primes.map(p => parseInt(p.toString()))
+    aux = eratosthenes(int, int).primes.map(p => parseInt(p.toString()))
   }
   
   for (var i=0;i<LIMIT;i++) {

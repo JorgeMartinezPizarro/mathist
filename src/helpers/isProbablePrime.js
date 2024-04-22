@@ -120,4 +120,10 @@ function isPrimeForSure(n) {
 	return isPrime(n)
 }
 
+function isProbablePrime(n) {
+	return isMillerRabinProbablePrime(n) && isBaillieProbablePrime
+}
+
+export default isProbablePrime
+
 export { isPrimeForSure, isMillerRabinProbablePrime, isBaillieProbablePrime }

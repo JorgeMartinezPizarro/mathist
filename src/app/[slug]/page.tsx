@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer, Button, Divider } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, Drawer, Button } from '@mui/material';
 import { redirect } from "next/navigation";
 import { SubdirectoryArrowRight, Menu } from '@mui/icons-material';
 
@@ -10,8 +10,9 @@ import PrimeFactorization from "@/app/components/PrimeFactorization";
 import PithagoreanTree from "@/app/components/PithagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratosthenesSieve from "@/app/components/EratosthenesSieve";
+import RandomPrimes from '@/app/components/RandomPrimes';
 import { notFound } from 'next/navigation'
-import RandomPrimes from '../components/RandomPrimes';
+
 
 const Page = ({ params }: { params: { slug: string } }) => {
   
