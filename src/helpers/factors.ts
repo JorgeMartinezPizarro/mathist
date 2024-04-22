@@ -4,7 +4,7 @@ import getTimeMicro from '@/helpers/getTimeMicro';
 import { MAX_COMPUTATION_FACTORS } from "@/Constants";
 import { Factor, Factorization, PrimePower } from "@/types"
 import { abs, min, sqrt } from "@/helpers/math";
-import eratostenes from "./eratostenes";
+import Eratosthenes from "./Eratosthenes";
 
 const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 

@@ -1,6 +1,6 @@
 import { MAX_LENGTH_TREE } from '@/Constants';
 import errorMessage from '@/helpers/errorMessage';
-import pitagoreanTree from '@/helpers/pitagoreanTree'
+import PithagoreanTree from '@/helpers/PithagoreanTree'
 
 export async function GET(request: Request) {
   
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       return Response.json({error: "Max length of pithagorean tree is " + MAX_LENGTH_TREE + ", " + LIMIT + " provided."}, {status: 500})
     }
 
-    return Response.json( pitagoreanTree(LIMIT) )
+    return Response.json( PithagoreanTree(LIMIT) )
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }

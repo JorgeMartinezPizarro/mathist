@@ -30,7 +30,7 @@ import duration from "@/helpers/duration";
 //   5/6 * 29/30 * 209/210 = 80%
 //
 // Conclusion: do not worth to go beyond
-// Beyond 1t it is worth to use segmentedEratostenes instead.
+// Beyond 1t it is worth to use segmentedEratosthenes instead.
 
 
 export default function sieve(lastNumber: number): Bits {

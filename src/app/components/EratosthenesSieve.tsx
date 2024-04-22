@@ -12,7 +12,7 @@ import NumberToString from "@/widgets/NumberToString";
 import Progress from "@/widgets/Progress";
 import errorMessage from "@/helpers/errorMessage";
 
-const EratostenesSieve = () => {
+const EratosthenesSieve = () => {
 
     const [primes, setPrimes] = useState<number[]>([2])
 
@@ -154,4 +154,4 @@ const EratostenesSieve = () => {
     </>
 }
 
-export default EratostenesSieve;
+export default EratosthenesSieve;

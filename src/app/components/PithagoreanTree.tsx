@@ -10,7 +10,7 @@ import Progress from "@/widgets/Progress"
 import duration from "@/helpers/duration"
 import { Tree, Triple } from "@/types"
 
-const PitagoreanTree = () => {
+const PithagoreanTree = () => {
     const [tree, setTree] = useState<Tree>({tree: [], time: 0})
     const [loading, setLoading] = useState(false)
 
@@ -37,7 +37,7 @@ const PitagoreanTree = () => {
             }),
           }
         setError(false)
-        fetch("/api/pitagoreanTriple", options)
+        fetch("/api/PithagoreanTriple", options)
             .then(res => res.json())
             .then(res => {
                 if (res.error) {
@@ -55,7 +55,7 @@ const PitagoreanTree = () => {
     }
 
     useEffect(() => {
-        fetch("/api/pitagoreanTree?LIMIT=" + size.toString())
+        fetch("/api/PithagoreanTree?LIMIT=" + size.toString())
             .then(res => res.json())
             .then(res => setTree(res))
             .catch(error => setError(error))
@@ -159,4 +159,4 @@ const PitagoreanTree = () => {
     </>
 }
 
-export default PitagoreanTree;
+export default PithagoreanTree;

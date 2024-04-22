@@ -7,17 +7,17 @@ import { SubdirectoryArrowRight, Menu } from '@mui/icons-material';
 
 import About from "@/app/components/About";
 import PrimeFactorization from "@/app/components/PrimeFactorization";
-import PitagoreanTree from "@/app/components/PitagoreanTree";
+import PithagoreanTree from "@/app/components/PithagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
-import EratostenesSieve from "@/app/components/EratostenesSieve";
+import EratosthenesSieve from "@/app/components/EratosthenesSieve";
 import { notFound } from 'next/navigation'
 import RandomPrimes from '../components/RandomPrimes';
 
 const Page = ({ params }: { params: { slug: string } }) => {
   
   const elements = [
-    {name: "sieve", component: <EratostenesSieve/>},
-    {name: "tree", component: <PitagoreanTree/>},
+    {name: "sieve", component: <EratosthenesSieve/>},
+    {name: "tree", component: <PithagoreanTree/>},
     {name: "factors", component: <PrimeFactorization/>},
     {name: "series", component: <SerieDifferences/>},
     {name: "primes", component: <RandomPrimes/>},

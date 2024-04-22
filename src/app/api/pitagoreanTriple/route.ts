@@ -1,6 +1,6 @@
 import { MAX_DIGITS_TRIPLE } from '@/Constants';
 import errorMessage from '@/helpers/errorMessage';
-import pitagoreanTriple from '@/helpers/pitagoreanTriple'
+import PithagoreanTriple from '@/helpers/PithagoreanTriple'
 
 export async function GET(request: Request) {
   return Response.json({ error: "invalid protocol GET, available protocol POST"}, {status: 500})
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       return this.toString()
     }
     
-    return Response.json(pitagoreanTriple(LIMIT))
+    return Response.json(PithagoreanTriple(LIMIT))
   
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });

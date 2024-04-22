@@ -1,7 +1,7 @@
 import { TreeElement } from "@/types"
 import getTimeMicro from "@/helpers/getTimeMicro"
 
-export default function pitagoreanTree(n: bigint) {
+export default function PithagoreanTree(n: bigint) {
     
     const start = getTimeMicro()
     
@@ -15,7 +15,7 @@ export default function pitagoreanTree(n: bigint) {
 
     const result: TreeElement[] = arrayOfSquares.map(square => {
         return {
-            triple: pitagoreanTriple(square),
+            triple: PithagoreanTriple(square),
             square,
         }
     });
@@ -42,7 +42,7 @@ const iterate = (arrayOfSquares: bigint[][][]): bigint[][][] => {
     return nextArrayOfSquares;
 }
 
-export const pitagoreanTriple = (fibonacciSquare: bigint[][]): bigint[] => {
+export const PithagoreanTriple = (fibonacciSquare: bigint[][]): bigint[] => {
 
     const triple: bigint[] = [
         (fibonacciSquare[0][0] * fibonacciSquare[1][0]), 
