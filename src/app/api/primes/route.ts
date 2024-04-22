@@ -2,7 +2,6 @@ import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH
 import eratostenes, { lastTenEratostenes } from '@/helpers/eratostenes'
 import errorMessage from '@/helpers/errorMessage'
 import toHuman from '@/helpers/toHuman'
-import getTimeMicro from '@/helpers/getTimeMicro'
 
 export async function GET(request: Request): Promise<Response> {
   

@@ -164,6 +164,20 @@ function fillSieveBuffer(lwi, sb) {
   }
 }
 
+// It takes years to process every prime!
+function iteratePrimesInSieveBuffer(lwi, bitndxlmt, cmpsts) { 
+  let primes = []; 
+  const whlfctr = WHLODDCRC + WHLODDCRC;
+  for (let i = 0; i <= bitndxlmt; ++i) 
+    for (let ri = 0; ri < WHLHITS; ++ri) 
+      if ((cmpsts[ri][i >> 3] & (1 << (i & 7))) == 0) { 
+        const prime = (lwi + i) * whlfctr + RESIDUES[ri];
+        // DO something with the prime!
+      }
+  
+  return true;
+}
+
 export default function countPrimes(LIMIT, cache = 2 * 1024**2) { // 2MB cache. counter up to 10**12 in 7903 s
 
   const separator = new Array(10).fill(" ").join("")
@@ -178,7 +192,7 @@ export default function countPrimes(LIMIT, cache = 2 * 1024**2) { // 2MB cache. 
   process.stdout.write("\r");
   process.stdout.write("\r");
   // GordonBGood super fast sieve
-  process.stdout.write("GS: Sieved 0.000% in " + duration(getTimeMicro() - startx)+ separator)
+  process.stdout.write("GS: Sieved   0.000% in " + duration(getTimeMicro() - startx)+ separator)
   
   for (let i = 0; i < WHLPRMS.length; ++i) {
     if (WHLPRMS[i] > LIMIT) break;
@@ -214,8 +228,12 @@ export default function countPrimes(LIMIT, cache = 2 * 1024**2) { // 2MB cache. 
         const nxti = lwi + SIEVEBUFFERSZ;
         fillSieveBuffer(lwi, cmpsts);
         cullSieveBuffer(lwi, bparr, strts, cmpsts);
-        if (nxti <= lwilmt) count += countSieveBuffer(SIEVEBUFFERSZ * WHLODDCRC - 1, cmpsts);
-        else count += countSieveBuffer((LIMIT - FRSTSVPRM) / 2 - lwi * WHLODDCRC, cmpsts);
+        if (nxti <= lwilmt) {
+          count += countSieveBuffer(SIEVEBUFFERSZ * WHLODDCRC - 1, cmpsts);
+        } 
+        else {
+          count += countSieveBuffer((LIMIT - FRSTSVPRM) / 2 - lwi * WHLODDCRC, cmpsts);
+        }
       }
       if (lwi <= lwilmt) {
         process.stdout.write("\r");

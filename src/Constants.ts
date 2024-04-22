@@ -2,15 +2,15 @@
 export const MAX_ALLOCATABLE_ARRAY = 2 ** 31;                       // 2.1b More elements break node
 
 // Supported limits
-export const MAX_SUPPORTED_SIEVE_LENGTH = 10**12;                   // 1t which takes 58GB RAM and generates 240GB primes. Tested on a 64GB RAM server.
+export const MAX_SUPPORTED_SIEVE_LENGTH = 10**12;                   // 1t which takes 58GB RAM and generates 452GB primes. Tested on a 64GB RAM server.
 
 // Excel limits
 export const EXCEL_MAX_ROWS = 1048576;                              // FIX VALUE FROM EXCEL SPEC 
 export const EXCEL_MAX_COLS = 16384;                                // FIX VALUE FROM EXCEL SPEC
 
 // Web healthy limits
-export const MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH = 10**16            // with segmented sieve it runs up to 10**16 is less than a sec
-export const MAX_HEALTHY_SIEVE_LENGTH = 10**8                       // 100m run in les than a sec.
+export const MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH = 10**16            // with segmented sieve it runs up to 10q is less than a sec
+export const MAX_HEALTHY_SIEVE_LENGTH = 10**8                       // with full sieve 100m run in less than a sec.
 export const MAX_DIGITS_TRIPLE = 180000;                            // Healthy computation of less than a sec
 export const MAX_LENGTH_TREE = 10;                                  // Healthy computation of just few seconds
 export const MAX_DIGITS_FACTORIZATION = 21;                         // Healthy computation of just few seconds

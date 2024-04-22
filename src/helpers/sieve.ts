@@ -1,8 +1,8 @@
 import Bits from "@/helpers/Bits";
 import errorMessage from "@/helpers/errorMessage";
-import percent from "./percent";
-import getTimeMicro from "./getTimeMicro";
-import duration from "./duration";
+import percent from "@/helpers/percent";
+import getTimeMicro from "@/helpers/getTimeMicro";
+import duration from "@/helpers/duration";
 
 // Enhanced eratosthenes sieve with odd numbers
 //
@@ -21,19 +21,17 @@ import duration from "./duration";
 //
 // Posible improvements: 
 //
-// Remove odds memory usage
+// Remove times 3
 //
-//   1/2 = 50%
+//   5/6 = 82%
 //
-// Remove evens, times 3
+// Remove times 3, 5 and 7
 //
-//   1/2 * 5/6 = 41%
-//
-// Remove evens, times 3, 5 and 7
-//
-//   1/2 * 5/6 * 29/30 * 209/210 = 40%
+//   5/6 * 29/30 * 209/210 = 80%
 //
 // Conclusion: do not worth to go beyond
+// Beyond 1t it is worth to use segmentedEratostenes instead.
+
 
 export default function sieve(lastNumber: number): Bits {
     
@@ -42,14 +40,14 @@ export default function sieve(lastNumber: number): Bits {
     return new Bits(0)
   }
 
-  try {
+  try { 
       // Initialization
       const memorySize = Math.round(lastNumber / 2);
       const upperLimit = Math.round(Math.sqrt(lastNumber));
       const sieve = new Bits(memorySize);
       process.stdout.write("\r");
       process.stdout.write("\r");
-      process.stdout.write("CS: Sieved 0.000% in " + duration(getTimeMicro() - startx) + "        ")     
+      process.stdout.write("CS: Sieved   0.000% in " + duration(getTimeMicro() - startx) + "        ")     
       // Hard process crossing all odd composite numbers
       for (var i = 3; i <= upperLimit; i += 2) {
         if (sieve.get((i -1) / 2) === false) {

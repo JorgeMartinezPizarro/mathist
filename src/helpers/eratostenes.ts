@@ -7,22 +7,22 @@ import toHuman from "@/helpers/toHuman";
 import eratosthenes from "@/helpers/sieve";
 import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
+import percent from "@/helpers/percent";
 import { SieveReport } from "@/types";
 import Bits from "@/helpers/Bits";
-import percent from "@/helpers/percent";
-import { max, min, sqrt } from "./math";
 
+// https://en.wikipedia.org/wiki/Prime_number_theorem#Table_of_%CF%80(x),_x_/_log_x,_and_li(x)
 export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
 
   if (excel) {
-    return primesToExcel(LIMIT)
+    return primesToExcel(LIMIT) 
   } 
   
   return primes(LIMIT, amount)
   
 }
 
-export function lastTenEratostenes(LIMIT: bigint) {
+export function lastTenEratostenes(LIMIT: bigint): SieveReport {
   if (LIMIT > MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH) {
     throw new Error("Segmented sieve can be run with a max value of " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
   }
@@ -36,16 +36,15 @@ export function lastTenEratostenes(LIMIT: bigint) {
 }
 
 export function segmentedEratostenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
-  // segment size
-  const S = 1024 * 512
+  
   let result: number[] = []
   const startx = getTimeMicro()
-  const primos: number[] = [];
   const nsqrt = Math.floor(Math.sqrt(n));
+  const S = Math.min(1024 * 1024, nsqrt) // 1MB cache
   const firstPrimes = primes(nsqrt + 1, nsqrt + 1).primes
   process.stdout.write("\r");
   process.stdout.write("\r");
-  process.stdout.write("SS: Sieved 000.000% in " + (duration(getTimeMicro() - startx)) + "       ")
+  process.stdout.write("SS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "       ")
   let resultado = 0;
   const bloque: boolean[] = Array(S).fill(true);
   for (let k = 0; k * S <= n; k++) {
@@ -84,8 +83,7 @@ export function segmentedEratostenes(n: number, amount: number = MAX_DISPLAY_SIE
   };
 }
 
-// Segment the sieve into steps of size sqrt of high. 
-// TODO: understand deeply countPrimes.js and apply the same principle here. Our version is way slower!
+// Segment the sieve into steps of size sqrt of high.
 export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
   if (high > 10 ** 18) {
     throw new Error("This algorithm need memory sqrt(high), 10**8 basic sieve takes some seconds.")
@@ -99,14 +97,13 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
   
   // TODO: instead of getting the primes and iterate over them, iterate over the original sieve and catch the primes.
-  // TODO the count is wrong!
   const primesToRoot = primes(sieveSize, sieveSize).primes;
   
   let primesInRange: Array<bigint> = []; // Primes found in the given range
   
   process.stdout.write("\r");
   process.stdout.write("\r");
-  process.stdout.write("PS: Sieved 0.000% in " + (duration(getTimeMicro() - startx)) + "      ")
+  process.stdout.write("PS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "      ")
   let count = 0
   // Iterate over each segment
   for (let segment = 0; segment < numSegments; segment++) {
@@ -139,7 +136,7 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
 
   process.stdout.write("\r");
   process.stdout.write("\r");
-  process.stdout.write("PS: Sieved 100.00% in " + (duration(getTimeMicro() - startx)) + "      \n")
+  process.stdout.write("PS: Sieved 100.000% in " + (duration(getTimeMicro() - startx)) + "      \n")
 
   return {
     isPartial: true,
@@ -151,6 +148,7 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
 }
 
 // Create excel file with primes up to LIMIT
+// TODO: use segmentedSieve to be faster
 function primesToExcel(LIMIT: number): SieveReport {
 
   console.log("//////////////////////////////////////////////////////////////////////////////////////////")
@@ -219,6 +217,7 @@ function primesToExcel(LIMIT: number): SieveReport {
 }
 
 // Count primes and return count and last amount primes
+// TODO: use segmentedSieve
 function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
   const elapsed = getTimeMicro()
 

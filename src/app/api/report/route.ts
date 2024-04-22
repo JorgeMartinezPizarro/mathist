@@ -34,8 +34,8 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9,10**10]
-      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12, 10**13]
+      ? [10**6, 10**7, 10**8, 10**9,10**10, 10**11 + 1]
+      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12]
 
     const stringArray = [
       ...[1, 2, 3, 4, 5, 6,7,8].map(i => printPrecentPrimes(i)),
@@ -46,12 +46,12 @@ export async function GET(request: Request): Promise<Response> {
       )
     ]
     
-    stringArray.push("It took " + duration(getTimeMicro() - start) + " to generate the report!")
     const filename = "./public/files/report.html"
+    stringArray.push("It took " + duration(getTimeMicro() - start) + " to generate the report!")
     fs.writeFileSync(filename, "<html><head></head><body>", 'utf8')
     stringArray.forEach(string => fs.appendFileSync(filename, "<p>" + string + "</p>", 'utf8'))
     fs.appendFileSync(filename, "</body></html>", 'utf8')
-    // The whole report takes about 5 minutes to generate.
+    // The whole report takes 1h in local, several hours in server.
     return Response.json( {time: getTimeMicro() - start, message: "report generated under /files/report.html"} )
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
@@ -66,7 +66,12 @@ const printPrecentPrimesEstimated = (digits: number): string => {
   const primesWithLessThanTenDigitsEstimated = maxTenDigits / ln(maxTenDigits)
   const primesWithLessThanNineDigitsEstimated = maxNineDigits / ln(maxNineDigits)
   const primesWithTenDigitsEstimated = primesWithLessThanTenDigitsEstimated - primesWithLessThanNineDigitsEstimated
-  
+  // TODO: think about 
+  /* 
+    const a = x / Math.log(x) * (1 + 0.992 / Math.log(x));
+    const b = x / Math.log(x) * (1 + 1.2762 / Math.log(x));
+    return Math.round((a + b) / 2); // take the value in the middle
+  */
   return percent(primesWithTenDigitsEstimated, numbersWithTenDigits) + " numbers with " + digits + " digits are prime approximated"
 }
 
@@ -89,7 +94,6 @@ const checkPrimeCounts = (n: number): string[] => {
   
   let stringArray: string[] = [];
   stringArray.push("Checking prime functions for " + n.toString()[0] + "E" + (n.toString().length - 1))
-  // 37607912018 primes up to 1t
   const limit = n
   const c = countPrimes(limit)
   const e = n <= 10**11 ? eratostenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
@@ -102,12 +106,12 @@ const checkPrimeCounts = (n: number): string[] => {
     ) {
       stringArray.push(lp.primes.toString())
       stringArray.push(se.primes.toString())
-      stringArray.push("Some is wrong generating last primes to " + limit)
+      stringArray.push("Something went wrong generating primes to " + limit)
     }
-    if (c.length !== e.length || e.length !== se.length) {
+    if (c.length !== se.length) {
       stringArray.push("" + c.length)
       stringArray.push("" + se.length)
-      stringArray.push("Something is wrong counting primes to " + limit)
+      stringArray.push("Something went wrong counting primes to " + limit)
     }
   } else {
     if (!arrayEquals(lp.primes, se.primes) || 
@@ -116,14 +120,14 @@ const checkPrimeCounts = (n: number): string[] => {
       stringArray.push(lp.primes.toString())
       stringArray.push(se.primes.toString())
       stringArray.push(e.primes.toString())
-      stringArray.push("Some is wrong generating last primes to " + limit)
+      stringArray.push("Some went wrong generating primes to " + limit)
     }
 
     if (c.length !== e.length || e.length !== se.length) {
       stringArray.push("" + c.length)
       stringArray.push("" + e.length)
       stringArray.push("" + se.length)
-      stringArray.push("Something is wrong counting primes to " + limit)
+      stringArray.push("Something went wrong counting primes to " + limit)
     }
   }
 
