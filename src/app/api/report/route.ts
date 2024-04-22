@@ -36,7 +36,7 @@ export async function GET(request: Request): Promise<Response> {
     const stringArray = [
       ...[1, 2, 3, 4, 5, 6,7,8].map(i => printPrecentPrimes(i)),
       ...[9, 10,11,12,13,14,15,20,50,100,1000,10000].map(i => printPrecentPrimesEstimated(i)),
-      ...[10**7, 10**8, 10**9, 10**10, 10**11, 10**12].reduce(
+      ...[10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12, 10**13].reduce(
         (acc: string[], i: number): string[] => [...acc, ...checkPrimeCounts(i)], 
         []
       )
@@ -44,9 +44,9 @@ export async function GET(request: Request): Promise<Response> {
     
     stringArray.push("It took " + duration(getTimeMicro() - start) + " to generate the report!")
     const filename = "./public/files/report.html"
-    fs.writeFileSync(filename, "<html><head></head><body>")
-    stringArray.forEach(string => fs.appendFileSync(filename, "<p>" + string + "</p>"))
-    fs.appendFileSync(filename, "</body></html>")
+    fs.writeFileSync(filename, "<html><head></head><body>", 'utf8')
+    stringArray.forEach(string => fs.appendFileSync(filename, "<p>" + string + "</p>", 'utf8'))
+    fs.appendFileSync(filename, "</body></html>", 'utf8')
     // The whole report takes about 5 minutes to generate.
     return Response.json( {time: getTimeMicro() - start, message: "report generated under /files/report.html"} )
   } catch (error) {
@@ -92,29 +92,40 @@ const checkPrimeCounts = (n: number): string[] => {
   const se = segmentedEratostenes(limit)
   const lp = lastTenEratostenes(BigInt(limit))
   
-
-  if (!arrayEquals(lp.primes, se.primes) || 
+  if (e.length === 0) {
+    
+    if (!arrayEquals(lp.primes, se.primes)
+    ) {
+      stringArray.push(lp.primes.toString())
+      stringArray.push(se.primes.toString())
+      stringArray.push("Some is wrong generating last primes to " + limit)
+    }
+    if (c.length !== e.length || e.length !== se.length) {
+      stringArray.push("" + c.length)
+      stringArray.push("" + se.length)
+      stringArray.push("Something is wrong counting primes to " + limit)
+    }
+  } else {
+    if (!arrayEquals(lp.primes, se.primes) || 
       !arrayEquals(se.primes, e.primes)
-  ) {
-    stringArray.push(lp.primes.toString())
-    stringArray.push(se.primes.toString())
-    stringArray.push(e.primes.toString())
-    stringArray.push("Some is wrong generating last primes to " + limit)
-  }
+    ) {
+      stringArray.push(lp.primes.toString())
+      stringArray.push(se.primes.toString())
+      stringArray.push(e.primes.toString())
+      stringArray.push("Some is wrong generating last primes to " + limit)
+    }
 
-  if (c.length !== e.length || e.length !== se.length) {
-    stringArray.push("" + c.length)
-    stringArray.push("" + e.length)
-    stringArray.push("" + se.length)
-    stringArray.push("Something is wrong counting primes to " + limit)
+    if (c.length !== e.length || e.length !== se.length) {
+      stringArray.push("" + c.length)
+      stringArray.push("" + e.length)
+      stringArray.push("" + se.length)
+      stringArray.push("Something is wrong counting primes to " + limit)
+    }
   }
 
   stringArray.push("It took " + duration(lp.time) + " to generate the last 10 primes")
-  
-  stringArray.push("It took " + duration(e.time) + " to generate the full sieve at once and iterate over all primes")
-
+  e.time > 0 && stringArray.push("It took " + duration(e.time) + " to generate the full sieve at once and iterate over all primes")
   stringArray.push("It took " + duration(se.time) + " to generate the full sieve with segments and iterate over all primes")
-
   stringArray.push("It took " + duration(c.time) + " to count with a bit wise segmentation sieve.")
 
   return stringArray;
