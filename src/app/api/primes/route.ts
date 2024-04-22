@@ -11,6 +11,7 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
 
+    
     const { searchParams } = new URL(request.url||"".toString())
     const LIMIT_BI: bigint = BigInt(searchParams.get('LIMIT') || "")
     const LIMIT = Number(LIMIT_BI)

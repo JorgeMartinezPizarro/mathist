@@ -1,3 +1,4 @@
+import os from 'node:os' 
 import fs from "fs"
 
 import eratostenes, { segmentedEratostenes, lastTenEratostenes } from '@/helpers/eratostenes'
@@ -34,10 +35,11 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9,10**10, 10**11 + 1]
+      ? [10**6, 10**7, 10**8, 10**9,10**10, 10**11+1]
       : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12] // 10**13 produces stackoverflow
 
     const stringArray = [
+      os.cpus()[0].model + " " + process.arch,
       ...[1, 2, 3, 4, 5, 6,7,8].map(i => {
         return printPrecentPrimes(i)
       }),
