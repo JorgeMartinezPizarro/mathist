@@ -37,7 +37,7 @@ const PithagoreanTree = () => {
             }),
           }
         setError(false)
-        fetch("/api/PithagoreanTriple", options)
+        fetch("/api/pithagoreanTriple", options)
             .then(res => res.json())
             .then(res => {
                 if (res.error) {
@@ -55,7 +55,7 @@ const PithagoreanTree = () => {
     }
 
     useEffect(() => {
-        fetch("/api/PithagoreanTree?LIMIT=" + size.toString())
+        fetch("/api/pithagoreanTree?LIMIT=" + size.toString())
             .then(res => res.json())
             .then(res => setTree(res))
             .catch(error => setError(error))
