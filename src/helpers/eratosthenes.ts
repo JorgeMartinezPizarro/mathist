@@ -1,10 +1,10 @@
 import fs from "fs"
 
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH} from "@/Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_CLASSIC_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH} from "@/Constants";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
-import eratosthenes from "@/helpers/sieve";
+import sieve from "@/helpers/sieve";
 import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
 import percent from "@/helpers/percent";
@@ -12,17 +12,21 @@ import { SieveReport } from "@/types";
 import Bits from "@/helpers/Bits";
 
 // https://en.wikipedia.org/wiki/Prime_number_theorem#Table_of_%CF%80(x),_x_/_log_x,_and_li(x)
-export default function eratostenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
 
+// Get primes or write primes to a file and get the link.
+// Excel works MAX value 10**12, 452GB.
+// Excel works up to 10**8 48MB less than a second.
+// Primes works well up to 10**16 generating last primes in less than a second.
+//
+export default function eratosthenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
   if (excel) {
-    return primesToExcel(LIMIT) 
+    return primesToExcel(LIMIT)
   } 
   
-  return primes(LIMIT, amount)
-  
+  return classicOrSegmentedEratosthenes(LIMIT, amount)
 }
 
-export function lastTenEratostenes(LIMIT: bigint): SieveReport {
+export function lastTenEratosthenes(LIMIT: bigint): SieveReport {
   if (LIMIT > MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH) {
     throw new Error("Segmented sieve can be run with a max value of " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
   }
@@ -32,16 +36,68 @@ export function lastTenEratostenes(LIMIT: bigint): SieveReport {
   // Up to 10**18, 10000 elements ensure 10 primes
   const low = high > t ? high - t : BigInt(1)
 
-  return segmentedEratostenesPartial(low, high)
+  return segmentedEratosthenesPartial(low, high)
 }
 
-export function segmentedEratostenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
+// Use the iterator for primes and primesTOExcel. It is 10 times faster than the classic sieve for values from 10**12
+function segmentedEratosthenesIterator(n: number, callback: any): void {
+  
+  const startx = getTimeMicro()
+  const nsqrt = Math.floor(Math.sqrt(n));
+  const S = Math.min(1024 * 1024 * 16, nsqrt) // 16MB cache
+  const firstPrimes = classicOrSegmentedEratosthenes(nsqrt + 1, nsqrt + 1).primes
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("SS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "       ")
+  
+  let bloque: Bits = new Bits(S);
+  for (let k = 0; k * S <= n; k++) {
+      bloque = new Bits(S);
+      const start = k * S;
+      for (const p of firstPrimes) {
+          const startIdx = Math.max(Math.floor((start + Number(p) - 1) / Number(p)), Number(p)) * Number(p) - start;
+          for (let j = startIdx; j < S; j += Number(p))
+              bloque.set(j, true);
+      }
+      if (k === 0) {
+          bloque.set(0, true);
+          bloque.set(1, true);
+      }
+      for (let i = 0; i < S && start + i <= n; i++) {
+          if (!bloque.get(i)) {
+              callback(start + i)
+          }
+      }
+
+      process.stdout.write("\r");
+      process.stdout.write("\r");
+      process.stdout.write("SS: Sieved " + percent(BigInt(k), BigInt(n)/BigInt(S)) + " in " + (duration(getTimeMicro() - startx)) + "       ")
+  }
+
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("SS: Sieved 100.000% in " + (duration(getTimeMicro() - startx)) + "                 \n")
+}
+
+function classicEratosthenesIterator(n: number, callback: any): void {
+  const s = sieve(n);
+  
+  callback(2);
+
+  for (var i = 1; i< s.length;i++) {
+    if (2*i+1 <=n && !s.get(i)) {
+      callback(2 * i + 1)
+    }
+  }
+}
+
+export function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
   
   let result: number[] = []
   const startx = getTimeMicro()
   const nsqrt = Math.floor(Math.sqrt(n));
-  const S = Math.min(1024 * 1024, nsqrt) // 1MB cache
-  const firstPrimes = primes(nsqrt + 1, nsqrt + 1).primes
+  const S = Math.min(1024 * 1024 * 16, nsqrt) // 16MB cache
+  const firstPrimes = classicOrSegmentedEratosthenes(nsqrt + 1, nsqrt + 1).primes
   process.stdout.write("\r");
   process.stdout.write("\r");
   process.stdout.write("SS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "       ")
@@ -83,11 +139,11 @@ export function segmentedEratostenes(n: number, amount: number = MAX_DISPLAY_SIE
   };
 }
 
-// Segment the sieve into steps of size sqrt of high.
-export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
+// Get part of the segmentedEratosthenes only
+function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
   if (high > 10 ** 18) {
     throw new Error("This algorithm need memory sqrt(high), 10**8 basic sieve takes some seconds.")
-  } else if (high - low > 10**10) {
+  } else if (high - low > 10**6) {
     throw new Error("It would take a lot of time!")
   }
   console.log("/////////////////////////////////////////////////////////////////////////////")
@@ -97,7 +153,7 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
   
   // TODO: instead of getting the primes and iterate over them, iterate over the original sieve and catch the primes.
-  const primesToRoot = primes(sieveSize, sieveSize).primes;
+  const primesToRoot = classicOrSegmentedEratosthenes(sieveSize, sieveSize).primes;
   
   let primesInRange: Array<bigint> = []; // Primes found in the given range
   
@@ -148,7 +204,6 @@ export function segmentedEratostenesPartial(low: bigint, high: bigint, maxLength
 }
 
 // Create excel file with primes up to LIMIT
-// TODO: use segmentedSieve to be faster
 function primesToExcel(LIMIT: number): SieveReport {
 
   console.log("//////////////////////////////////////////////////////////////////////////////////////////")
@@ -169,11 +224,10 @@ function primesToExcel(LIMIT: number): SieveReport {
   const path = root + filename;
 
   let e = getTimeMicro();
-  const sieve = eratosthenes(LIMIT);
+  
   let line = new Array();
-  line.push(2)
   let rows = 0;
-  let length = 1;
+  let length = 0;
   
   console.log("Sieved in " + duration(getTimeMicro() - e) + ", start writting primes to file")
   e = getTimeMicro()
@@ -181,16 +235,12 @@ function primesToExcel(LIMIT: number): SieveReport {
   // Create the file
   fs.writeFileSync(path, "")
 
-  if (sieve.length === 0) {
-    fs.appendFileSync(path, "2")
-  }
+  const primesIterator = LIMIT > MAX_CLASSIC_SIEVE_LENGTH ? segmentedEratosthenesIterator : classicEratosthenesIterator
 
-  for (var i = 1; i < sieve.length; i++) {
-    if (i * 2 + 1 <= LIMIT && !sieve.get(i)) {
-      line.push( 2 * i + 1)
-      length++
-    }
-    if (line.length === EXCEL_MAX_COLS || i === sieve.length-1) {
+  primesIterator(LIMIT, (p: number) => {
+    line.push(p)
+    length++
+    if (line.length === EXCEL_MAX_COLS) {
       try {
         fs.appendFileSync(path, line.join(',') + "\r\n");
       } catch (error) {
@@ -205,8 +255,11 @@ function primesToExcel(LIMIT: number): SieveReport {
       }
       line = new Array()
     }
-  }
+  })
 
+  // append the rest 
+  fs.appendFileSync(path, line.join(',') + "\r\n");
+  
   var stats = fs.statSync(path);
   var fileSizeInBytes = stats.size;
 
@@ -216,9 +269,8 @@ function primesToExcel(LIMIT: number): SieveReport {
   return {filename: "/files/" + filename, time: getTimeMicro() - elapsed, length, primes: [], isPartial: false};
 }
 
-// Count primes and return count and last amount primes
-// TODO: use segmentedSieve
-function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
+// Count primes and return count and last amount primes using classic or segmented sieve depending on the size
+export function classicOrSegmentedEratosthenes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
   const elapsed = getTimeMicro()
 
   if (isNaN(lastNumber)) {
@@ -251,35 +303,29 @@ function primes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveRe
   console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
   console.log("Let's sieve for less or equal than " + lastNumber)
   
-  let memorySize = Math.round(lastNumber / 2);
   let arrayOfPrimes: number[] = Array()  
-  let count = 0
-  let numberOfPrimes = 1
-  let sieve = eratosthenes(lastNumber)
+  let numberOfPrimes = 0
   let e = getTimeMicro()
 
-  // Basically push primes until get an amount
-  for (var i = memorySize; i >= 1; i-- ) {
-    if (i * 2 + 1 <= lastNumber && !sieve.get(i)) {
-      if (count < amount) {
-        try {
-          arrayOfPrimes.push(i * 2 + 1)
-          if (i===1 || count === amount - 1 && arrayOfPrimes.length < amount) {
-            arrayOfPrimes.push(2);
-          }
-          count++
-        } catch (e) {
-          throw new Error("Error push " + count + "-th time in array at primes below " + lastNumber + " last prime generated is " + (1 + 2*i))
-        }
-      }
-      numberOfPrimes++;
+  const primesIterator = lastNumber > MAX_CLASSIC_SIEVE_LENGTH ? segmentedEratosthenesIterator : classicEratosthenesIterator
+
+  primesIterator(lastNumber, (p: number) => {
+    try {
+      arrayOfPrimes.push(p)
+      
+      numberOfPrimes++
+      if (arrayOfPrimes.length > 10**6)
+        arrayOfPrimes = arrayOfPrimes.slice(-amount)
+
+    } catch (e) {
+      "Error push " + lastNumber + "-th time in array at primes below " + lastNumber + " last prime generated is " + p + ". " + errorMessage(e)
     }
-  }
-  
+  })
+
   console.log("Primes obtained and counted in " + duration(getTimeMicro() - e))
 
   console.log("Total duration " + duration(getTimeMicro() - elapsed))
 
-  return {filename: "", primes: arrayOfPrimes.slice(0, amount).reverse(), time: getTimeMicro() - elapsed, length: numberOfPrimes, isPartial: false};
+  return {filename: "", primes: arrayOfPrimes.slice(-amount), time: getTimeMicro() - elapsed, length: numberOfPrimes, isPartial: false};
 }
 

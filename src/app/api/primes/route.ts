@@ -1,6 +1,5 @@
 import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH } from '@/Constants'
-import countPrimes from '@/helpers/countPrimes'
-import eratostenes, { lastTenEratostenes } from '@/helpers/eratostenes'
+import eratosthenes, { lastTenEratosthenes } from '@/helpers/eratosthenes'
 import errorMessage from '@/helpers/errorMessage'
 import toHuman from '@/helpers/toHuman'
 
@@ -11,7 +10,7 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   try {
-
+    
     const { searchParams } = new URL(request.url||"".toString())
     const LIMIT_BI: bigint = BigInt(searchParams.get('LIMIT') || "")
     const LIMIT = Number(LIMIT_BI)
@@ -25,12 +24,12 @@ export async function GET(request: Request): Promise<Response> {
         {status: 500}
       )
     };
-
+    console.log(KEY, process.env.MATHER_SECRET)
     if (process.env.MATHER_SECRET?.trim() !== KEY && !excel && LIMIT_BI > MAX_HEALTHY_SIEVE_LENGTH) {
-      return Response.json( lastTenEratostenes(LIMIT_BI) )
+      return Response.json( lastTenEratosthenes(LIMIT_BI) )
     } 
     // USE ENV MATHER_SECRET TO OVERCOME THE GUI LIMITS
-    if (process.env.MATHER_SECRET !== KEY && LIMIT > MAX_HEALTHY_SIEVE_LENGTH) { 
+    if (process.env.MATHER_SECRET?.trim() !== KEY && LIMIT > MAX_HEALTHY_SIEVE_LENGTH) { 
       // 500m up to 30MB RAM 245MB disk, natural limit for the web, it takes 3s to compute.
       return Response.json(
         {error: "Max length for generate prime download is " + MAX_HEALTHY_SIEVE_LENGTH + ", which takes " + toHuman(MAX_HEALTHY_SIEVE_LENGTH / 16) + " RAM and 49MB disk. For more ask the admin."},
@@ -46,7 +45,7 @@ export async function GET(request: Request): Promise<Response> {
       )
     }    
 
-    return Response.json( eratostenes(LIMIT, amount, excel) )
+    return Response.json( eratosthenes(LIMIT, amount, excel) )
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }

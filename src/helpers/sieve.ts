@@ -4,18 +4,18 @@ import percent from "@/helpers/percent";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 
-// Enhanced eratosthenes sieve with odd numbers
+// Return the enhanced eratosthenes sieve (CS) with odd numbers
 //
 // Tested with values:
 //
 //  amount  time  RAM
-//  =====   ===== ====
+//  ======  ===== ===
 //
-//  100m    500ms  5MB 
-//  1b      10s    64MB
-//  10b     3m     640MB
-//  100b    50m    6GB 
-//  1t      36h    58GB
+//  10**8   500ms  5MB 
+//  10**9   10s    64MB
+//  10**10  3m     640MB
+//  10**11  50m    6GB 
+//  10**12  24h    58GB
 //
 // If your node has no enough memory it will throw an error.
 //

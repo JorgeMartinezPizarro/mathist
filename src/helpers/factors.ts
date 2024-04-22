@@ -199,16 +199,15 @@ const brentFactor = (n: bigint): bigint => {
     }
 
     if (d === n) {
-        console.log("The factor " + n + " is not prime. Failed brent.")
+        throw new Error("Factor found itself ... failed brent")
         return d;
     }
 
-    const primeFactor = min(d, n / d)
-
-    if (!isMillerRabinProbablePrime(primeFactor) || !isBaillieProbablePrime(primeFactor)) {
-        // TODO: call the function again with the factor to find factors.
-        throw new Error("NOT IMPLEMENTED: The brent factorization generated a non prime, implement a recursion.")
+    const factor = min(d, n / d)
+    
+    if (!isMillerRabinProbablePrime(factor) || !isBaillieProbablePrime(factor)) {
+        throw new Error("Factor is not prime, should we iterate to find more?")
     }
 
-    return min(d, n/d);
+    return factor;
 }

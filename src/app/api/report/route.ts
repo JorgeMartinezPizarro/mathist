@@ -1,13 +1,14 @@
 import os from 'node:os' 
 import fs from "fs"
 
-import eratostenes, { segmentedEratostenes, lastTenEratostenes } from '@/helpers/eratostenes'
+import { segmentedEratosthenes, lastTenEratosthenes, classicOrSegmentedEratosthenes } from '@/helpers/eratosthenes'
 import errorMessage from '@/helpers/errorMessage'
 import { ln } from '@/helpers/math'
 import countPrimes from "@/helpers/countPrimes"
 import duration from '@/helpers/duration'
 import percent from '@/helpers/percent'
 import getTimeMicro from '@/helpers/getTimeMicro'
+import { MAX_CLASSIC_SIEVE_LENGTH } from '@/Constants'
 
 function arrayEquals(a: (number | bigint)[], b: (number | bigint)[]) {
   return Array.isArray(a) &&
@@ -34,8 +35,8 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 10**10, 5 * 10**10] // acceptable for local, 40m
-      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 5 * 10**11, 10**12, 5 * 10**12] // max server around a day to compute, 30h
+      ? [10**6, 10**7, 10**8, 10**9, 10**10, 10**11]                                  // acceptable for local, 5m
+      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**11, 10**12]                  // server stress checks, 4h
 
     const stringArray = [
       "<h3>Test report of mather.ideniox.com</h3>",
@@ -109,15 +110,15 @@ const printPercentPrimes = (digits: number): string => {
 const checkPrimeCounts = (n: number): string[] => {
   // Needed to increase the cache from 1MB to 13MB to avoid max number of iterations in the segments loop.
   const cache = 1024 ** 2 * 2 ** 4 // 16MB
-  const skipClassicSieve = n < 5 * 10**11 // 30GB RAM!
+  const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   let stringArray: string[] = [];
   const sort = n.toString()[0] + "E" + (n.toString().length - 1)
   stringArray.push("<b>Checking prime functions for " + sort +"</b>")
   const limit = n
   const c = countPrimes(limit, cache)
-  const e = skipClassicSieve ? eratostenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
-  const se = segmentedEratostenes(limit)
-  const lp = lastTenEratostenes(BigInt(limit))
+  const ce = !skipClassicSieve ? classicOrSegmentedEratosthenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
+  const se = segmentedEratosthenes(limit)
+  const lp = lastTenEratosthenes(BigInt(limit))
   
   if (skipClassicSieve) {
     if (!arrayEquals(lp.primes, se.primes)
@@ -132,21 +133,21 @@ const checkPrimeCounts = (n: number): string[] => {
     }
   } else {
     if (!arrayEquals(lp.primes, se.primes) || 
-      !arrayEquals(se.primes, e.primes)
+      !arrayEquals(se.primes, ce.primes)
     ) {
       stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
       stringArray.push("PS: " + lp.primes.toString())
       stringArray.push("SS: " + se.primes.toString())
-      stringArray.push("CS: " + e.primes.toString())
+      stringArray.push("CS: " + ce.primes.toString())
     }
-    if (c.length !== e.length || e.length !== se.length) {
+    if (c.length !== ce.length || ce.length !== se.length) {
       stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
-      stringArray.push("GS: " + c.length + " !== CS: " + e.length + " !== SS: " + se.length)
+      stringArray.push("GS: " + c.length + " !== CS: " + ce.length + " !== SS: " + se.length)
     }
   }
 
   stringArray.push("It took " + duration(lp.time) + " to generate the last 10 primes")
-  e.time > 0 && stringArray.push("It took " + duration(e.time) + " to generate the full sieve at once and iterate over all primes")
+  !skipClassicSieve && stringArray.push("It took " + duration(ce.time) + " to generate the full sieve at once and iterate over all primes")
   stringArray.push("It took " + duration(se.time) + " to generate the full sieve with segments and iterate over all primes")
   stringArray.push("It took " + duration(c.time) + " to count with a bit wise segmentation sieve.")
 
