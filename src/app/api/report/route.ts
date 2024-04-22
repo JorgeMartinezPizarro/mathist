@@ -86,7 +86,7 @@ const printPrecentPrimesEstimated = (digits: number): string => {
     const b = x / Math.log(x) * (1 + 1.2762 / Math.log(x));
     return Math.round((a + b) / 2); // take the value in the middle
   */
-  return percent(primesWithTenDigitsEstimated, numbersWithTenDigits) + " numbers with " + digits + " digits are prime approximated"
+  return percent(primesWithTenDigitsEstimated, numbersWithTenDigits) + " numbers with " + digits + " digits are prime approximately"
 }
 
 const printPrecentPrimes = (digits: number): string => {
@@ -107,7 +107,8 @@ const printPrecentPrimes = (digits: number): string => {
 const checkPrimeCounts = (n: number): string[] => {
   
   let stringArray: string[] = [];
-  stringArray.push("<b>Checking prime functions for " + n.toString()[0] + "E" + (n.toString().length - 1)+"</b>")
+  const sort = n.toString()[0] + "E" + (n.toString().length - 1)
+  stringArray.push("<b>Checking prime functions for " + sort +"</b>")
   const limit = n
   const c = countPrimes(limit)
   const e = n <= 10**11 ? eratostenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
@@ -118,27 +119,26 @@ const checkPrimeCounts = (n: number): string[] => {
     
     if (!arrayEquals(lp.primes, se.primes)
     ) {
-      stringArray.push(lp.primes.toString())
-      stringArray.push(se.primes.toString())
-      stringArray.push("<span style='color: red'>Something went wrong generating primes to " + limit+"</span>")
+      stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
+      stringArray.push("PS: " +  lp.primes.toString())
+      stringArray.push("SS: " + se.primes.toString())
     }
     if (c.length !== se.length) {
-      stringArray.push("<span style='color: red'>Something went wrong counting primes to " + limit+"</span>")
-      stringArray.push("" + c.length + "!==" + se.length)
+      stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
+      stringArray.push("GS: " + c.length + " !== SS: " + se.length)
     }
   } else {
     if (!arrayEquals(lp.primes, se.primes) || 
       !arrayEquals(se.primes, e.primes)
     ) {
-      stringArray.push(lp.primes.toString())
-      stringArray.push(se.primes.toString())
-      stringArray.push(e.primes.toString())
-      stringArray.push("<span style='color: red'>Something went wrong generating primes to " + limit+"</span>")
+      stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
+      stringArray.push("PS: " + lp.primes.toString())
+      stringArray.push("SS: " + se.primes.toString())
+      stringArray.push("CS: " + e.primes.toString())
     }
-
     if (c.length !== e.length || e.length !== se.length) {
-      stringArray.push("<span style='color: red'>Something went wrong counting primes to " + limit+"</span>")
-      stringArray.push("" + c.length + "!==" + e.length + "!==" + se.length)
+      stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
+      stringArray.push("GS: " + c.length + " !== CS: " + e.length + " !== SS" + se.length)
     }
   }
 
