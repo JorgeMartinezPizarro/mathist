@@ -35,8 +35,8 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 10**10, 10**11]                                  // acceptable for local, 5m
-      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**11, 10**12]                  // server stress checks, 4h
+      ? [10**6, 10**7, 10**8, 10**9, 10**10, 10**11]                                  // acceptable for local, 26m
+      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12]                          // server stress checks, ?h
 
     const stringArray = [
       "<h3>Test report of mather.ideniox.com</h3>",
