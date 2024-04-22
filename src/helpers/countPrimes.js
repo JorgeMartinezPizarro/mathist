@@ -4,8 +4,6 @@ import duration from "@/helpers/duration";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import percent from "@/helpers/percent";
 
-// Code from https://stackoverflow.com/a/57108107/4219083
-
 const WHLPRMS = new Uint32Array([2,3,5,7,11,13,17,19]);
 const FRSTSVPRM = 23;
 const WHLODDCRC = 105 | 0;
@@ -164,25 +162,23 @@ function fillSieveBuffer(lwi, sb) {
   }
 }
 
-// It takes years to process every prime!
-function iteratePrimesInSieveBuffer(lwi, bitndxlmt, cmpsts) { 
-  let primes = []; 
-  const whlfctr = WHLODDCRC + WHLODDCRC;
-  for (let i = 0; i <= bitndxlmt; ++i) 
-    for (let ri = 0; ri < WHLHITS; ++ri) 
-      if ((cmpsts[ri][i >> 3] & (1 << (i & 7))) == 0) { 
-        const prime = (lwi + i) * whlfctr + RESIDUES[ri];
-        // DO something with the prime!
-      }
-  
-  return true;
-}
-
-export default function countPrimes(LIMIT, cache = 2 * 1024**2) { // 2MB cache. counter up to 10**12 in 7903 s
-
+// GordonBGood super fast sieve count.
+// Code from https://stackoverflow.com/a/57108107/4219083
+// 1MB cache. counter up to 10**12 in 480 s. For 10**13 increase by 10 the cache or it will crash!. 10**14 
+// LIMITED TO 1.2hours max allowed.
+//
+// LIMIT    DURATION
+// 10**12   8 m
+// 10**13   1.2 h
+// 10**14   12 hours
+// 10**15   120 hours
+//
+export default function countPrimes(LIMIT, cache = 1024**2) { 
   const separator = new Array(10).fill(" ").join("")
-  if ((LIMIT < 0) || (LIMIT > 10**14)) { // 10**12 takes 8 minutes, 10**13 80 minutes, 1.2 h, 10**14 800 minutes, 12 hours and 10**15 120 hours, around 4 days
-    throw new Error("Value out of range " + LIMIT + " it takes days to compute.")
+  
+  
+  if ((LIMIT < 0) || (LIMIT > 10**13)) { 
+    throw new Error("Value out of range " + LIMIT + ".")
   }
 
   const SIEVEBUFFERSZ = cache;
@@ -191,7 +187,6 @@ export default function countPrimes(LIMIT, cache = 2 * 1024**2) { // 2MB cache. 
 
   process.stdout.write("\r");
   process.stdout.write("\r");
-  // GordonBGood super fast sieve
   process.stdout.write("GS: Sieved   0.000% in " + duration(getTimeMicro() - startx)+ separator)
   
   for (let i = 0; i < WHLPRMS.length; ++i) {

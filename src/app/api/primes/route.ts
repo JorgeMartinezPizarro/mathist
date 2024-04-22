@@ -1,4 +1,5 @@
 import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH } from '@/Constants'
+import countPrimes from '@/helpers/countPrimes'
 import eratostenes, { lastTenEratostenes } from '@/helpers/eratostenes'
 import errorMessage from '@/helpers/errorMessage'
 import toHuman from '@/helpers/toHuman'
@@ -11,7 +12,6 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
 
-    
     const { searchParams } = new URL(request.url||"".toString())
     const LIMIT_BI: bigint = BigInt(searchParams.get('LIMIT') || "")
     const LIMIT = Number(LIMIT_BI)
