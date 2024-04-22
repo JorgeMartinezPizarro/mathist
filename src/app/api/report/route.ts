@@ -35,15 +35,18 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9,10**10, 10**11+1]
+      ? [10**6, 10**7, 10**8, 10**9, 10**10]
       : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12] // 10**13 produces stackoverflow
 
     const stringArray = [
-      os.cpus()[0].model + " " + process.arch,
-      ...[1, 2, 3, 4, 5, 6,7,8].map(i => {
+      "<h3>Test report of mather.ideniox.com</h3>",
+      "==========================================",
+      "<b>" + os.cpus()[0].model + " " + process.arch + "</b>",
+      "<b>Primes percent for given digits number</b>",
+      ...[1, 2, 3, 4, 5, 6, 7, 8].map(i => {
         return printPrecentPrimes(i)
       }),
-      ...[9, 10,11,12,13,14,15,20,50,100,1000,10000].map(i => {
+      ...[9, 10, 11, 12, 13, 14, 15, 20, 50, 100, 1000, 10000, 40000].map(i => {
         return printPrecentPrimesEstimated(i)
       }),
       ...testValues.reduce(
@@ -104,7 +107,7 @@ const printPrecentPrimes = (digits: number): string => {
 const checkPrimeCounts = (n: number): string[] => {
   
   let stringArray: string[] = [];
-  stringArray.push("Checking prime functions for " + n.toString()[0] + "E" + (n.toString().length - 1))
+  stringArray.push("<b>Checking prime functions for " + n.toString()[0] + "E" + (n.toString().length - 1)+"</b>")
   const limit = n
   const c = countPrimes(limit)
   const e = n <= 10**11 ? eratostenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
@@ -117,12 +120,11 @@ const checkPrimeCounts = (n: number): string[] => {
     ) {
       stringArray.push(lp.primes.toString())
       stringArray.push(se.primes.toString())
-      stringArray.push("Something went wrong generating primes to " + limit)
+      stringArray.push("<span style='color: red'>Something went wrong generating primes to " + limit+"</span>")
     }
     if (c.length !== se.length) {
-      stringArray.push("" + c.length)
-      stringArray.push("" + se.length)
-      stringArray.push("Something went wrong counting primes to " + limit)
+      stringArray.push("<span style='color: red'>Something went wrong counting primes to " + limit+"</span>")
+      stringArray.push("" + c.length + "!==" + se.length)
     }
   } else {
     if (!arrayEquals(lp.primes, se.primes) || 
@@ -131,14 +133,12 @@ const checkPrimeCounts = (n: number): string[] => {
       stringArray.push(lp.primes.toString())
       stringArray.push(se.primes.toString())
       stringArray.push(e.primes.toString())
-      stringArray.push("Some went wrong generating primes to " + limit)
+      stringArray.push("<span style='color: red'>Something went wrong generating primes to " + limit+"</span>")
     }
 
     if (c.length !== e.length || e.length !== se.length) {
-      stringArray.push("" + c.length)
-      stringArray.push("" + e.length)
-      stringArray.push("" + se.length)
-      stringArray.push("Something went wrong counting primes to " + limit)
+      stringArray.push("<span style='color: red'>Something went wrong counting primes to " + limit+"</span>")
+      stringArray.push("" + c.length + "!==" + e.length + "!==" + se.length)
     }
   }
 
