@@ -36,19 +36,26 @@ export async function GET(request: Request): Promise<Response> {
     const start = getTimeMicro();
     const testValues = KEY==="111111"
       ? [10**6, 10**7, 10**8, 10**9, 10**10]
-      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12] // 10**13 produces stackoverflow
+      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12, 5*10**12] // 10**13 produces stackoverflow
 
     const stringArray = [
       "<h3>Test report of mather.ideniox.com</h3>",
       "==========================================",
       "<b>" + os.cpus()[0].model + " " + process.arch + "</b>",
       "<b>Primes percent for given digits number</b>",
-      ...[1, 2, 3, 4, 5, 6, 7, 8].map(i => {
+      ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => {
         return printPrecentPrimes(i)
       }),
-      ...[9, 10, 11, 12, 13, 14, 15, 20, 50, 100, 1000, 10000, 40000].map(i => {
+      ...[10, 11, 12, 13, 14, 15, 20, 30, 40, 50, 100, 200, 300, 1000, 10000, 40000].map(i => {
         return printPrecentPrimesEstimated(i)
       }),
+      "<b>Test prime generation algorithms",
+      "",
+      "    SS: Segmented Sieve",
+      "    CS: Classic Sieve",
+      "    GS: Gordon's Sieve",
+      "    PS: Partial Segmented Sieve",
+      "",
       ...testValues.reduce(
         (acc: string[], i: number): string[] => {
           try {
@@ -138,7 +145,7 @@ const checkPrimeCounts = (n: number): string[] => {
     }
     if (c.length !== e.length || e.length !== se.length) {
       stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
-      stringArray.push("GS: " + c.length + " !== CS: " + e.length + " !== SS" + se.length)
+      stringArray.push("GS: " + c.length + " !== CS: " + e.length + " !== SS: " + se.length)
     }
   }
 
