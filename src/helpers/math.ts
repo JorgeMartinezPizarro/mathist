@@ -14,7 +14,7 @@ export function ln(a: bigint): bigint {
 }
 
 // How to get sqrt of a BigInt, found under the link below
-// https://stackoverflow.com/a/53684036
+// https://stackoverflow.com/a/53684036/4219083
 export function sqrt(value: bigint): bigint {
     if (value < zero) {
         throw 'Square root of negative numbers is not supported'

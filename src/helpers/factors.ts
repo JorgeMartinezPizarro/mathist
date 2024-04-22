@@ -9,7 +9,7 @@ const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
 // TODO implement the gnfs algorithm
 //
-// https://stackoverflow.com/questions/2267146/what-is-the-fastest-integer-factorization-algorithm
+// https://stackoverflow.com/a/2274520/4219083
 //
 export default function factors(n: bigint ): Factorization {
     

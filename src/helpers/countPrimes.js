@@ -4,7 +4,7 @@ import duration from "@/helpers/duration";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import percent from "@/helpers/percent";
 
-// Code from solution https://stackoverflow.com/questions/39312107/implementing-the-page-segmented-sieve-of-eratosthenes-in-javascript
+// Code from https://stackoverflow.com/a/57108107/4219083
 
 const WHLPRMS = new Uint32Array([2,3,5,7,11,13,17,19]);
 const FRSTSVPRM = 23;
