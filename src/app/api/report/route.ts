@@ -34,8 +34,8 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 10**10]
-      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12] // TODO: 10**13 produces stackoverflow, increase cache to avoid it!
+      ? [10**6, 10**7, 10**8, 10**9, 10**10, 5 * 10**10] // acceptable for local, 40m
+      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 5 * 10**11, 10**12, 5 * 10**12] // max server around a day to compute, 30h
 
     const stringArray = [
       "<h3>Test report of mather.ideniox.com</h3>",
@@ -109,17 +109,17 @@ const printPercentPrimes = (digits: number): string => {
 const checkPrimeCounts = (n: number): string[] => {
   // Needed to increase the cache from 1MB to 13MB to avoid max number of iterations in the segments loop.
   const cache = 1024 ** 2 * 2 ** 4 // 16MB
+  const skipClassicSieve = n < 5 * 10**11 // 30GB RAM!
   let stringArray: string[] = [];
   const sort = n.toString()[0] + "E" + (n.toString().length - 1)
   stringArray.push("<b>Checking prime functions for " + sort +"</b>")
   const limit = n
   const c = countPrimes(limit, cache)
-  const e = n <= 10**11 ? eratostenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
+  const e = skipClassicSieve ? eratostenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
   const se = segmentedEratostenes(limit)
   const lp = lastTenEratostenes(BigInt(limit))
   
-  if (e.length === 0) {
-    
+  if (skipClassicSieve) {
     if (!arrayEquals(lp.primes, se.primes)
     ) {
       stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
