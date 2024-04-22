@@ -1,7 +1,7 @@
 import { MAX_DIGITS_PRIMALY_TEST } from '@/Constants'
 import errorMessage from '@/helpers/errorMessage';
 import getTimeMicro from '@/helpers/getTimeMicro'
-import { isBaillieProbablePrime, isMillerRabinProbablePrime } from '@/helpers/primalyTests'
+import isProbablePrime from '@/helpers/isProbablePrime'
 
 export async function GET(request: Request) {
   return Response.json({ error: "invalid protocol GET, available protocol POST"}, {status: 500})
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       return this.toString()
     }
 
-    const isPrime = isBaillieProbablePrime(number) && isMillerRabinProbablePrime(number)
+    const isPrime = isProbablePrime(number)
 
     return Response.json( {isPrime, number, time: getTimeMicro() - start} )
   } catch (error) {
