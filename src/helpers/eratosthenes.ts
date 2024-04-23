@@ -36,7 +36,7 @@ function lastTenEratosthenes(LIMIT: bigint): SieveReport {
   }
 
   const high = LIMIT;
-  const t = BigInt(10**3)
+  const t = BigInt(10**5)
   // Up to 10**18, 10000 elements ensure 10 primes
   const low = high > t ? high - t : BigInt(1)
 
@@ -158,7 +158,7 @@ function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: numb
   const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
   const primesToRoot = classicOrSegmentedEratosthenes(sieveSize, sieveSize).primes;
-  let primesInRange: Array<bigint> = []; // Primes found in the given range
+  let primesInRange: Array<bigint> = [];
   let count = 0
 
   process.stdout.write("\r");
@@ -312,14 +312,15 @@ function classicOrSegmentedEratosthenes(lastNumber: number, amount: number = MAX
   let e = getTimeMicro()
 
   const primesIterator = lastNumber > MAX_CLASSIC_SIEVE_LENGTH ? segmentedEratosthenesIterator : classicEratosthenesIterator
-
+  
   primesIterator(lastNumber, (p: number) => {
     try {
       arrayOfPrimes.push(p)
       
       numberOfPrimes++
-      if (arrayOfPrimes.length > 10**6)
+      if (arrayOfPrimes.length > 10**8) {
         arrayOfPrimes = arrayOfPrimes.slice(-amount)
+      }
 
     } catch (e) {
       "Error push " + lastNumber + "-th time in array at primes below " + lastNumber + " last prime generated is " + p + ". " + errorMessage(e)

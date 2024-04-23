@@ -109,7 +109,7 @@ const printPercentPrimes = (digits: number): string => {
 
 const checkPrimeCounts = (n: number): string[] => {
   // Needed to increase the cache from 1MB to 13MB to avoid max number of iterations in the segments loop.
-  const cache = Math.min(1024 * 1024 * 2)
+  const cache = 1024 * 1024 * 10
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   let stringArray: string[] = [];
   const sort = n.toString()[0] + "E" + (n.toString().length - 1)
@@ -120,14 +120,18 @@ const checkPrimeCounts = (n: number): string[] => {
   const se = segmentedEratosthenes(limit)
   const lp = lastTenEratosthenes(BigInt(limit))
   
+  let failed = false;
+
   if (skipClassicSieve) {
     if (!arrayEquals(lp.primes, se.primes)
     ) {
+      failed = true
       stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
       stringArray.push("PS: " +  lp.primes.toString())
       stringArray.push("SS: " + se.primes.toString())
     }
     if (c.length !== se.length) {
+      failed = true
       stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
       stringArray.push("GS: " + c.length + " !== SS: " + se.length)
     }
@@ -135,12 +139,14 @@ const checkPrimeCounts = (n: number): string[] => {
     if (!arrayEquals(lp.primes, se.primes) || 
       !arrayEquals(se.primes, ce.primes)
     ) {
+      failed = true
       stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
       stringArray.push("PS: " + lp.primes.toString())
       stringArray.push("SS: " + se.primes.toString())
       stringArray.push("CS: " + ce.primes.toString())
     }
     if (c.length !== ce.length || ce.length !== se.length) {
+      failed = true
       stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
       stringArray.push("GS: " + c.length + " !== CS: " + ce.length + " !== SS: " + se.length)
     }
@@ -150,6 +156,7 @@ const checkPrimeCounts = (n: number): string[] => {
   !skipClassicSieve && stringArray.push("It took " + duration(ce.time) + " to generate the full sieve at once and iterate over all primes")
   stringArray.push("It took " + duration(se.time) + " to generate the full sieve with segments and iterate over all primes")
   stringArray.push("It took " + duration(c.time) + " to count with a bit wise segmentation sieve.")
+  !failed && stringArray.push("<span style='color: green'>Counted " + c.length + " primes</span>")
 
   return stringArray;
 }
