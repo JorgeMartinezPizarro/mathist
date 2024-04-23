@@ -10,6 +10,8 @@ import percent from "@/helpers/percent";
 import { SieveReport } from "@/types";
 import { BitView } from "@/helpers/Bits";
 import { sqrt } from "./math";
+import isProbablePrime from "./isProbablePrime";
+import { bignumber } from "mathjs";
 
 const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
@@ -40,6 +42,41 @@ function lastTenEratosthenes(LIMIT: bigint): SieveReport {
   const low = high > t ? high - t : BigInt(1)
 
   return segmentedEratosthenesPartial(low, high)
+}
+
+function lastTenGenerated(LIMIT: bigint): SieveReport {
+
+  const start = getTimeMicro()
+  const primesArray = new Array();
+
+  let bigNumber = LIMIT % two === zero ? LIMIT + one : LIMIT
+  
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("BF: Sieved   0.000% in " + (duration(getTimeMicro() - start)) + "       ")
+
+  while (primesArray.length < 10) {
+    if (isProbablePrime(bigNumber)) {
+      primesArray.push(bigNumber)
+      process.stdout.write("\r");
+      process.stdout.write("\r");
+      process.stdout.write("BF: Sieved " + percent(BigInt(primesArray.length), BigInt(10)) + " in " + (duration(getTimeMicro() - start)) + "       ")
+    }
+    bigNumber-=two
+  }
+
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("BF: Sieved 100.000% in " + (duration(getTimeMicro() - start)) + "                 \n")
+
+
+  return {
+    primes: primesArray.reverse(),
+    filename: "",
+    length: 10,
+    isPartial: true,
+    time: getTimeMicro() - start,
+  }
 }
 
 // Use the iterator for primes and primesTOExcel. It is 10 times faster than the classic sieve for values from 10**12
@@ -83,6 +120,8 @@ function segmentedEratosthenesIterator(n: number, callback: any): void {
   process.stdout.write("SS: Sieved 100.000% in " + (duration(getTimeMicro() - startx)) + "                 \n")
 }
 
+
+
 function classicEratosthenesIterator(n: number, callback: any): void {
     const lastNumber = n
     const startx = getTimeMicro()
@@ -99,10 +138,10 @@ function classicEratosthenesIterator(n: number, callback: any): void {
         const upperLimit = Math.round(Math.sqrt(lastNumber));
         const sieve: BitView = new BitView(memorySize)
 
-        // TODO: FIX DISPLAY OF %
         process.stdout.write("\r");
         process.stdout.write("\r");
-        process.stdout.write("CS: Sieved   0.000% in " + duration(getTimeMicro() - startx) + "        ")     
+        process.stdout.write("ES: Sieved   0.000% in " + duration(getTimeMicro() - startx) + "        ")     
+        
         // Hard process crossing all odd composite numbers
         for (var i = 3; i <= upperLimit; i += 2) {
           if (sieve.getBit((i -1) / 2) === 0) {
@@ -112,7 +151,7 @@ function classicEratosthenesIterator(n: number, callback: any): void {
 
             process.stdout.write("\r");
             process.stdout.write("\r");
-            process.stdout.write("CS: Sieved " + percent(BigInt(Math.round(i)), BigInt(Math.round(upperLimit))) + " in " + duration(getTimeMicro() - startx) + "        ")
+            process.stdout.write("ES: Sieved " + percent(BigInt(Math.round(i)), BigInt(Math.round(upperLimit))) + " in " + duration(getTimeMicro() - startx) + "        ")
           }          
         }
   
@@ -120,14 +159,14 @@ function classicEratosthenesIterator(n: number, callback: any): void {
           if (2*i+1 <=n && sieve.getBit(i) === 0) {
             //process.stdout.write("\r");
             //process.stdout.write("\r");
-            //process.stdout.write("CS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "              ")
+            //process.stdout.write("ES: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "              ")
             callback(2 * i + 1)
           }
         }
 
         process.stdout.write("\r");
         process.stdout.write("\r");
-        process.stdout.write("CS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "              \n")
+        process.stdout.write("ES: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "              \n")
   
     } catch (error) {
       const text = "sieve(" + lastNumber + "), " + errorMessage(error);
@@ -372,7 +411,7 @@ function classicOrSegmentedEratosthenes(lastNumber: number, amountX: number = MA
       }
 
     } catch (e) {
-      "Error push " + lastNumber + "-th time in array at primes below " + lastNumber + " last prime generated is " + p + ". " + errorMessage(e)
+      "Error push " + arrayOfPrimes.length + "-th time in array at primes below " + lastNumber + " last prime generated is " + p + ". " + errorMessage(e)
     }
   })
 
@@ -385,4 +424,4 @@ function classicOrSegmentedEratosthenes(lastNumber: number, amountX: number = MA
 
 export default eratosthenes;
 
-export { lastTenEratosthenes, segmentedEratosthenes, classicOrSegmentedEratosthenes }
+export { lastTenGenerated, lastTenEratosthenes, segmentedEratosthenes, classicOrSegmentedEratosthenes, classicEratosthenesIterator, segmentedEratosthenesIterator }
