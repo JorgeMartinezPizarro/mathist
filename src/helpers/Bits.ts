@@ -2,10 +2,10 @@ import { MAX_ALLOCATABLE_ARRAY, MAX_SUPPORTED_SIEVE_LENGTH } from "@/Constants";
 import errorMessage from "@/helpers/errorMessage";
 import toHuman from "@/helpers/toHuman";
 
-// Up to 500b, posible sieve for up to 1t, requires 58GB RAM
-export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY            // 2b columns
+// Up to 515b, it requires 58GB RAM
+export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY            // 2.1b columns
 export const MAX_ROWS = 250;                                // 250 rows
-
+// TODO: make it efficient instead of looping
 export default class Bits {
   private array: BitView[] = new Array(0)
   public length: number = 0
@@ -59,19 +59,20 @@ export default class Bits {
   }
 }
 
-class BitView {
+// Works up to 2.1b
+export class BitView {
   buffer: ArrayBuffer
   u8: Uint8Array
   constructor(length: number) {
     try {
       this.buffer = new ArrayBuffer(length);
     } catch(e) {
-      throw new Error("ArrayBuffer(" + length + ")")
+      throw new Error("Max array length is " + MAX_ALLOCATABLE_ARRAY)
     }
     try {
       this.u8 = new Uint8Array(this.buffer);
     } catch(e) {
-      throw new Error("Uint8Array(" + length + ")")
+      throw new Error("Max array length is " + MAX_ALLOCATABLE_ARRAY)
     }
   }
   getBit(idx: number) {
@@ -87,5 +88,9 @@ class BitView {
     } else {
       this.u8[idx >> 3] &= ~(0x80 >> off);
     }
+  }
+
+  length() {
+    return this.u8.length;
   }
 }

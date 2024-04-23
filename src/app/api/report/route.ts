@@ -36,7 +36,7 @@ export async function GET(request: Request): Promise<Response> {
     const start = getTimeMicro();
     const testValues = KEY==="111111"
       ? [10**6, 10**7, 10**8, 10**9, 10**10, 10**11]                                  // acceptable for local, 26m
-      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12]                          // server stress checks, ?h
+      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12]                          // server stress checks, 3h
 
     const stringArray = [
       "<h3>Test report of mather.ideniox.com</h3>",
@@ -109,7 +109,7 @@ const printPercentPrimes = (digits: number): string => {
 
 const checkPrimeCounts = (n: number): string[] => {
   // Needed to increase the cache from 1MB to 13MB to avoid max number of iterations in the segments loop.
-  const cache = 1024 ** 2 * 2 ** 4 // 16MB
+  const cache = Math.min(1024 * 1024 * 2)
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   let stringArray: string[] = [];
   const sort = n.toString()[0] + "E" + (n.toString().length - 1)

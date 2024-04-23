@@ -1,4 +1,4 @@
-import Bits from "@/helpers/Bits";
+import { BitView } from "@/helpers/Bits";
 import errorMessage from "@/helpers/errorMessage";
 import percent from "@/helpers/percent";
 import getTimeMicro from "@/helpers/getTimeMicro";
@@ -33,26 +33,26 @@ import duration from "@/helpers/duration";
 // Beyond 1t it is worth to use segmentedEratosthenes instead.
 
 
-export default function sieve(lastNumber: number): Bits {
+export default function sieve(lastNumber: number): BitView {
     
   const startx = getTimeMicro()
   if (lastNumber === 2) {
-    return new Bits(0)
+    return new BitView(0)
   }
 
   try { 
       // Initialization
       const memorySize = Math.round(lastNumber / 2);
       const upperLimit = Math.round(Math.sqrt(lastNumber));
-      const sieve = new Bits(memorySize);
+      const sieve: BitView = new BitView(memorySize);
       process.stdout.write("\r");
       process.stdout.write("\r");
       process.stdout.write("CS: Sieved   0.000% in " + duration(getTimeMicro() - startx) + "        ")     
       // Hard process crossing all odd composite numbers
       for (var i = 3; i <= upperLimit; i += 2) {
-        if (sieve.get((i -1) / 2) === false) {
+        if (sieve.getBit((i -1) / 2) === 0) {
           for (var j = i * i; j <= lastNumber; j += 2 * i) {
-            sieve.set((j - 1) / 2, true);
+            sieve.setBit((j - 1) / 2, true);
           }
         }
         process.stdout.write("\r");

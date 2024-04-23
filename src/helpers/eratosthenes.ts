@@ -9,14 +9,18 @@ import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
 import percent from "@/helpers/percent";
 import { SieveReport } from "@/types";
-import Bits from "@/helpers/Bits";
+import { BitView } from "@/helpers/Bits";
+import { sqrt } from "./math";
+
+const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
 // https://en.wikipedia.org/wiki/Prime_number_theorem#Table_of_%CF%80(x),_x_/_log_x,_and_li(x)
 
 // Get primes or write primes to a file and get the link.
-// Excel works MAX value 10**12, 452GB.
-// Excel works up to 10**8 48MB less than a second.
-// Primes works well up to 10**16 generating last primes in less than a second.
+// primesToExcel works MAX value 10**12, 452GB.
+// primesToExcel works up to 10**8 48MB less than a second.
+// lastTenEratosthenes works well up to 10**16 generating last primes in less than a second.
+// classicOrSegmentedEratosthenes works up to 10**12 
 //
 function eratosthenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
   if (excel) {
@@ -44,27 +48,27 @@ function segmentedEratosthenesIterator(n: number, callback: any): void {
   
   const startx = getTimeMicro()
   const nsqrt = Math.floor(Math.sqrt(n));
-  const S = Math.min(1024 * 1024 * 16, nsqrt) // 16MB cache
+  const S = Math.min(1024 * 1024 * 16, nsqrt)
   const firstPrimes = classicOrSegmentedEratosthenes(nsqrt + 1, nsqrt + 1).primes
   process.stdout.write("\r");
   process.stdout.write("\r");
   process.stdout.write("SS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "       ")
   
-  let bloque: Bits = new Bits(S);
+  let bloque: BitView = new BitView(S);
   for (let k = 0; k * S <= n; k++) {
-      bloque = new Bits(S);
+      bloque = new BitView(S);
       const start = k * S;
       for (const p of firstPrimes) {
           const startIdx = Math.max(Math.floor((start + Number(p) - 1) / Number(p)), Number(p)) * Number(p) - start;
           for (let j = startIdx; j < S; j += Number(p))
-              bloque.set(j, true);
+              bloque.setBit(j, true);
       }
       if (k === 0) {
-          bloque.set(0, true);
-          bloque.set(1, true);
+          bloque.setBit(0, true);
+          bloque.setBit(1, true);
       }
       for (let i = 0; i < S && start + i <= n; i++) {
-          if (!bloque.get(i)) {
+          if (!bloque.getBit(i)) {
               callback(start + i)
           }
       }
@@ -84,8 +88,8 @@ function classicEratosthenesIterator(n: number, callback: any): void {
   
   callback(2);
 
-  for (var i = 1; i< s.length;i++) {
-    if (2*i+1 <=n && !s.get(i)) {
+  for (var i = 1; i< s.length();i++) {
+    if (2*i+1 <=n && !s.getBit(i)) {
       callback(2 * i + 1)
     }
   }
@@ -96,7 +100,7 @@ function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): S
   let result: number[] = []
   const startx = getTimeMicro()
   const nsqrt = Math.floor(Math.sqrt(n));
-  const S = Math.min(1024 * 1024 * 16, nsqrt) // 16MB cache
+  const S = Math.min(1024 * 1024 * 16, nsqrt)
   const firstPrimes = classicOrSegmentedEratosthenes(nsqrt + 1, nsqrt + 1).primes
   process.stdout.write("\r");
   process.stdout.write("\r");
@@ -142,41 +146,41 @@ function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): S
 // Get part of the segmentedEratosthenes only
 function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
   if (high > 10 ** 18) {
-    throw new Error("This algorithm need memory sqrt(high), 10**8 basic sieve takes some seconds.")
+    throw new Error("This algorithm need memory sqrt(high), 10**9 basic sieve takes some seconds and takes the max array length of 9*10**9.")
   } else if (high - low > 10**6) {
     throw new Error("It would take a lot of time!")
   }
+
   console.log("/////////////////////////////////////////////////////////////////////////////")
+  
   const startx: number = getTimeMicro();
-  const sieveSize = Math.min(10**8, Math.floor(Math.sqrt(Number(high))) + 1); // 50MB size
+  const sieveSize = Number(sqrt(high)) + 1
   const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
-  
-  // TODO: instead of getting the primes and iterate over them, iterate over the original sieve and catch the primes.
   const primesToRoot = classicOrSegmentedEratosthenes(sieveSize, sieveSize).primes;
-  
   let primesInRange: Array<bigint> = []; // Primes found in the given range
-  
+  let count = 0
+
   process.stdout.write("\r");
   process.stdout.write("\r");
   process.stdout.write("PS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "      ")
-  let count = 0
+  
   // Iterate over each segment
   for (let segment = 0; segment < numSegments; segment++) {
       const start = low + BigInt(segment) * BigInt(segmentSize);
       const end = low + BigInt(segment + 1) * BigInt(segmentSize);
-      const sieve = new Bits(segmentSize)
+      const sieve: BitView = new BitView(segmentSize)
       // Sieve the segment using primes from the base sieve
       for (const t of primesToRoot) {
           const p = BigInt(t)
           const startIdx = p >= start ? p : start + (p - start % p) % p; // Start at the smallest multiple of p >= start
           for (let j = startIdx; j < end; j += p) {
-              sieve.set(Number(j - start), true); // Mark multiples of prime as composite
+              sieve.setBit(Number(j - start), true); // Mark multiples of prime as composite
           }
       }
       // Store primes found in this segment
       for (let i = 0; i < segmentSize; i++) {
-          if (!sieve.get(i) && (start + BigInt(i)) !== BigInt(1)) { // Skip 1 as it's not a prime
+          if (!sieve.getBit(i) && (start + BigInt(i)) !== BigInt(1)) { // Skip 1 as it's not a prime
               if (start + BigInt(i) <= high && start + BigInt(i) >= low) {
                 count++;
                 primesInRange.push(start + BigInt(i));
