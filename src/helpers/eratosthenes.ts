@@ -145,8 +145,9 @@ function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): S
 
 // Get part of the segmentedEratosthenes only
 function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
-  if (high > 10 ** 18) {
-    throw new Error("This algorithm need memory sqrt(high), 10**9 basic sieve takes some seconds and takes the max array length of 9*10**9.")
+  const maxSS = BigInt(MAX_ALLOCATABLE_ARRAY) ** two
+  if (high > maxSS) {
+    throw new Error("Max value for segmented sieve is " + maxSS)
   } else if (high - low > 10**6) {
     throw new Error("It would take a lot of time!")
   }

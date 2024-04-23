@@ -13,11 +13,8 @@ import duration from "@/helpers/duration";
 //
 //  10**8   500ms  5MB 
 //  10**9   10s    64MB
-//  10**10  3m     640MB
-//  10**11  50m    6GB 
-//  10**12  24h    58GB
 //
-// If your node has no enough memory it will throw an error.
+// It works up to 10**9. Further use segmentation sieve.
 //
 // Posible improvements: 
 //

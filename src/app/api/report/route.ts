@@ -9,6 +9,7 @@ import duration from '@/helpers/duration'
 import percent from '@/helpers/percent'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import { MAX_CLASSIC_SIEVE_LENGTH } from '@/Constants'
+import isProbablePrime from '@/helpers/isProbablePrime'
 
 function arrayEquals(a: (number | bigint)[], b: (number | bigint)[]) {
   return Array.isArray(a) &&
@@ -35,7 +36,7 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 10**10, 10**11]                                  // acceptable for local, 26m
+      ? [10**6, 10**7, 10**8, 10**9/*, 10**10*/]                                          // acceptable for local, 2m
       : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12]                          // server stress checks, 3h
 
     const stringArray = [
@@ -56,13 +57,12 @@ export async function GET(request: Request): Promise<Response> {
       "&nbsp;&nbsp;&nbsp;&nbsp;PS: Partial Segmented Sieve",
       "",
       ...testValues.reduce(
-        (acc: string[], i: number): string[] => {
-          try {
-            return [...acc, ...checkPrimeCounts(i)] 
-          } catch (e) {
-            return ["WARNING: An error ocurred processing checkPrimeCounts(" + i + ")", errorMessage(e)]
-          }
-        }, []
+        (acc: string[], i: number): string[] => [...acc, ...checkPrimeCounts(i)], 
+        []
+      ),
+      ...[BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18)].reduce(
+        (acc: string[], i: bigint) => [...acc, ...checkLastPrimes(i)],
+        []
       ),
       "<hr/>",
       "It took " + duration(getTimeMicro() - start) + " to generate the report!"
@@ -81,6 +81,41 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
+const checkLastPrimes = (number: bigint): string[] => {
+
+  const start = getTimeMicro();
+  const sort = number.toString()[0] + "E" + (number.toString().length - 1)
+  const stringArray: string[] = ["<b>Check last primes below " + sort + "</b>"]
+  
+  try {
+    const sr = lastTenEratosthenes(number)
+    let failed = false
+
+    sr.primes.forEach(p => {
+      if (!isProbablePrime(p)) {
+        stringArray.push("<span style='color: red'>The generated number " + p + " is not prime!</span>")
+        failed = true
+      }
+    })
+    if (sr.primes.length !== 10) {
+        stringArray.push("<span style='color: red'>Failed to generate 10 primes</span>")
+        failed = true
+    }
+
+    if (!failed) {
+      stringArray.push("<span style='color: green'>The ten generated numbers are all prime.</span>")
+    }
+
+    stringArray.push("Checked last ten primes generated in " + duration(getTimeMicro() - start))
+
+  } catch(e) {
+    stringArray.push("<span style='color: red;'>ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")</span>")
+    stringArray.push(errorMessage(e))
+  }
+
+  return stringArray
+}
+
 const printPercentPrimesEstimated = (digits: number): string => {
           
   const maxTenDigits = BigInt(new Array(digits).fill("9").join(""))
@@ -94,7 +129,7 @@ const printPercentPrimesEstimated = (digits: number): string => {
 }
 
 const printPercentPrimes = (digits: number): string => {
-  const buffer = 8 * 1024 ** 2 // 8MB cache
+  const buffer = 1024 * 512 // 512KB cache
   const maxTenDigits = BigInt(new Array(digits).fill("9").join(""))
   const maxNineDigits = BigInt(new Array(digits - 1).fill("9").join(""))
   const numbersWithTenDigits = maxTenDigits - maxNineDigits
@@ -108,55 +143,61 @@ const printPercentPrimes = (digits: number): string => {
 }
 
 const checkPrimeCounts = (n: number): string[] => {
-  // Needed to increase the cache from 1MB to 13MB to avoid max number of iterations in the segments loop.
-  const cache = 1024 * 1024 * 10
-  const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
-  let stringArray: string[] = [];
-  const sort = n.toString()[0] + "E" + (n.toString().length - 1)
-  stringArray.push("<b>Checking prime functions for " + sort +"</b>")
-  const limit = n
-  const c = countPrimes(limit, cache)
-  const ce = !skipClassicSieve ? classicOrSegmentedEratosthenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
-  const se = segmentedEratosthenes(limit)
-  const lp = lastTenEratosthenes(BigInt(limit))
   
-  let failed = false;
+  // Needed to increase the cache from 512 to 10MB for 10**13
+  const sort = n.toString()[0] + "E" + (n.toString().length - 1)
+  const stringArray: string[] = ["<b>Checking prime functions for " + sort +"</b>"]
+  const cache = 1024 * 512
+  const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
+  
+  try {
+    
+    const limit = n
+    const c = countPrimes(limit, cache)
+    const ce = !skipClassicSieve ? classicOrSegmentedEratosthenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
+    const se = segmentedEratosthenes(limit)
+    const lp = lastTenEratosthenes(BigInt(limit))
+    
+    let failed = false;
 
-  if (skipClassicSieve) {
-    if (!arrayEquals(lp.primes, se.primes)
-    ) {
-      failed = true
-      stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
-      stringArray.push("PS: " +  lp.primes.toString())
-      stringArray.push("SS: " + se.primes.toString())
+    if (skipClassicSieve) {
+      if (!arrayEquals(lp.primes, se.primes)
+      ) {
+        failed = true
+        stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
+        stringArray.push("PS: " +  lp.primes.toString())
+        stringArray.push("SS: " + se.primes.toString())
+      }
+      if (c.length !== se.length) {
+        failed = true
+        stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
+        stringArray.push("GS: " + c.length + " !== SS: " + se.length)
+      }
+    } else {
+      if (!arrayEquals(lp.primes, se.primes) || 
+        !arrayEquals(se.primes, ce.primes)
+      ) {
+        failed = true
+        stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
+        stringArray.push("PS: " + lp.primes.toString())
+        stringArray.push("SS: " + se.primes.toString())
+        stringArray.push("CS: " + ce.primes.toString())
+      }
+      if (c.length !== ce.length || ce.length !== se.length) {
+        failed = true
+        stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
+        stringArray.push("GS: " + c.length + " !== CS: " + ce.length + " !== SS: " + se.length)
+      }
     }
-    if (c.length !== se.length) {
-      failed = true
-      stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
-      stringArray.push("GS: " + c.length + " !== SS: " + se.length)
-    }
-  } else {
-    if (!arrayEquals(lp.primes, se.primes) || 
-      !arrayEquals(se.primes, ce.primes)
-    ) {
-      failed = true
-      stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
-      stringArray.push("PS: " + lp.primes.toString())
-      stringArray.push("SS: " + se.primes.toString())
-      stringArray.push("CS: " + ce.primes.toString())
-    }
-    if (c.length !== ce.length || ce.length !== se.length) {
-      failed = true
-      stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
-      stringArray.push("GS: " + c.length + " !== CS: " + ce.length + " !== SS: " + se.length)
-    }
-  }
-
-  stringArray.push("It took " + duration(lp.time) + " to generate the last 10 primes")
-  !skipClassicSieve && stringArray.push("It took " + duration(ce.time) + " to generate the full sieve at once and iterate over all primes")
-  stringArray.push("It took " + duration(se.time) + " to generate the full sieve with segments and iterate over all primes")
-  stringArray.push("It took " + duration(c.time) + " to count with a bit wise segmentation sieve.")
-  !failed && stringArray.push("<span style='color: green'>Counted " + c.length + " primes</span>")
+    stringArray.push("It took " + duration(lp.time) + " to generate the last 10 primes")
+    !skipClassicSieve && stringArray.push("It took " + duration(ce.time) + " to generate the full sieve at once and iterate over all primes")
+    stringArray.push("It took " + duration(se.time) + " to generate the full sieve with segments and iterate over all primes")
+    stringArray.push("It took " + duration(c.time) + " to count with a bit wise segmentation sieve.")
+    !failed && stringArray.push("<span style='color: green'>Counted " + c.length + " primes</span>")
+  } catch(e) {
+    stringArray.push("<span style='color: red;'>ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")</span>")
+    stringArray.push(errorMessage(e))
+  }  
 
   return stringArray;
 }
