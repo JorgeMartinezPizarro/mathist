@@ -36,9 +36,14 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9/*, 10**10*/]                                          // acceptable for local, 2m
-      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12]                          // server stress checks, 3h
+      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 6m
+      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12]                          // server stress checks, 3h
 
+    const testLastValues: bigint[] = [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18)]
+    const randomTestLastValues: bigint[] = (new Array(50).fill(0)).map(e => {
+      return BigInt(1) + BigInt(Math.floor(Math.random() * (10**16-1)))
+    })
+    
     const stringArray = [
       "<h3>Test report of mather.ideniox.com</h3>",
       "<hr/>",
@@ -60,8 +65,12 @@ export async function GET(request: Request): Promise<Response> {
         (acc: string[], i: number): string[] => [...acc, ...checkPrimeCounts(i)], 
         []
       ),
-      ...[BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18)].reduce(
-        (acc: string[], i: bigint) => [...acc, ...checkLastPrimes(i)],
+      ...testLastValues.reduce(
+        (acc: string[], i: bigint): string[] => [...acc, ...checkLastPrimes(i)], 
+        []
+      ),
+      ...randomTestLastValues.reduce(
+        (acc: string[], i: bigint): string[] => [...acc, ...checkLastPrimes(i)], 
         []
       ),
       "<hr/>",

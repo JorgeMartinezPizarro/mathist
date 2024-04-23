@@ -164,7 +164,8 @@ function fillSieveBuffer(lwi, sb) {
 
 // GordonBGood super fast sieve count.
 // Code from https://stackoverflow.com/a/57108107/4219083
-// 1MB cache. counter up to 10**12 in 480 s. For 10**13 increase by 10 the cache or it will crash!. 10**14 
+// 1MB cache. counter up to 10**12 in 480 s. For 10**13 increase by 10 the cache or it will crash!. 
+// 10**14 is not realistic.
 // LIMITED TO 1.2hours max allowed.
 //
 // LIMIT    DURATION
@@ -173,7 +174,7 @@ function fillSieveBuffer(lwi, sb) {
 // 10**14   12 hours
 // 10**15   120 hours
 //
-export default function countPrimes(LIMIT, cache = 1024**2) { 
+export default function countPrimes(LIMIT, cache = 1024*512) { 
   const separator = new Array(10).fill(" ").join("")
   
   

@@ -4,7 +4,6 @@ import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_CLASSIC_SIEVE
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
-import sieve from "@/helpers/sieve";
 import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
 import percent from "@/helpers/percent";
@@ -54,21 +53,22 @@ function segmentedEratosthenesIterator(n: number, callback: any): void {
   process.stdout.write("\r");
   process.stdout.write("SS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "       ")
   
-  let bloque: BitView = new BitView(S);
+  let bloque: boolean[] = Array(S).fill(true)
   for (let k = 0; k * S <= n; k++) {
-      bloque = new BitView(S);
+      bloque.fill(true)
+      bloque.length = S;
       const start = k * S;
       for (const p of firstPrimes) {
           const startIdx = Math.max(Math.floor((start + Number(p) - 1) / Number(p)), Number(p)) * Number(p) - start;
           for (let j = startIdx; j < S; j += Number(p))
-              bloque.setBit(j, true);
+              bloque[j] = false;
       }
       if (k === 0) {
-          bloque.setBit(0, true);
-          bloque.setBit(1, true);
+          bloque[0] = false;
+          bloque[1] = false;
       }
       for (let i = 0; i < S && start + i <= n; i++) {
-          if (!bloque.getBit(i)) {
+          if (bloque[i]) {
               callback(start + i)
           }
       }
@@ -84,15 +84,56 @@ function segmentedEratosthenesIterator(n: number, callback: any): void {
 }
 
 function classicEratosthenesIterator(n: number, callback: any): void {
-  const s = sieve(n);
-  
-  callback(2);
+    const lastNumber = n
+    const startx = getTimeMicro()
 
-  for (var i = 1; i< s.length();i++) {
-    if (2*i+1 <=n && !s.getBit(i)) {
-      callback(2 * i + 1)
+    callback(2);
+
+    if (lastNumber === 2) {
+      return;
     }
-  }
+  
+    try { 
+        // Initialization
+        const memorySize = Math.round(lastNumber / 2);
+        const upperLimit = Math.round(Math.sqrt(lastNumber));
+        const sieve: BitView = new BitView(memorySize)
+
+        // TODO: FIX DISPLAY OF %
+        process.stdout.write("\r");
+        process.stdout.write("\r");
+        process.stdout.write("CS: Sieved   0.000% in " + duration(getTimeMicro() - startx) + "        ")     
+        // Hard process crossing all odd composite numbers
+        for (var i = 3; i <= upperLimit; i += 2) {
+          if (sieve.getBit((i -1) / 2) === 0) {
+            for (var j = i * i; j <= lastNumber; j += 2 * i) {
+              sieve.setBit((j - 1) / 2, true);
+            }
+
+            process.stdout.write("\r");
+            process.stdout.write("\r");
+            process.stdout.write("CS: Sieved " + percent(BigInt(Math.round(i)), BigInt(Math.round(upperLimit))) + " in " + duration(getTimeMicro() - startx) + "        ")
+          }          
+        }
+  
+        for (var i = 1; i< sieve.length();i++) {
+          if (2*i+1 <=n && sieve.getBit(i) === 0) {
+            //process.stdout.write("\r");
+            //process.stdout.write("\r");
+            //process.stdout.write("CS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "              ")
+            callback(2 * i + 1)
+          }
+        }
+
+        process.stdout.write("\r");
+        process.stdout.write("\r");
+        process.stdout.write("CS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "              \n")
+  
+    } catch (error) {
+      const text = "sieve(" + lastNumber + "), " + errorMessage(error);
+      console.log(text)
+      throw new Error(text);
+    }
 }
 
 function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
@@ -106,7 +147,7 @@ function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): S
   process.stdout.write("\r");
   process.stdout.write("SS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "       ")
   let resultado = 0;
-  const bloque: boolean[] = Array(S).fill(true);
+  let bloque: boolean[] = Array(S).fill(true);
   for (let k = 0; k * S <= n; k++) {
       bloque.fill(true);
       const start = k * S;
@@ -120,6 +161,8 @@ function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): S
       for (let i = 0; i < S && start + i <= n; i++) {
           if (bloque[i]) {
               resultado++;
+              if (result.length > 10**8)
+                result = result.slice(-amount)
               result.push(start + i)
           }
       }
@@ -159,7 +202,7 @@ function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: numb
   const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
   const numSegments = Math.ceil((Number(high - low) + 1) / segmentSize); // Number of segments
   const primesToRoot = classicOrSegmentedEratosthenes(sieveSize, sieveSize).primes;
-  let primesInRange: Array<bigint> = [];
+  let primesInRange: bigint[] = new Array();
   let count = 0
 
   process.stdout.write("\r");
@@ -185,6 +228,9 @@ function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: numb
               if (start + BigInt(i) <= high && start + BigInt(i) >= low) {
                 count++;
                 primesInRange.push(start + BigInt(i));
+                if (primesInRange.length > 10**8) {
+                  primesInRange = primesInRange.slice(-maxLength)
+                }
               }
           }
       }
@@ -275,7 +321,9 @@ function primesToExcel(LIMIT: number): SieveReport {
 }
 
 // Count primes and return count and last amount primes using classic or segmented sieve depending on the size
-function classicOrSegmentedEratosthenes(lastNumber: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
+function classicOrSegmentedEratosthenes(lastNumber: number, amountX: number = MAX_DISPLAY_SIEVE): SieveReport {
+
+  const amount = Math.min(2 * Math.round(lastNumber / Math.log(lastNumber)), amountX)
   const elapsed = getTimeMicro()
 
   if (isNaN(lastNumber)) {
