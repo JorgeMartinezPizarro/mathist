@@ -10,7 +10,7 @@ const percent = (a: bigint, b: bigint) => {
     
     let string = ""
     if (isInteger(t)) {
-        return new Array(3 - t.toString().length).fill(" ").join("") + t + ".000"
+        return new Array(3 - t.toString().length).fill(" ").join("") + t + ".000%"
     }
     
     if (t < 10) {

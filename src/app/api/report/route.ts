@@ -10,6 +10,9 @@ import percent from '@/helpers/percent'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import { MAX_CLASSIC_SIEVE_LENGTH } from '@/Constants'
 import isProbablePrime from '@/helpers/isProbablePrime'
+import id from '@/helpers/id'
+import { get } from 'node:http'
+import factors from '@/helpers/factors'
 
 interface TestReport {
   time: number;
@@ -20,6 +23,13 @@ interface TestReport {
   GSTime: number;
   PSTime: number;
   BFTime: number;
+}
+
+interface TestFactorReport {
+  time: number;
+  name: string;
+  passed: boolean;
+  error: string;
 }
 
 function arrayEquals(a: (number | bigint)[], b: (number | bigint)[]) {
@@ -37,6 +47,7 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
 
+    // TODO: add error message on hover
     const { searchParams } = new URL(request.url||"".toString())
 
     const KEY: string = searchParams.get('KEY') || "";
@@ -49,13 +60,38 @@ export async function GET(request: Request): Promise<Response> {
 
     // TODO: add tests for factorization algorithms
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 8m
-      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12]                          // server stress checks, 3h
+      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 10m
+      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12]                          // server stress checks,  3h
 
     const testLastValues: bigint[] = [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18)]
     
-    const randomTestLastValues: bigint[] = (new Array(50).fill(0)).map(e => {
+    const randomTestLastValues: bigint[] = (new Array(200).fill(0)).map(e => {
       return BigInt(1) + BigInt(Math.floor(Math.random() * (10**16-1)))
+    })
+
+    const randomTestFactorizeValues: bigint[] = (new Array(5000).fill(0)).map(e => {
+      return BigInt(id(21))
+    })
+
+    const testFactorizationArray: TestFactorReport[] = randomTestFactorizeValues.map(number => {
+      const sort = number.toString()[0] + "E" + (number.toString().length - 1)
+      const start = getTimeMicro()
+      let error = "";
+      let failed = false;
+      
+      try {
+        factors(number)
+      } catch (e) {
+        failed = true
+        error = "Failed factoring " + sort + ". " + errorMessage(e)
+      }
+      
+      return {
+        time: getTimeMicro() - start,
+        name: "Factorize " + sort,
+        passed: !failed,
+        error,
+      }
     })
 
     const bigTestLastValues = [BigInt(10)**BigInt(20), BigInt(10)**BigInt(25), BigInt(10)**BigInt(30), BigInt(10)**BigInt(50), BigInt(10)**BigInt(100), BigInt(10)**BigInt(150), BigInt(10)**BigInt(200), BigInt(10)**BigInt(250), BigInt(10)**BigInt(300), BigInt(10)**BigInt(350), BigInt(10)**BigInt(400)]
@@ -89,7 +125,16 @@ export async function GET(request: Request): Promise<Response> {
       ...testLastGeneratedPrimes
     ]
 
-    const testRows = testArray.map(test => "<tr><td>" +
+    const testFactorRows = testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(-25).reverse().map(test => "<tr><td>" +
+        test.name +
+      "</td><td>" +
+        duration(test.time) +
+      "</td><td style='" + (test.passed ? "background: green;" : "background: red;") + "'>" +
+        (test.passed ? "Passed" : "Failed") + 
+      "</td></tr>"
+    )
+
+    const testRows = testArray.sort((test1, test2) => test1.time - test2.time).slice(-25).reverse().map(test => "<tr><td>" +
         test.name +
       "</td><td>" +
         duration(test.SSTime) + 
@@ -115,6 +160,12 @@ export async function GET(request: Request): Promise<Response> {
     const BFTime = duration(testArray.reduce((acc: number, val: TestReport): number => acc + val.BFTime, 0))
     const time   = duration(testArray.reduce((acc: number, val: TestReport): number => acc + val.time,   0))
 
+    const testFactorizationPassedCount = testFactorizationArray.reduce((acc: number, val: TestFactorReport): number => acc + (val.passed ? 1 : 0), 0)
+
+    const testFactorizationTime = testFactorizationArray.reduce((acc: number, val: TestFactorReport): number => acc + val.time, 0)
+
+    const testFactoritzationCount = testFactorizationArray.length
+
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + process.arch + "</b></p>",
@@ -123,10 +174,12 @@ export async function GET(request: Request): Promise<Response> {
       ...rowsPercentsExact,
       ...rowPercentsEstimated,
       "</tbody></table>",
+      "<hr/>",
       "<table style='width: 800px;margin: 0 auto;'> <thead><tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Passed</th></tr></thead><tbody>",
       ...testRows,
+      "<tr><td>" + (testArray.length - 25) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
       "<tr><th style='text-align: left;'>Value</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left;'>Passed</th></tr>",
-      "<tr><td>TOTAL</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
+      "<tr><td>" + testArray.length + "</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
       "</tbody></table>",
       "<hr/>",
       "<p style='text-align: center;'><b>Tested the following prime algorithms</b></p>",
@@ -135,6 +188,18 @@ export async function GET(request: Request): Promise<Response> {
       "<p style='text-align: center;'>GS: Gordon's Sieve</p>",
       "<p style='text-align: center;'>PS: Partial Segmented Sieve</p>",
       "<p style='text-align: center;'>BF: Brute force generator</p>",
+      "<hr/>",
+      "<table style='width: 500px;margin: 0 auto;'><thead><tr><th style='text-align: left;'>Name</th><th style='text-align: left;'>Time</th><th style='text-align: left; width: 80px;'>Passed</th></tr></thead><tbody>",
+      ...testFactorRows,
+      "<tr><td>" + (testFactoritzationCount - 25) + " more</td><td>...</td><td>...</td>",
+      "<tr><th style='text-align: left;'>Name</th><th style='text-align: left;'>Time</th><th style='text-align: left; width: 80px;'>Passed</th></tr>",
+      "<tr><td>" + testFactoritzationCount + "</td><td>" + duration(testFactorizationTime) + "</td><td>" + percent(BigInt(testFactorizationPassedCount), BigInt(testFactoritzationCount)) + "</td>",
+      "<tr>",
+      "</tbody></table>",
+      "<hr/>",
+      "<p style='text-align: center;'><b>Tested the following factorization algorithms</b></p>",
+      "<p style='text-align: center;'>Brute force for factors up to 10**7</p>",
+      "<p style='text-align: center;'>Brent algorithm for factors up to 10**11</p>",
       "<hr/>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>"
     ]
