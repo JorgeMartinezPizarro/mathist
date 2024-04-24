@@ -11,9 +11,10 @@ import { SieveReport } from "@/types";
 import { BitView } from "@/helpers/Bits";
 import { sqrt } from "./math";
 import isProbablePrime from "./isProbablePrime";
-import { bignumber } from "mathjs";
 
 const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
+
+// TODO: remove duplicated code. 
 
 // https://en.wikipedia.org/wiki/Prime_number_theorem#Table_of_%CF%80(x),_x_/_log_x,_and_li(x)
 
@@ -141,7 +142,7 @@ function classicEratosthenesIterator(n: number, callback: any): void {
         process.stdout.write("\r");
         process.stdout.write("\r");
         process.stdout.write("ES: Sieved   0.000% in " + duration(getTimeMicro() - startx) + "        ")     
-        
+
         // Hard process crossing all odd composite numbers
         for (var i = 3; i <= upperLimit; i += 2) {
           if (sieve.getBit((i -1) / 2) === 0) {

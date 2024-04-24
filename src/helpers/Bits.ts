@@ -5,7 +5,7 @@ import toHuman from "@/helpers/toHuman";
 // Up to 515b, it requires 58GB RAM
 export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY            // 2.1b columns
 export const MAX_ROWS = 250;                                // 250 rows
-// TODO: make it efficient instead of looping
+// TODO: make it efficient instead of looping use mod to compute position
 export default class Bits {
   private array: BitView[] = new Array(0)
   public length: number = 0

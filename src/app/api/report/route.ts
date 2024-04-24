@@ -48,7 +48,6 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
 
-    // TODO: add error message on hover
     const { searchParams } = new URL(request.url||"".toString())
 
     const KEY: string = searchParams.get('KEY') || "";
@@ -59,20 +58,27 @@ export async function GET(request: Request): Promise<Response> {
     
     const start = getTimeMicro();
 
-    // TODO: add tests for factorization algorithms
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 12m
+      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 15m
       : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12]                          // server stress checks,  3h
 
-    const testLastValues: bigint[] = [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18)]
+    const testLastValues: bigint[] = [
+      BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18),
+      ...new Array(500).fill(0).map(e => BigInt(id(12)))
+    ]
     
-    const randomTestLastValues: bigint[] = (new Array(200).fill(0)).map(e => {
-      return BigInt(1) + BigInt(Math.floor(Math.random() * (10**16-1)))
+    const randomTestLastValues: bigint[] = (new Array(500).fill(0)).map(e => {
+      return BigInt(id(6))
     })
 
-    const randomTestFactorizeValues: bigint[] = (new Array(10000).fill(0)).map(e => {
+    const randomTestFactorizeValues: bigint[] = (new Array(20000).fill(0)).map(e => {
       return BigInt(id(21))
     })
+
+    const bigTestLastValues = [
+      ...[20, 25, 30, 50, 100, 150, 200, 250, 300, 350, 400].map(e => BigInt(10)**BigInt(e)),
+      ...new Array(1000).fill(0).map(e => BigInt(id(20)))
+    ]
 
     const testFactorizationArray: TestFactorReport[] = randomTestFactorizeValues.map(number => {
       const sort = number.toString()[0] + "E" + (number.toString().length - 1)
@@ -95,8 +101,6 @@ export async function GET(request: Request): Promise<Response> {
         error,
       }
     })
-
-    const bigTestLastValues = [BigInt(10)**BigInt(20), BigInt(10)**BigInt(25), BigInt(10)**BigInt(30), BigInt(10)**BigInt(50), BigInt(10)**BigInt(100), BigInt(10)**BigInt(150), BigInt(10)**BigInt(200), BigInt(10)**BigInt(250), BigInt(10)**BigInt(300), BigInt(10)**BigInt(350), BigInt(10)**BigInt(400)]
 
     const testPrimesCountArray = testValues.map(i => checkPrimeCounts(i))
     
@@ -190,7 +194,7 @@ export async function GET(request: Request): Promise<Response> {
       "<table style='width: 800px;margin: 0 auto;'> <thead><tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Passed</th></tr></thead><tbody>",
       ...testRows,
       "<tr><td>" + (testArray.length - testRows.length) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
-      "<tr><th style='text-align: left;'>Value</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left;'>Passed</th></tr>",
+      "<tr><th style='text-align: left;'>Total tests</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left;'>Passed</th></tr>",
       "<tr><td>" + testArray.length + "</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td  style='" + (failedTests === 0 ? "background: green;" : "background: red;") + "'>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
       "</tbody></table>",
       "<hr/>",
@@ -204,7 +208,7 @@ export async function GET(request: Request): Promise<Response> {
       "<table style='width: 500px;margin: 0 auto;'><thead><tr><th style='text-align: left;'>Name</th><th style='text-align: left;'>Time</th><th style='text-align: left; width: 80px;'>Passed</th></tr></thead><tbody>",
       ...testFactorRows,
       "<tr><td>" + (testFactoritzationCount - testFactorRows.length) + " more</td><td>...</td><td>...</td>",
-      "<tr><th style='text-align: left;'>Name</th><th style='text-align: left;'>Time</th><th style='text-align: left; width: 80px;'>Passed</th></tr>",
+      "<tr><th style='text-align: left;'>Total tests</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Passed</th></tr>",
       "<tr><td>" + testFactoritzationCount + "</td><td>" + duration(testFactorizationTime) + "</td><td style='" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testFactoritzationCount)) + "</td>",
       "<tr>",
       "</tbody></table>",

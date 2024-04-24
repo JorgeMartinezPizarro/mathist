@@ -192,19 +192,23 @@ const brentFactor = (n: bigint): bigint => {
         d = one;
         while (d === one) {
             x = f(x) % n;
-            y = f(y) % n;
+            y = f(f(y)) % n;
             d = gcd(abs(x - y), n);
         }
     }
 
     if (d === n) {
-        throw new Error("Factor found itself ... failed brent")
+        if (isProbablePrime(d)) {
+            return one;
+        }
+        // try again with another function f
+        throw new Error("Factor found itself ... failed brent for n = " + n)
     }
 
     const factor = min(d, n / d)
     
     if (!isProbablePrime(factor)) {
-        throw new Error("Factor is not prime, should we iterate to find more?")
+        throw new Error("Factor " + factor + "  is not prime, should we iterate to find more? ")
     }
 
     return factor;
