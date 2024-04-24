@@ -23,6 +23,7 @@ interface TestReport {
   GSTime: number;
   PSTime: number;
   BFTime: number;
+  error: string;
 }
 
 interface TestFactorReport {
@@ -60,7 +61,7 @@ export async function GET(request: Request): Promise<Response> {
 
     // TODO: add tests for factorization algorithms
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 10m
+      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 12m
       : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12]                          // server stress checks,  3h
 
     const testLastValues: bigint[] = [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18)]
@@ -69,7 +70,7 @@ export async function GET(request: Request): Promise<Response> {
       return BigInt(1) + BigInt(Math.floor(Math.random() * (10**16-1)))
     })
 
-    const randomTestFactorizeValues: bigint[] = (new Array(5000).fill(0)).map(e => {
+    const randomTestFactorizeValues: bigint[] = (new Array(10000).fill(0)).map(e => {
       return BigInt(id(21))
     })
 
@@ -80,7 +81,8 @@ export async function GET(request: Request): Promise<Response> {
       let failed = false;
       
       try {
-        factors(number)
+        const f = factors(number)
+        if (f.message) error = f.message
       } catch (e) {
         failed = true
         error = "Failed factoring " + sort + ". " + errorMessage(e)
@@ -125,16 +127,26 @@ export async function GET(request: Request): Promise<Response> {
       ...testLastGeneratedPrimes
     ]
 
-    const testFactorRows = testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(-25).reverse().map(test => "<tr><td>" +
+    const testFactorizationTestToDisplay = [
+      ...testFactorizationArray.filter(test => !test.passed),
+      ...testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(-30).reverse()
+    ]
+
+    const testArrayToDisplay = [
+      ...testArray.filter(test => !test.passed),
+      ...testArray.sort((test1, test2) => test1.time - test2.time).slice(-30).reverse()
+    ]
+
+    const testFactorRows = testFactorizationTestToDisplay.map(test => "<tr><td>" +
         test.name +
       "</td><td>" +
         duration(test.time) +
-      "</td><td style='" + (test.passed ? "background: green;" : "background: red;") + "'>" +
+      "</td><td title='" + test.error + "' style='" + (test.passed ? "background: green;" : "background: red;") + "'>" +
         (test.passed ? "Passed" : "Failed") + 
       "</td></tr>"
     )
 
-    const testRows = testArray.sort((test1, test2) => test1.time - test2.time).slice(-25).reverse().map(test => "<tr><td>" +
+    const testRows = testArrayToDisplay.map(test => "<tr><td>" +
         test.name +
       "</td><td>" +
         duration(test.SSTime) + 
@@ -148,7 +160,7 @@ export async function GET(request: Request): Promise<Response> {
         duration(test.BFTime) + 
       "</td><td>" + 
         duration(test.time) + 
-      "</td><td style='" + (test.passed ? "background: green;" : "background: red;") + "'>" +
+      "</td><td title='" + test.error + "' style='" + (test.passed ? "background: green;" : "background: red;") + "'>" +
         (test.passed ? "Passed" : "Failed") + 
       "</td></tr>"
     )
@@ -168,7 +180,7 @@ export async function GET(request: Request): Promise<Response> {
 
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
-      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + process.arch + "</b></p>",
+      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + os.cpus()[0].speed + " " + process.arch + "</b></p>",
       "<hr/>",
       "<table style='width: 300px;margin: 0 auto;'><thead><tr><th style='text-align: left;'>Primes %</th><th style='text-align: left;'>Digits</th></tr></thead><tbody>",
       ...rowsPercentsExact,
@@ -177,9 +189,9 @@ export async function GET(request: Request): Promise<Response> {
       "<hr/>",
       "<table style='width: 800px;margin: 0 auto;'> <thead><tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Passed</th></tr></thead><tbody>",
       ...testRows,
-      "<tr><td>" + (testArray.length - 25) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
+      "<tr><td>" + (testArray.length - testRows.length) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
       "<tr><th style='text-align: left;'>Value</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left;'>Passed</th></tr>",
-      "<tr><td>" + testArray.length + "</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
+      "<tr><td>" + testArray.length + "</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td  style='" + (failedTests === 0 ? "background: green;" : "background: red;") + "'>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
       "</tbody></table>",
       "<hr/>",
       "<p style='text-align: center;'><b>Tested the following prime algorithms</b></p>",
@@ -191,9 +203,9 @@ export async function GET(request: Request): Promise<Response> {
       "<hr/>",
       "<table style='width: 500px;margin: 0 auto;'><thead><tr><th style='text-align: left;'>Name</th><th style='text-align: left;'>Time</th><th style='text-align: left; width: 80px;'>Passed</th></tr></thead><tbody>",
       ...testFactorRows,
-      "<tr><td>" + (testFactoritzationCount - 25) + " more</td><td>...</td><td>...</td>",
+      "<tr><td>" + (testFactoritzationCount - testFactorRows.length) + " more</td><td>...</td><td>...</td>",
       "<tr><th style='text-align: left;'>Name</th><th style='text-align: left;'>Time</th><th style='text-align: left; width: 80px;'>Passed</th></tr>",
-      "<tr><td>" + testFactoritzationCount + "</td><td>" + duration(testFactorizationTime) + "</td><td>" + percent(BigInt(testFactorizationPassedCount), BigInt(testFactoritzationCount)) + "</td>",
+      "<tr><td>" + testFactoritzationCount + "</td><td>" + duration(testFactorizationTime) + "</td><td style='" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testFactoritzationCount)) + "</td>",
       "<tr>",
       "</tbody></table>",
       "<hr/>",
@@ -220,30 +232,24 @@ export async function GET(request: Request): Promise<Response> {
 const checkLastGeneratedPrimes = (number: bigint): TestReport => {
   const start = getTimeMicro();
   const sort = number.toString()[0] + "E" + (number.toString().length - 1)
-  const stringArray: string[] = ["<b>Check last primes below " + sort + "</b>"]
+  const stringArray: string[] = []
   let failed = false
   let sr
   try {
     sr = lastTenGenerated(number)
     
     if (sr.primes.length !== 10) {
-        stringArray.push("<span style='color: red'>Failed to generate 10 primes</span>")
+        stringArray.push("Failed to generate 10 primes")
         failed = true
     }
-
-    if (!failed) {
-      stringArray.push("<span style='color: green'>The ten generated numbers are all prime.</span>")
-    }
-
-    stringArray.push("Checked last ten primes generated in " + duration(getTimeMicro() - start))
-
   } catch(e) {
-    stringArray.push("<span style='color: red;'>ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")</span>")
+    stringArray.push("ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")")
     stringArray.push(errorMessage(e))
     failed = true
   }
 
   return {
+    error: stringArray.join(". "),
     BFTime: sr?.time||0,
     SSTime: 0,
     ESTime: 0,
@@ -259,7 +265,7 @@ const checkLastPrimes = (number: bigint): TestReport => {
 
   const start = getTimeMicro();
   const sort = number.toString()[0] + "E" + (number.toString().length - 1)
-  const stringArray: string[] = ["<b>Check last primes below " + sort + "</b>"]
+  const stringArray: string[] = []
   let failed = false
   let sr
 
@@ -269,28 +275,24 @@ const checkLastPrimes = (number: bigint): TestReport => {
 
     sr.primes.forEach(p => {
       if (!isProbablePrime(p)) {
-        stringArray.push("<span style='color: red'>The generated number " + p + " is not prime!</span>")
+        stringArray.push("The generated number " + p + " is not prime!")
         failed = true
       }
     })
     if (sr.primes.length !== 10) {
-        stringArray.push("<span style='color: red'>Failed to generate 10 primes</span>")
+        stringArray.push("Failed to generate 10 primes")
         failed = true
     }
 
-    if (!failed) {
-      stringArray.push("<span style='color: green'>The ten generated numbers are all prime.</span>")
-    }
-
-    stringArray.push("Checked last ten primes generated in " + duration(getTimeMicro() - start))
-
+    
   } catch(e) {
-    stringArray.push("<span style='color: red;'>ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")</span>")
+    stringArray.push("ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")")
     stringArray.push(errorMessage(e))
     failed = true
   }
 
   return {
+    error: stringArray.join(". "),
     BFTime: 0,
     SSTime: 0,
     ESTime: 0,
@@ -332,7 +334,7 @@ const checkPrimeCounts = (n: number): TestReport => {
   
   // Needed to increase the cache from 512 to 10MB for 10**13
   const sort = n.toString()[0] + "E" + (n.toString().length - 1)
-  const stringArray: string[] = ["<b>Checking prime functions for " + sort +"</b>"]
+  const stringArray: string[] = []
   const cache = 1024 * 512
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   const start = getTimeMicro()
@@ -352,13 +354,13 @@ const checkPrimeCounts = (n: number): TestReport => {
       if (!arrayEquals(lp.primes, se.primes)
       ) {
         failed = true
-        stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
+        stringArray.push("Something went wrong generating primes to " + sort + "")
         stringArray.push("PS: " +  lp.primes.toString())
         stringArray.push("SS: " + se.primes.toString())
       }
       if (c.length !== se.length) {
         failed = true
-        stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
+        stringArray.push("Something went wrong counting primes to " + sort + "")
         stringArray.push("GS: " + c.length + " !== SS: " + se.length)
       }
     } else {
@@ -366,29 +368,26 @@ const checkPrimeCounts = (n: number): TestReport => {
         !arrayEquals(se.primes, ce.primes)
       ) {
         failed = true
-        stringArray.push("<span style='color: red'>Something went wrong generating primes to " + sort + "</span>")
+        stringArray.push("Something went wrong generating primes to " + sort + "")
         stringArray.push("PS: " + lp.primes.toString())
         stringArray.push("SS: " + se.primes.toString())
         stringArray.push("ES: " + ce.primes.toString())
       }
       if (c.length !== ce.length || ce.length !== se.length) {
         failed = true
-        stringArray.push("<span style='color: red'>Something went wrong counting primes to " + sort + "</span>")
+        stringArray.push("Something went wrong counting primes to " + sort + "")
         stringArray.push("GS: " + c.length + " !== ES: " + ce.length + " !== SS: " + se.length)
       }
     }
-    stringArray.push("It took " + duration(lp.time) + " to generate the last 10 primes")
-    !skipClassicSieve && stringArray.push("It took " + duration(ce.time) + " to generate the full sieve at once and iterate over all primes")
-    stringArray.push("It took " + duration(se.time) + " to generate the full sieve with segments and iterate over all primes")
-    stringArray.push("It took " + duration(c.time) + " to count with a bit wise segmentation sieve.")
-    !failed && stringArray.push("<span style='color: green'>Counted " + c.length + " primes</span>")
+    
   } catch(e) {
     failed = true
-    stringArray.push("<span style='color: red;'>ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")</span>")
+    stringArray.push("ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")")
     stringArray.push(errorMessage(e))
   }  
 
   return {
+    error: stringArray.join(". "),
     BFTime: 0,
     SSTime: se?.time||0,
     ESTime: ce?.time||0,
