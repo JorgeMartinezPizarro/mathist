@@ -97,7 +97,7 @@ function addPrime(factors: PrimePower[], factor: bigint): void {
 }
 
 // Divide by 2, 3, 5 and 7 and iterate over the possible rests mod 2 * 3 * 5 * 7 = 210
-export const factor = function(n: bigint): Factor {
+function factor(n: bigint): Factor {
 
     if (n > 10**10 && isProbablePrime(n)) {
         return {
