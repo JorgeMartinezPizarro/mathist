@@ -39,7 +39,7 @@ function lastTenEratosthenes(LIMIT: bigint): SieveReport {
 
   const high = LIMIT;
   const t = BigInt(10**5)
-  // Up to 10**18, 10000 elements ensure 10 primes
+  // Up to 10**16, 10**5 ensure 10 primes
   const low = high > t ? high - t : BigInt(1)
 
   return segmentedEratosthenesPartial(low, high)

@@ -2,8 +2,10 @@ import gcd from "@/helpers/gcd"
 import isProbablePrime from "@/helpers/isProbablePrime"
 import getTimeMicro from '@/helpers/getTimeMicro';
 import { abs, min, sqrt } from "@/helpers/math";
+import id from "@/helpers/id"
 import { MAX_COMPUTATION_FACTORS } from "@/Constants";
 import { Factor, Factorization, PrimePower } from "@/types"
+import { NoMeals } from "@mui/icons-material";
 
 const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
@@ -37,7 +39,7 @@ export default function factors(n: bigint ): Factorization {
     while (f.factor > one) {
         if (f.message.includes("The factor " + f.factor + " is not prime.")) {
             // Enought with trial division, now try brent algorithm
-            console.log("Give up with bruce force, try the Brent factoring algorithm")
+            console.log("Give up with brute force, try the Brent factoring algorithm")
             // brentFactor
             addFactorsWithMethod(factors, f.factor, brentFactor)
             factors.sort((a: PrimePower,b: PrimePower ) => Number(a.prime - b.prime))
@@ -111,6 +113,13 @@ export const factor = function(n: bigint): Factor {
         }
     }
 
+    if (n % two === zero) {
+        return {
+            factor: two,
+            message: ""
+        }
+    }
+
     const ringSize = BigInt(210)
 
     const initialPrime = BigInt(11)
@@ -162,6 +171,7 @@ export const factor = function(n: bigint): Factor {
 
 const brentFactor = (n: bigint): bigint => {
     
+    // TODO: generate more f x y to test if the first two sets fail
     const s = sqrt(n)
 
     // If it is a square return the root
@@ -173,12 +183,12 @@ const brentFactor = (n: bigint): bigint => {
 
     if (n % two === zero) return two; // If n is even, return 2
 
+    // first attempt with f(x) = x**2 + 1 mod n, x = 2, y = 2
+    let f = (x: bigint): bigint => (x * x + one) % n;
     let x = two;
     let y = two;
     let d = one;
-
-    const f = (x: bigint): bigint => (x * x + one) % n;
-
+        
     while (d === one) {
         x = f(x);
         y = f(f(y));
@@ -186,9 +196,10 @@ const brentFactor = (n: bigint): bigint => {
     }
 
     if (d === n) {
-        // Retry with different starting point if failed
-        x = two;
-        y = two;
+        // second attempt with f(x) = x**3 + 1 mod n, x = 3, y = 5
+        f = (x: bigint): bigint => (x * x * x + one) % n;
+        x = BigInt(3);
+        y = BigInt(5);
         d = one;
         while (d === one) {
             x = f(x) % n;
@@ -197,18 +208,14 @@ const brentFactor = (n: bigint): bigint => {
         }
     }
 
-    if (d === n) {
-        if (isProbablePrime(d)) {
-            return one;
-        }
-        // try again with another function f
-        throw new Error("Factor found itself ... failed brent for n = " + n)
-    }
-
     const factor = min(d, n / d)
     
+    if (d === n) {
+        throw new Error("No factor found for " + factor + ", should we iterate more? ")
+    }
+
     if (!isProbablePrime(factor)) {
-        throw new Error("Factor " + factor + "  is not prime, should we iterate to find more? ")
+        throw new Error("Factor " + factor + "  is not prime, we should iterate.")
     }
 
     return factor;

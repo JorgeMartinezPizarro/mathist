@@ -49,7 +49,6 @@ export async function GET(request: Request): Promise<Response> {
   try {
 
     const { searchParams } = new URL(request.url||"".toString())
-
     const KEY: string = searchParams.get('KEY') || "";
 
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
@@ -57,23 +56,33 @@ export async function GET(request: Request): Promise<Response> {
     }
     
     const start = getTimeMicro();
-
+    
     const testValues = KEY==="111111"
       ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 15m
       : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12]                          // server stress checks,  3h
 
     const testLastValues: bigint[] = [
       BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18),
-      ...new Array(500).fill(0).map(e => BigInt(id(12)))
+      ...new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
     const randomTestLastValues: bigint[] = (new Array(500).fill(0)).map(e => {
       return BigInt(id(6))
     })
 
-    const randomTestFactorizeValues: bigint[] = (new Array(20000).fill(0)).map(e => {
-      return BigInt(id(21))
-    })
+    const randomTestFactorizeValues: bigint[] = [
+      ...new Array(10000).fill(0).map(e => BigInt(id(21))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(20))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(19))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(18))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(17))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(16))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(15))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(14))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(13))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(12))),
+      ...new Array(1000).fill(0).map(e => BigInt(id(11))),
+    ]
 
     const bigTestLastValues = [
       ...[20, 25, 30, 50, 100, 150, 200, 250, 300, 350, 400].map(e => BigInt(10)**BigInt(e)),
@@ -122,7 +131,7 @@ export async function GET(request: Request): Promise<Response> {
     const rowsPercentsExact = [1, 2, 3, 4, 5, 6, 7, 8, 9]
       .map(printPercentPrimes)
 
-    const rowPercentsEstimated = [10, 11, 12, 13, 14, 15, 20, 30, 40, 50, 100, 200, 300, 1000, 10000, 40000]
+    const rowPercentsEstimated = [10, 20, 30, 40, 50, 100, 200, 300, 1000, 10000, 40000]
       .map(printPercentPrimesEstimated)
 
     const testArray = [
@@ -133,19 +142,21 @@ export async function GET(request: Request): Promise<Response> {
 
     const testFactorizationTestToDisplay = [
       ...testFactorizationArray.filter(test => !test.passed),
-      ...testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(-30).reverse()
+      ...testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(-5).reverse(),
+      ...testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(0, 5),
     ]
 
     const testArrayToDisplay = [
       ...testArray.filter(test => !test.passed),
-      ...testArray.sort((test1, test2) => test1.time - test2.time).slice(-30).reverse()
+      ...testArray.sort((test1, test2) => test1.time - test2.time).slice(-25).reverse(),
+      ...testArray.sort((test1, test2) => test1.time - test2.time).slice(0, 5)
     ]
 
     const testFactorRows = testFactorizationTestToDisplay.map(test => "<tr><td>" +
         test.name +
       "</td><td>" +
         duration(test.time) +
-      "</td><td title='" + test.error + "' style='" + (test.passed ? "background: green;" : "background: red;") + "'>" +
+      "</td><td title='" + test.error + "' style='text-align: center;color: white;" + (test.passed ? "background: green;" : "background: red;") + "'>" +
         (test.passed ? "Passed" : "Failed") + 
       "</td></tr>"
     )
@@ -164,7 +175,7 @@ export async function GET(request: Request): Promise<Response> {
         duration(test.BFTime) + 
       "</td><td>" + 
         duration(test.time) + 
-      "</td><td title='" + test.error + "' style='" + (test.passed ? "background: green;" : "background: red;") + "'>" +
+      "</td><td title='" + test.error + "' style='text-align: center;color: white;" + (test.passed ? "background: green;" : "background: red;") + "'>" +
         (test.passed ? "Passed" : "Failed") + 
       "</td></tr>"
     )
@@ -184,18 +195,18 @@ export async function GET(request: Request): Promise<Response> {
 
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
-      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + os.cpus()[0].speed + " " + process.arch + "</b></p>",
+      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz " + process.arch + "</b></p>",
       "<hr/>",
       "<table style='width: 300px;margin: 0 auto;'><thead><tr><th style='text-align: left;'>Primes %</th><th style='text-align: left;'>Digits</th></tr></thead><tbody>",
       ...rowsPercentsExact,
       ...rowPercentsEstimated,
       "</tbody></table>",
       "<hr/>",
-      "<table style='width: 800px;margin: 0 auto;'> <thead><tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Passed</th></tr></thead><tbody>",
+      "<table style='width: 800px;margin: 0 auto;'> <thead><tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr></thead><tbody>",
       ...testRows,
       "<tr><td>" + (testArray.length - testRows.length) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
-      "<tr><th style='text-align: left;'>Total tests</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left;'>Passed</th></tr>",
-      "<tr><td>" + testArray.length + "</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td  style='" + (failedTests === 0 ? "background: green;" : "background: red;") + "'>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
+      "<tr><th style='text-align: left;'>Total tests</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left;'>Result</th></tr>",
+      "<tr><td>" + testArray.length + "</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td  style='text-align:center;color:white;" + (failedTests === 0 ? "background: green;" : "background: red;") + "'>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
       "</tbody></table>",
       "<hr/>",
       "<p style='text-align: center;'><b>Tested the following prime algorithms</b></p>",
@@ -205,11 +216,11 @@ export async function GET(request: Request): Promise<Response> {
       "<p style='text-align: center;'>PS: Partial Segmented Sieve</p>",
       "<p style='text-align: center;'>BF: Brute force generator</p>",
       "<hr/>",
-      "<table style='width: 500px;margin: 0 auto;'><thead><tr><th style='text-align: left;'>Name</th><th style='text-align: left;'>Time</th><th style='text-align: left; width: 80px;'>Passed</th></tr></thead><tbody>",
+      "<table style='width: 500px;margin: 0 auto;'><thead><tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'>Time</th><th style='text-align: left; width: 80px;'>Result</th></tr></thead><tbody>",
       ...testFactorRows,
       "<tr><td>" + (testFactoritzationCount - testFactorRows.length) + " more</td><td>...</td><td>...</td>",
-      "<tr><th style='text-align: left;'>Total tests</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Passed</th></tr>",
-      "<tr><td>" + testFactoritzationCount + "</td><td>" + duration(testFactorizationTime) + "</td><td style='" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testFactoritzationCount)) + "</td>",
+      "<tr><th style='text-align: left;'>Total tests</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr>",
+      "<tr><td>" + testFactoritzationCount + "</td><td>" + duration(testFactorizationTime) + "</td><td style='text-align:center;color:white;" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testFactoritzationCount)) + "</td>",
       "<tr>",
       "</tbody></table>",
       "<hr/>",
