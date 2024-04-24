@@ -50,16 +50,15 @@ export async function GET(request: Request): Promise<Response> {
 
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
-
+    const start = getTimeMicro();
+    
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
     
-    const start = getTimeMicro();
-    
     const testValues = KEY==="111111"
       ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 15m
-      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12]                          // server stress checks,  3h
+      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12, 10**13]                  // server stress checks, 30h
 
     const testLastValues: bigint[] = [
       BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18),
@@ -143,13 +142,11 @@ export async function GET(request: Request): Promise<Response> {
     const testFactorizationTestToDisplay = [
       ...testFactorizationArray.filter(test => !test.passed),
       ...testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(-5).reverse(),
-      ...testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(0, 5),
     ]
 
     const testArrayToDisplay = [
       ...testArray.filter(test => !test.passed),
-      ...testArray.sort((test1, test2) => test1.time - test2.time).slice(-25).reverse(),
-      ...testArray.sort((test1, test2) => test1.time - test2.time).slice(0, 5)
+      ...testArray.sort((test1, test2) => test1.time - test2.time).slice(-20).reverse(),
     ]
 
     const testFactorRows = testFactorizationTestToDisplay.map(test => "<tr><td>" +

@@ -2,7 +2,7 @@
 export const MAX_ALLOCATABLE_ARRAY = 2 ** 31;                       // 2.1b More elements break node
 
 // Supported limits
-export const MAX_SUPPORTED_SIEVE_LENGTH = 10**12;                   // 1t which takes 58GB RAM and generates 452GB primes. Tested on a 64GB RAM server.
+export const MAX_SUPPORTED_SIEVE_LENGTH = 10**12;                   // 1t 452GB primes, iteration takes 3h. 10t iterated and counted in 30h
 
 // Excel limits
 export const EXCEL_MAX_ROWS = 1048576;                              // FIX VALUE FROM EXCEL SPEC 
