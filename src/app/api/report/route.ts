@@ -60,7 +60,7 @@ export async function GET(request: Request): Promise<Response> {
 
     const testValues = KEY==="111111"
       ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 15m
-      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12]                          // server stress checks,  3h
+      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10/*, 10**11, 10**12*/]                          // server stress checks,  3h
 
     const testLastValues: bigint[] = [
       BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18),
@@ -221,7 +221,7 @@ export async function GET(request: Request): Promise<Response> {
     ]
     
     const filename = "./public/files/report.html"
-    fs.writeFileSync(filename, "<html><head></head><body>", 'utf8')
+    fs.writeFileSync(filename, '<html><head><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')
     stringArray.forEach(string => 
       fs.appendFileSync(filename, string, 'utf8')
     );
