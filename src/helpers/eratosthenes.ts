@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_CLASSIC_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH} from "@/Constants";
+import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_CLASSIC_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH, MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH} from "@/Constants";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
@@ -33,8 +33,8 @@ function eratosthenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: 
 }
 
 function lastTenEratosthenes(LIMIT: bigint): SieveReport {
-  if (LIMIT > MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH) {
-    throw new Error("Segmented sieve can be run with a max value of " + MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH)
+  if (LIMIT > MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH) {
+    throw new Error("lastTenEratosthenes can be run with a max value of " + MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH)
   }
 
   const high = LIMIT;
