@@ -60,8 +60,8 @@ export async function GET(request: Request): Promise<Response> {
     }
     
     const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 15m
-      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12, 10**13]                  // server stress checks, 30h
+      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 20m
+      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12, 10**13]                  // server stress checks, 32h
 
     const testLastValues: bigint[] = [
       BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18), BigInt(416)*BigInt(10**16),
@@ -145,7 +145,7 @@ export async function GET(request: Request): Promise<Response> {
     const testFactorizationTestToDisplay = [
       ...testFactorizationArray.filter(test => !test.passed),
       ...testFactorizationArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(-5).reverse(),
-      ...testFactorizationArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(0, 5),
+      ...testFactorizationArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(0, 5).reverse(),
     ]
 
     const testArrayToDisplay = [
@@ -197,6 +197,8 @@ export async function GET(request: Request): Promise<Response> {
     const testFactorizationPrimeCount = testFactorizationArray.reduce((acc, val) => {
       return acc + val.factorsCount
     }, 0)
+
+    const testFactorizationPrimeCountAvg = testFactorizationPrimeCount / testFactorizationArray.length
     const factorsAvgLength = testFactorizationArray.reduce((acc, val) => {
       return acc + val.factorsAvgLength;
     }, 0)
@@ -239,8 +241,8 @@ export async function GET(request: Request): Promise<Response> {
       "<p style='text-align: center;'><b>Tested the following factorization algorithms</b></p>",
       "<p style='text-align: center;'>Brute force for factors up to 10**7</p>",
       "<p style='text-align: center;'>Brent algorithm for factors up to 10**11</p>",
-      "<p style='text-align: center;'>The total of primes found " + testFactorizationPrimeCount + "</p>",
-      "<p style='text-align: center;'>The average prime lenght is " + Math.round(totalTestAverageFactorsLength * 100)/100 + "</p>",
+      "<p style='text-align: center;'>The average of prime factors is " + Math.round(testFactorizationPrimeCountAvg * 100) / 100 + "</p>",
+      "<p style='text-align: center;'>The average prime lenght is " + Math.round(totalTestAverageFactorsLength * 100) / 100 + "</p>",
       
       "<hr/>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>"
