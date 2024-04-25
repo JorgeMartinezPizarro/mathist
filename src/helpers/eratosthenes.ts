@@ -39,7 +39,7 @@ function lastTenEratosthenes(LIMIT: bigint): SieveReport {
 
   const high = LIMIT;
   const t = BigInt(10**5)
-  // Up to 10**16, 10**5 ensure 10 primes
+  // Up to 10**18, 10**5 ensure 10 primes
   const low = high > t ? high - t : BigInt(1)
 
   return segmentedEratosthenesPartial(low, high)
@@ -201,7 +201,7 @@ function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): S
       for (let i = 0; i < S && start + i <= n; i++) {
           if (bloque[i]) {
               resultado++;
-              if (result.length > 10**8)
+              if (result.length > 2*amount)
                 result = result.slice(-amount)
               result.push(start + i)
           }
@@ -267,10 +267,10 @@ function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: numb
           if (!sieve.getBit(i) && (start + BigInt(i)) !== BigInt(1)) { // Skip 1 as it's not a prime
               if (start + BigInt(i) <= high && start + BigInt(i) >= low) {
                 count++;
-                primesInRange.push(start + BigInt(i));
-                if (primesInRange.length > 10**8) {
+                if (primesInRange.length > 2*maxLength) {
                   primesInRange = primesInRange.slice(-maxLength)
                 }
+                primesInRange.push(start + BigInt(i));
               }
           }
       }
@@ -404,13 +404,11 @@ function classicOrSegmentedEratosthenes(lastNumber: number, amountX: number = MA
   
   primesIterator(lastNumber, (p: number) => {
     try {
-      arrayOfPrimes.push(p)
-      
-      numberOfPrimes++
-      if (arrayOfPrimes.length > 10**8) {
+      if (arrayOfPrimes.length > 2*amount) {
         arrayOfPrimes = arrayOfPrimes.slice(-amount)
       }
-
+      arrayOfPrimes.push(p)
+      numberOfPrimes++
     } catch (e) {
       "Error push " + arrayOfPrimes.length + "-th time in array at primes below " + lastNumber + " last prime generated is " + p + ". " + errorMessage(e)
     }

@@ -13,6 +13,7 @@ import isProbablePrime from '@/helpers/isProbablePrime'
 import id from '@/helpers/id'
 import { get } from 'node:http'
 import factors from '@/helpers/factors'
+import { PrimePower } from '@/types'
 
 interface TestReport {
   time: number;
@@ -31,6 +32,8 @@ interface TestFactorReport {
   name: string;
   passed: boolean;
   error: string;
+  factorsCount: number;
+  factorsAvgLength: number;
 }
 
 function arrayEquals(a: (number | bigint)[], b: (number | bigint)[]) {
@@ -61,7 +64,7 @@ export async function GET(request: Request): Promise<Response> {
       : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12, 10**13]                  // server stress checks, 30h
 
     const testLastValues: bigint[] = [
-      BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18),
+      BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18), BigInt(416)*BigInt(10**16),
       ...new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
@@ -70,21 +73,11 @@ export async function GET(request: Request): Promise<Response> {
     })
 
     const randomTestFactorizeValues: bigint[] = [
-      ...new Array(14000).fill(0).map(e => BigInt(id(21))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(20))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(19))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(18))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(17))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(16))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(15))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(14))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(13))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(12))),
-      ...new Array(1000).fill(0).map(e => BigInt(id(11))),
+      ...new Array(20000).fill(0).map(e => BigInt(id(21))),
     ]
 
     const bigTestLastValues = [
-      ...[20, 25, 30, 50, 100, 150, 200, 250, 300, 350, 400].map(e => BigInt(10)**BigInt(e)),
+      ...[20, 25, 30, 50, 100, 150, 200, 250, 300, 350, 400, 500].map(e => BigInt(10)**BigInt(e)),
       ...new Array(1000).fill(0).map(e => BigInt(id(20)))
     ]
 
@@ -93,9 +86,17 @@ export async function GET(request: Request): Promise<Response> {
       const start = getTimeMicro()
       let error = "";
       let failed = false;
+      let factorsCount = 0;
+      let factorsLengthSum = 0;
       
       try {
         const f = factors(number)
+        factorsCount = f.factors.reduce((acc: number, val: PrimePower): number => {
+          return acc + val.exponent
+        }, 0)
+        factorsLengthSum = f.factors.reduce((acc: number, val: PrimePower): number => {
+          return acc + val.prime.toString().length * val.exponent
+        }, 0)
         if (f.message) error = f.message
       } catch (e) {
         failed = true
@@ -104,9 +105,11 @@ export async function GET(request: Request): Promise<Response> {
       
       return {
         time: getTimeMicro() - start,
-        name: "Factorize " + sort,
+        name: "<span title='" + number + "'>Factorize " + sort + "</span>",
         passed: !failed,
         error,
+        factorsCount,
+        factorsAvgLength: factorsLengthSum / factorsCount,
       }
     })
 
@@ -141,12 +144,13 @@ export async function GET(request: Request): Promise<Response> {
 
     const testFactorizationTestToDisplay = [
       ...testFactorizationArray.filter(test => !test.passed),
-      ...testFactorizationArray.sort((test1, test2) => test1.time - test2.time).slice(-5).reverse(),
+      ...testFactorizationArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(-5).reverse(),
+      ...testFactorizationArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(0, 5),
     ]
 
     const testArrayToDisplay = [
       ...testArray.filter(test => !test.passed),
-      ...testArray.sort((test1, test2) => test1.time - test2.time).slice(-20).reverse(),
+      ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(-20).reverse(),
     ]
 
     const testFactorRows = testFactorizationTestToDisplay.map(test => "<tr><td>" +
@@ -190,6 +194,17 @@ export async function GET(request: Request): Promise<Response> {
 
     const testFactoritzationCount = testFactorizationArray.length
 
+    const testFactorizationPrimeCount = testFactorizationArray.reduce((acc, val) => {
+      return acc + val.factorsCount
+    }, 0)
+    const factorsAvgLength = testFactorizationArray.reduce((acc, val) => {
+      return acc + val.factorsAvgLength;
+    }, 0)
+
+    const factorTestCount = testFactorizationArray.length;
+
+    const totalTestAverageFactorsLength = factorsAvgLength / factorTestCount
+
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz " + process.arch + "</b></p>",
@@ -199,7 +214,7 @@ export async function GET(request: Request): Promise<Response> {
       ...rowPercentsEstimated,
       "</tbody></table>",
       "<hr/>",
-      "<table style='width: 800px;margin: 0 auto;'> <thead><tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr></thead><tbody>",
+      "<table style='width: 850px;margin: 0 auto;'> <thead><tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr></thead><tbody>",
       ...testRows,
       "<tr><td>" + (testArray.length - testRows.length) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
       "<tr><th style='text-align: left;'>Total tests</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left;'>Result</th></tr>",
@@ -208,7 +223,7 @@ export async function GET(request: Request): Promise<Response> {
       "<hr/>",
       "<p style='text-align: center;'><b>Tested the following prime algorithms</b></p>",
       "<p style='text-align: center;'>SS: Segmented Sieve</p>",
-      "<p style='text-align: center;'>ES: Eratosthenes Sieve</p>",
+      "<p style='text-align: center;'>ES: Eratosthenes' Sieve</p>",
       "<p style='text-align: center;'>GS: Gordon's Sieve</p>",
       "<p style='text-align: center;'>PS: Partial Segmented Sieve</p>",
       "<p style='text-align: center;'>BF: Brute force generator</p>",
@@ -224,6 +239,9 @@ export async function GET(request: Request): Promise<Response> {
       "<p style='text-align: center;'><b>Tested the following factorization algorithms</b></p>",
       "<p style='text-align: center;'>Brute force for factors up to 10**7</p>",
       "<p style='text-align: center;'>Brent algorithm for factors up to 10**11</p>",
+      "<p style='text-align: center;'>The total of primes found " + testFactorizationPrimeCount + "</p>",
+      "<p style='text-align: center;'>The average prime lenght is " + Math.round(totalTestAverageFactorsLength * 100)/100 + "</p>",
+      
       "<hr/>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>"
     ]
@@ -255,7 +273,7 @@ const checkLastGeneratedPrimes = (number: bigint): TestReport => {
         failed = true
     }
   } catch(e) {
-    stringArray.push("ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")")
+    stringArray.push("ERROR: An error ocurred processing checkLastGeneratedPrimes(" + sort + ")")
     stringArray.push(errorMessage(e))
     failed = true
   }
@@ -267,7 +285,7 @@ const checkLastGeneratedPrimes = (number: bigint): TestReport => {
     ESTime: 0,
     GSTime: 0,
     PSTime: 0,
-    name: "BF to " + sort,
+    name: "<span title='" + number + "'>BF to " + sort+ "</span>",
     passed: !failed,
     time: getTimeMicro() - start,
   }
@@ -298,7 +316,7 @@ const checkLastPrimes = (number: bigint): TestReport => {
 
     
   } catch(e) {
-    stringArray.push("ERROR: An error ocurred processing checkPrimeCounts(" + sort + ")")
+    stringArray.push("ERROR: An error ocurred processing checkLastPrimes(" + sort + ")")
     stringArray.push(errorMessage(e))
     failed = true
   }
@@ -310,7 +328,7 @@ const checkLastPrimes = (number: bigint): TestReport => {
     ESTime: 0,
     GSTime: 0,
     PSTime: sr?.time||0,
-    name: "PS to " + sort,
+    name: "<span title='" + number + "'>PS to " + sort+ "</span>",
     passed: !failed,
     time: getTimeMicro() - start,
   }
@@ -342,7 +360,7 @@ const printPercentPrimes = (digits: number): string => {
   return "<tr><td>" + percent(primesWithTenDigits, numbersWithTenDigits) + "</td><td>" + digits + "</td></tr>"
 }
 
-const   checkPrimeCounts = (n: number): TestReport => {
+const checkPrimeCounts = (n: number): TestReport => {
   
   // Needed to increase the cache from 512KB to 10MB for 10**13
   const sort = n.toString()[0] + "E" + (n.toString().length - 1)
@@ -351,7 +369,7 @@ const   checkPrimeCounts = (n: number): TestReport => {
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   const start = getTimeMicro()
   let failed = false;
-  let c, ce, se, lp
+  let c, ce, se, lp, bf
 
   try {
     
@@ -360,15 +378,17 @@ const   checkPrimeCounts = (n: number): TestReport => {
     ce = !skipClassicSieve ? classicOrSegmentedEratosthenes(limit) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
     se = segmentedEratosthenes(limit)
     lp = lastTenEratosthenes(BigInt(limit))
+    bf = lastTenGenerated(BigInt(limit))
     
-
     if (skipClassicSieve) {
-      if (!arrayEquals(lp.primes, se.primes)
+      if (!arrayEquals(lp.primes, se.primes) || 
+        !arrayEquals(se.primes, bf.primes)
       ) {
         failed = true
         stringArray.push("Something went wrong generating primes to " + sort + "")
-        stringArray.push("PS: " +  lp.primes.toString())
-        stringArray.push("SS: " + se.primes.toString())
+        stringArray.push("PS: " +  lp.primes.join(", "))
+        stringArray.push("BF: " +  bf.primes.join(", "))
+        stringArray.push("SS: " + se.primes.join(", "))
       }
       if (c.length !== se.length) {
         failed = true
@@ -377,13 +397,15 @@ const   checkPrimeCounts = (n: number): TestReport => {
       }
     } else {
       if (!arrayEquals(lp.primes, se.primes) || 
-        !arrayEquals(se.primes, ce.primes)
+        !arrayEquals(se.primes, ce.primes) || 
+        !arrayEquals(ce.primes, bf.primes)
       ) {
         failed = true
         stringArray.push("Something went wrong generating primes to " + sort + "")
-        stringArray.push("PS: " + lp.primes.toString())
-        stringArray.push("SS: " + se.primes.toString())
-        stringArray.push("ES: " + ce.primes.toString())
+        stringArray.push("PS: " + lp.primes.join(", "))
+        stringArray.push("SS: " + se.primes.join(", "))
+        stringArray.push("ES: " + ce.primes.join(", "))
+        stringArray.push("BF: " + bf.primes.join(", "))
       }
       if (c.length !== ce.length || ce.length !== se.length) {
         failed = true
@@ -400,12 +422,12 @@ const   checkPrimeCounts = (n: number): TestReport => {
 
   return {
     error: stringArray.join(". "),
-    BFTime: 0,
+    BFTime: bf?.time||0,
     SSTime: se?.time||0,
     ESTime: ce?.time||0,
     GSTime: c?.time||0,
     PSTime: lp?.time||0,
-    name: "GS ES SS PS to " + sort,
+    name: "<span title='" + n + "'>All algorithms to " + sort+ "</span>",
     passed: !failed,
     time: getTimeMicro() - start,
   }
