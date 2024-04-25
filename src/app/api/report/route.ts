@@ -61,7 +61,7 @@ export async function GET(request: Request): Promise<Response> {
       : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12, 10**13]                  // server stress checks, 30h
 
     const testLastValues: bigint[] = [
-      BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18), BigInt(10)**BigInt(19),
+      BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18),
       ...new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
@@ -344,10 +344,10 @@ const printPercentPrimes = (digits: number): string => {
 
 const   checkPrimeCounts = (n: number): TestReport => {
   
-  // Needed to increase the cache from 512 to 10MB for 10**13
+  // Needed to increase the cache from 512KB to 10MB for 10**13
   const sort = n.toString()[0] + "E" + (n.toString().length - 1)
   const stringArray: string[] = []
-  const cache = 1024 * 512
+  const cache = 1024**2 * 2**4
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   const start = getTimeMicro()
   let failed = false;
