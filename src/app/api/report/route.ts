@@ -11,7 +11,6 @@ import getTimeMicro from '@/helpers/getTimeMicro'
 import { MAX_CLASSIC_SIEVE_LENGTH } from '@/Constants'
 import isProbablePrime from '@/helpers/isProbablePrime'
 import id from '@/helpers/id'
-import { get } from 'node:http'
 import factors from '@/helpers/factors'
 import { PrimePower } from '@/types'
 
@@ -59,9 +58,14 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!")
     }
     
-    const testValues = KEY==="111111"
-      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]                                          // acceptable for local, 20m
-      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12, 10**13]                  // server stress checks, 32h
+    // STEP 1: define values to test
+    // ==============================
+    // acceptable for local, 20m
+    // server stress checks, 52h
+
+    const testValues = KEY ==="111111"
+      ? [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10]
+      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12, 10**13]
 
     const testLastValues: bigint[] = [
       BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18), BigInt(416)*BigInt(10**16),
@@ -72,14 +76,17 @@ export async function GET(request: Request): Promise<Response> {
       return BigInt(id(6))
     })
 
-    const randomTestFactorizeValues: bigint[] = [
-      ...new Array(20000).fill(0).map(e => BigInt(id(21))),
-    ]
-
+    const randomTestFactorizeValues: bigint[] = KEY==="111111"
+      ? new Array(20000).fill(0).map(e => BigInt(id(21)))
+      : new Array(200000).fill(0).map(e => BigInt(id(21)))
+    
     const bigTestLastValues = [
       ...[20, 25, 30, 50, 100, 150, 200, 250, 300, 350, 400, 500].map(e => BigInt(10)**BigInt(e)),
       ...new Array(1000).fill(0).map(e => BigInt(id(20)))
     ]
+
+    // STEP 2: test over the values
+    // ==============================
 
     const testFactorizationArray: TestFactorReport[] = randomTestFactorizeValues.map(number => {
       const sort = number.toString()[0] + "E" + (number.toString().length - 1)
@@ -152,6 +159,9 @@ export async function GET(request: Request): Promise<Response> {
       ...testArray.filter(test => !test.passed),
       ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(-20).reverse(),
     ]
+
+    // STEP 3: create the test report
+    // ==============================
 
     const testFactorRows = testFactorizationTestToDisplay.map(test => "<tr><td>" +
         test.name +
@@ -238,15 +248,18 @@ export async function GET(request: Request): Promise<Response> {
       "<tr>",
       "</tbody></table>",
       "<hr/>",
+      "<p style='text-align: center;'><b>Factorization summary</b></p>",
+      "<p style='text-align: center;'>The average of prime factors is " + Math.round(testFactorizationPrimeCountAvg * 100) / 100 + "</p>",
+      "<p style='text-align: center;'>The average prime lenght is " + Math.round(totalTestAverageFactorsLength * 100) / 100 + "</p>",
+      "<hr/>",
       "<p style='text-align: center;'><b>Tested the following factorization algorithms</b></p>",
       "<p style='text-align: center;'>Brute force for factors up to 10**7</p>",
       "<p style='text-align: center;'>Brent algorithm for factors up to 10**11</p>",
-      "<p style='text-align: center;'>The average of prime factors is " + Math.round(testFactorizationPrimeCountAvg * 100) / 100 + "</p>",
-      "<p style='text-align: center;'>The average prime lenght is " + Math.round(totalTestAverageFactorsLength * 100) / 100 + "</p>",
-      
       "<hr/>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>"
     ]
+
+    // STEP 4: write the report to a file
     
     const filename = "./public/files/report.html"
     fs.writeFileSync(filename, '<html><head><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')
@@ -254,7 +267,7 @@ export async function GET(request: Request): Promise<Response> {
       fs.appendFileSync(filename, string, 'utf8')
     );
     fs.appendFileSync(filename, "</body></html>", 'utf8')
-    // The whole report takes 6m in local, 8 hours in the server.
+
     return Response.json( {time: getTimeMicro() - start, message: "report generated under /files/report.html"} )
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });

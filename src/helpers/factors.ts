@@ -211,7 +211,7 @@ const brentFactor = (n: bigint): bigint => {
     const factor = min(d, n / d)
     
     if (d === n) {
-        throw new Error("No factor found for " + factor + ", should we iterate more? ")
+        throw new Error("No factor found for " + factor + ", should we iterate more?")
     }
 
     if (!isProbablePrime(factor)) {
