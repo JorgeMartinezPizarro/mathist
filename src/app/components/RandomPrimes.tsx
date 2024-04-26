@@ -14,6 +14,7 @@ const initialRandomPrimes: RandomPrimesReport = {
     length: 0,
     time: 0,
     amount: 0,
+    tries: 0,
 }
 
 const RandomPrimes = () => {

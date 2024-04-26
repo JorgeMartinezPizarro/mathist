@@ -18,8 +18,8 @@ export async function GET(request: Request) {
             return this.toString()
         }
 
-        if (n > BigInt(10**MAX_DIGITS_FACTORIZATION -1)) {
-            return Response.json( {error: "Max value of LIMIT is " + BigInt(10**MAX_DIGITS_FACTORIZATION -1) + ", " + n + " provided"}, {status: 500})
+        if (n.toString().length > MAX_DIGITS_FACTORIZATION) {
+            return Response.json( {error: "Max value of LIMIT is " + (BigInt(10)**BigInt(MAX_DIGITS_FACTORIZATION) - BigInt(1)) + ", " + n + " provided"}, {status: 500})
         }
         
         return Response.json(factors(n))

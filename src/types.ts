@@ -3,6 +3,7 @@ export interface RandomPrimesReport {
     time: number;
     length: number;
     amount: number;
+    tries: number;
 }
 
 export interface TreeElement {

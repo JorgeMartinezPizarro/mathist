@@ -24,7 +24,6 @@ export async function GET(request: Request): Promise<Response> {
         {status: 500}
       )
     };
-    console.log(KEY, process.env.MATHER_SECRET)
     if (process.env.MATHER_SECRET?.trim() !== KEY && !excel && LIMIT_BI > MAX_HEALTHY_SIEVE_LENGTH) {
       return Response.json( lastTenEratosthenes(LIMIT_BI) )
     } 

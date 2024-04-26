@@ -9,12 +9,12 @@ export const EXCEL_MAX_ROWS = 1048576;                              // FIX VALUE
 export const EXCEL_MAX_COLS = 16384;                                // FIX VALUE FROM EXCEL SPEC
 
 // Web healthy limits
-export const MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH = 10**19
+export const MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH = BigInt(10)**BigInt(19) - BigInt(1)
 export const MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH = 10**16            // with segmented sieve it runs up to 10q is less than a sec
 export const MAX_HEALTHY_SIEVE_LENGTH = 10**8                       // with full sieve 100m run in less than a sec.
 export const MAX_DIGITS_TRIPLE = 180000;                            // Healthy computation of less than a sec
 export const MAX_LENGTH_TREE = 10;                                  // Healthy computation of just few seconds
-export const MAX_DIGITS_FACTORIZATION = 21;                         // Healthy computation of just few seconds
+export const MAX_DIGITS_FACTORIZATION = 23;                         // Healthy computation of just few seconds
 export const MAX_COMPUTATION_FACTORS = 1 * 10**7;                   // Healthy limit to check divisibility by in a few seconds
 export const MAX_SERIES_DIFFERENCES_SIZE = 20;                      // Healthy size of the displayed number square
 export const MAX_DISPLAY_SIEVE = 10;                                // Healthy amount of primes displayed

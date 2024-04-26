@@ -17,16 +17,11 @@ export default function factors(n: bigint ): Factorization {
     
     const start = getTimeMicro()
 
-    console.log("///////////////////////////////////////////////")
-    console.log("Getting factors of " + n)
-    
     if (n === one || n === zero) {
         return {
             message: "0 and 1 are special numbers, no primes.",
-            factors: [
-                { prime: n, exponent: 1 }
-            ],
-            time: getTimeMicro()-start,
+            factors: [],
+            time: getTimeMicro() - start,
         }
     } 
     else if (n < zero) {
@@ -37,10 +32,8 @@ export default function factors(n: bigint ): Factorization {
     let m = n
     let f: Factor = factor(n)
     while (f.factor > one) {
-        if (f.message.includes("The factor " + f.factor + " is not prime.")) {
-            // Enought with trial division, now try brent algorithm
-            console.log("Give up with brute force, try the Brent factoring algorithm")
-            // brentFactor
+        if (f.message !== "") {
+            // brentFactors
             addFactorsWithMethod(factors, f.factor, brentFactor)
             factors.sort((a: PrimePower,b: PrimePower ) => Number(a.prime - b.prime))
             return {
@@ -63,7 +56,7 @@ export default function factors(n: bigint ): Factorization {
 
 function addFactorsWithMethod(factors: PrimePower[], factor: bigint, factorizationMethod: any) {
     const computedFactor = factorizationMethod(factor)
-    console.log("Found a factor " + computedFactor)
+    
     if (computedFactor !== factor) {
         let c = 1
         let p: bigint = computedFactor
@@ -72,11 +65,9 @@ function addFactorsWithMethod(factors: PrimePower[], factor: bigint, factorizati
             addPrime(factors, p)
         }
         while (p > two && !isProbablePrime(rest) && isProbablePrime(p)) {
-            
             p = factorizationMethod(rest)
             rest = rest / p;
             c++
-            console.log("Found another factor " + p)
             addPrime(factors, p)
         }
         
@@ -136,7 +127,6 @@ function factor(n: bigint): Factor {
 
     for (var i = 0; i < firstPrimes.length; i++) {
         if (n % firstPrimes[i] === zero) {
-            console.log("Found a factor " + firstPrimes[i])
             return {factor: firstPrimes[i], message: ""};
         }
     }
@@ -145,8 +135,7 @@ function factor(n: bigint): Factor {
 
     for (let i: bigint = initialPrime; i <= m; i += ringSize) {
         if (i > MAX_COMPUTATION_FACTORS) {
-            const message = "The factor " + n + " is not prime. We give up by i = " + i;
-            console.log(message)
+            const message = "We give up the wheel division by i = " + i;
             return {
                 factor: n,
                 message, 
@@ -155,7 +144,6 @@ function factor(n: bigint): Factor {
         for (const a of dividers) {
             // Only check divisibility by biggers than last prime to save time
             if (n % (i + a) === zero) {
-                console.log("Found a factor " + (i + a))
                 return {
                     factor: i + a,
                     message: ""

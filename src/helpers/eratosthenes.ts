@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import {EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_CLASSIC_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH, MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH} from "@/Constants";
+import { EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_CLASSIC_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH } from "@/Constants";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
@@ -121,8 +121,6 @@ function segmentedEratosthenesIterator(n: number, callback: any): void {
   process.stdout.write("SS: Sieved 100.000% in " + (duration(getTimeMicro() - startx)) + "                 \n")
 }
 
-
-
 function classicEratosthenesIterator(n: number, callback: any): void {
     const lastNumber = n
     const startx = getTimeMicro()
@@ -155,12 +153,13 @@ function classicEratosthenesIterator(n: number, callback: any): void {
             process.stdout.write("ES: Sieved " + percent(BigInt(Math.round(i)), BigInt(Math.round(upperLimit))) + " in " + duration(getTimeMicro() - startx) + "        ")
           }          
         }
-  
+        process.stdout.write("\r");
+        process.stdout.write("\r");
+        process.stdout.write("ES: Sieved  99.999% in " + duration(getTimeMicro() - startx) + "              ")
+        
         for (var i = 1; i< sieve.length();i++) {
           if (2*i+1 <=n && sieve.getBit(i) === 0) {
-            //process.stdout.write("\r");
-            //process.stdout.write("\r");
-            //process.stdout.write("ES: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "              ")
+            
             callback(2 * i + 1)
           }
         }
@@ -171,57 +170,28 @@ function classicEratosthenesIterator(n: number, callback: any): void {
   
     } catch (error) {
       const text = "sieve(" + lastNumber + "), " + errorMessage(error);
-      console.log(text)
       throw new Error(text);
     }
 }
 
 function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
   
+  const start = getTimeMicro()
   let result: number[] = []
-  const startx = getTimeMicro()
-  const nsqrt = Math.floor(Math.sqrt(n));
-  const S = Math.min(1024 * 1024 * 16, nsqrt)
-  const firstPrimes = classicOrSegmentedEratosthenes(nsqrt + 1, nsqrt + 1).primes
-  process.stdout.write("\r");
-  process.stdout.write("\r");
-  process.stdout.write("SS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "       ")
   let resultado = 0;
-  let bloque: boolean[] = Array(S).fill(true);
-  for (let k = 0; k * S <= n; k++) {
-      bloque.fill(true);
-      const start = k * S;
-      for (const p of firstPrimes) {
-          const startIdx = Math.max(Math.floor((start + Number(p) - 1) / Number(p)), Number(p)) * Number(p) - start;
-          for (let j = startIdx; j < S; j += Number(p))
-              bloque[j] = false;
-      }
-      if (k === 0)
-          bloque[0] = bloque[1] = false;
-      for (let i = 0; i < S && start + i <= n; i++) {
-          if (bloque[i]) {
-              resultado++;
-              if (result.length > 2*amount)
-                result = result.slice(-amount)
-              result.push(start + i)
-          }
-      }
 
+  segmentedEratosthenesIterator(n, (prime: number) => {
+    resultado++;
+    if (result.length > 2*amount)
       result = result.slice(-amount)
-      process.stdout.write("\r");
-      process.stdout.write("\r");
-      process.stdout.write("SS: Sieved " + percent(BigInt(k), BigInt(n)/BigInt(S)) + " in " + (duration(getTimeMicro() - startx)) + "       ")
-  }
-
-  process.stdout.write("\r");
-  process.stdout.write("\r");
-  process.stdout.write("SS: Sieved 100.000% in " + (duration(getTimeMicro() - startx)) + "                 \n")
-
+    result.push(prime)
+  })
+  
   return {
     primes: result,
     length: resultado,
     filename: "",
-    time: getTimeMicro() - startx,
+    time: getTimeMicro() - start,
     isPartial: false
   };
 }
@@ -235,8 +205,6 @@ function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: numb
     throw new Error("It would take a lot of time!")
   }
 
-  console.log("/////////////////////////////////////////////////////////////////////////////")
-  
   const startx: number = getTimeMicro();
   const sieveSize = Number(sqrt(high)) + 1
   const segmentSize = Math.min(sieveSize, Number(high - low) + 1); // Size of each segment
@@ -297,9 +265,7 @@ function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: numb
 // Create excel file with primes up to LIMIT
 function primesToExcel(LIMIT: number): SieveReport {
 
-  console.log("//////////////////////////////////////////////////////////////////////////////////////////")
   console.log("Requesting excel file primes-to-" + LIMIT + ".csv")
-  console.log("Let's sieve for less or equal than " + LIMIT)
   
   if (isNaN(LIMIT)) {
     throw new Error("Invalid length " + LIMIT)
@@ -314,14 +280,9 @@ function primesToExcel(LIMIT: number): SieveReport {
   const filename = "primes-to-" + LIMIT + "-hash-" + id(20) + ".csv"
   const path = root + filename;
 
-  let e = getTimeMicro();
-  
   let line = new Array();
   let rows = 0;
   let length = 0;
-  
-  console.log("Sieved in " + duration(getTimeMicro() - e) + ", start writting primes to file")
-  e = getTimeMicro()
   
   // Create the file
   fs.writeFileSync(path, "")
@@ -336,7 +297,6 @@ function primesToExcel(LIMIT: number): SieveReport {
         fs.appendFileSync(path, line.join(',') + "\r\n");
       } catch (error) {
         const message = "Error writting to file " + path + ", " + errorMessage(error)
-        console.log(message)
         throw new Error(message)
       }
       rows++;
@@ -354,8 +314,7 @@ function primesToExcel(LIMIT: number): SieveReport {
   var stats = fs.statSync(path);
   var fileSizeInBytes = stats.size;
 
-  console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - e));
-  console.log("Total duration " + duration(getTimeMicro() - elapsed))
+  console.log("Finished writting " + toHuman(fileSizeInBytes) + " of primes in " + duration(getTimeMicro() - elapsed));
   
   return {filename: "/files/" + filename, time: getTimeMicro() - elapsed, length, primes: [], isPartial: false};
 }
@@ -376,25 +335,11 @@ function classicOrSegmentedEratosthenes(lastNumber: number, amountX: number = MA
     throw new Error("Cannot get the sieve of negative numbers")
   }
   if (lastNumber === 1 || lastNumber === 0) {
-    console.log("//////////////////////////////////////////////////////////////////////////////////////////")
-    console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
-    console.log("Let's sieve for less or equal than " + lastNumber)
-    console.log("Primes obtained and counted in " + duration(10))
-    console.log("Total duration " +  duration(getTimeMicro() - elapsed))
     return {primes: [], time: getTimeMicro() - elapsed, length: 0, filename: "", isPartial: false}
   }  
   if (lastNumber === 2) {
-    console.log("//////////////////////////////////////////////////////////////////////////////////////////")
-    console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
-    console.log("Let's sieve for less or equal than " + lastNumber)
-    console.log("Primes obtained and counted in " + duration(10))
-    console.log("Total duration " +  duration(getTimeMicro() - elapsed))
     return {primes: [2], time: getTimeMicro() - elapsed, length: 1, filename: "", isPartial: false}
   } 
-  
-  console.log("//////////////////////////////////////////////////////////////////////////////////////////")
-  console.log("Requesting last " + amount + " primes lower or equal than " + lastNumber)
-  console.log("Let's sieve for less or equal than " + lastNumber)
   
   let arrayOfPrimes: number[] = Array()  
   let numberOfPrimes = 0
@@ -413,10 +358,6 @@ function classicOrSegmentedEratosthenes(lastNumber: number, amountX: number = MA
       "Error push " + arrayOfPrimes.length + "-th time in array at primes below " + lastNumber + " last prime generated is " + p + ". " + errorMessage(e)
     }
   })
-
-  console.log("Primes obtained and counted in " + duration(getTimeMicro() - e))
-
-  console.log("Total duration " + duration(getTimeMicro() - elapsed))
 
   return {filename: "", primes: arrayOfPrimes.slice(-amount), time: getTimeMicro() - elapsed, length: numberOfPrimes, isPartial: false};
 }

@@ -37,4 +37,6 @@ next-env.d.ts
 
 /public/files/*.csv
 
-/public/files/report.html
+/public/files/*.html
+
+
