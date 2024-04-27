@@ -14,15 +14,11 @@ import isProbablePrime from "./isProbablePrime";
 
 const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 
-// TODO: remove duplicated code. 
-
-// https://en.wikipedia.org/wiki/Prime_number_theorem#Table_of_%CF%80(x),_x_/_log_x,_and_li(x)
-
 // Get primes or write primes to a file and get the link.
 // primesToExcel works MAX value 10**12, 452GB.
 // primesToExcel works up to 10**8 48MB less than a second.
 // lastTenEratosthenes works well up to 10**16 generating last primes in less than a second.
-// classicOrSegmentedEratosthenes works up to 10**12 
+// classicOrSegmentedEratosthenes works up to 10**13
 //
 function eratosthenes(LIMIT: number, amount: number = MAX_DISPLAY_SIEVE, excel: boolean = false): SieveReport {
   if (excel) {
@@ -188,7 +184,7 @@ function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): S
   })
   
   return {
-    primes: result,
+    primes: result.slice(-amount),
     length: resultado,
     filename: "",
     time: getTimeMicro() - start,
@@ -255,7 +251,7 @@ function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: numb
 
   return {
     isPartial: true,
-    primes: primesInRange,
+    primes: primesInRange.slice(-maxLength),
     filename: "",
     time: getTimeMicro() - startx,
     length: count

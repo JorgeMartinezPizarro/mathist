@@ -16,14 +16,16 @@ interface TestRandomReport {
 
 let totalTests = 0
 
-export default function testRandom(): string[] {
-    const randomTestSize = 3 * 10**2
+export default function testRandom(local: boolean): string[] {
+    const randomTestSize = local 
+      ? 10**2
+      : 10**4
     const start = getTimeMicro();
     
     
     // STEP 1: vales to evaluate
     // ==============================
-    // acceptable for local, 20m
+    // tests in around 25m
     
     const elapsed = getTimeMicro()
 
@@ -32,28 +34,41 @@ export default function testRandom(): string[] {
     // STEP 2: run the reports and generate the html
     // ==============================
 
-    const testRandomValues = [5, 10, 50, 100, 200, 400]
+    const testRandomValues = [1, 2, 5, 10, 50, 100, 200, 400]
     
     totalTests = testRandomValues.length
 
     const randomTestCount = randomTestSize * testRandomValues.length
-    
+    let errorsArray: string[] = []
+
     const testRows: string[] = [
       ...testRandomValues
-        .reduce((acc: string[], n: number) => [...acc, ...testRow(randomArray(n))], []),
+        .reduce((acc: string[], n: number): string[] => {
+          const t = testRow(randomArray(n))
+          if (t[1].length > 0 && t[1][0] !== "") {
+            errorsArray = [
+              ...errorsArray,
+              ...t[1].map(error => "<p style='color=red;text-align:center;'" + error + "</p>"),
+              "<hr/>"
+            ]
+          }
+          return [...acc, ...t[0]];
+        }, []),
     ];
 
-    const rowsPercentsExact = [1, 2, 3, 4, 5]
+    /*const rowsPercentsExact = [1, 2, 5]
       .map(printPercentPrimes)
 
     const rowPercentsEstimated = [10, 50, 100, 200, 400]
       .map(printPercentPrimesEstimated)
-    
+    */
+
     const stringArray = [
       "<table style='width: 670px;margin: 0 auto;'><thead>",
       "<tr>",
       "<th style='text-align:left'># primes</th>",
       "<th style='text-align:left'>Prime length</th>",
+      "<th style='text-align:left'>Prime %</th>",
       "<th style='text-align:left'># tries</th>",
       "<th style='text-align:left'>avg time</th>",
       "<th style='text-align:left'>Total time</th>",
@@ -64,6 +79,7 @@ export default function testRandom(): string[] {
       "<tr>",
       "<th style='text-align:left'># primes</th>",
       "<th style='text-align:left'>Prime length</th>",
+      "<th style='text-align:left'>Prime %</th>",
       "<th style='text-align:left'># tries</th>",
       "<th style='text-align:left'>avg time</th>",
       "<th style='text-align:left'>Total time</th>",
@@ -79,14 +95,10 @@ export default function testRandom(): string[] {
       "</tr>",
       "</tr></tbody></table>",
       "<hr/>",
+      ...errorsArray.slice(0, 1000),
       "<p style='text-align: center;'><b>Used the following primaly algorithms</b></p>",
       "<p style='text-align: center;'>Find factors for factors up to 1E23</p>",
       "<p style='text-align: center;'>Miller-Rabin and Baillie probabilistic primaly test</p>",
-      "<hr/>",
-      "<table style='width: 300px;margin: 0 auto;'><thead><tr><th style='text-align: left;'>Primes %</th><th style='text-align: left;'>Digits</th></tr></thead><tbody>",
-      ...rowsPercentsExact,
-      ...rowPercentsEstimated,
-      "</tbody></table>",
       "<hr/>",
     ]
 
@@ -95,7 +107,7 @@ export default function testRandom(): string[] {
 
 let c = 0
 
-function testRow(testValuesArray: number[]): string[] {
+function testRow(testValuesArray: number[]): string[][] {
   c++
   console.log("Test " + c + " from " + totalTests)
   const startX = getTimeMicro()
@@ -153,10 +165,15 @@ function testRow(testValuesArray: number[]): string[] {
 
   const totalTries = testFactorizationArray.reduce((acc, val) => acc + val.tries, 0)
   
+  const error = testFactorizationArray.filter(test => !test.passed).map(test => test.error).join(". ")
+  
+  const l = testFactorizationArray[0].prime.toString().length
+
   const stringArray = [
     "<tr>",
     "<td style=''>" + testFactorizationArray.length + "</td>",
     "<td style=''>" + testFactorizationArray[0].prime.toString().length + "</td>",
+    "<td style=''>" + (l < 10 ? percentPrimes(l) : percentPrimesEstimated(l)) + "</td>",
     "<td style=''>" + totalTries + "</td>",
     "<td style=''>" + duration(Math.round(testFactorizationTime / testFactorizationArray.length)) + "</td>",
     "<td style=''>" + duration(testFactorizationTime) + "</td>",
@@ -164,10 +181,13 @@ function testRow(testValuesArray: number[]): string[] {
     "</tr>"
   ]
 
-  return stringArray;
+  return [
+    stringArray,
+    error.split(". ")
+  ]
 }
 
-const printPercentPrimesEstimated = (digits: number): string => {
+const percentPrimesEstimated = (digits: number): string => {
           
   const maxTenDigits = BigInt(new Array(digits).fill("9").join(""))
   const maxNineDigits = BigInt(new Array(digits - 1).fill("9").join(""))
@@ -176,10 +196,10 @@ const printPercentPrimesEstimated = (digits: number): string => {
   const primesWithLessThanNineDigitsEstimated = maxNineDigits / ln(maxNineDigits)
   const primesWithTenDigitsEstimated = primesWithLessThanTenDigitsEstimated - primesWithLessThanNineDigitsEstimated
   
-  return "<tr><td>" + percent(primesWithTenDigitsEstimated, numbersWithTenDigits) + "</td><td>" + digits + "</td></tr>"
+  return percent(primesWithTenDigitsEstimated, numbersWithTenDigits)
 }
 
-const printPercentPrimes = (digits: number): string => {
+const percentPrimes = (digits: number): string => {
   const buffer = 1024 * 512 // 512KB cache
   const maxTenDigits = BigInt(new Array(digits).fill("9").join(""))
   const maxNineDigits = BigInt(new Array(digits - 1).fill("9").join(""))
@@ -190,5 +210,5 @@ const printPercentPrimes = (digits: number): string => {
   const primesWithLessThanNineDigits = BigInt(d?.length || 0)
   const primesWithTenDigits = primesWithLessThanTenDigits - primesWithLessThanNineDigits
   
-  return "<tr><td>" + percent(primesWithTenDigits, numbersWithTenDigits) + "</td><td>" + digits + "</td></tr>"
+  return percent(primesWithTenDigits, numbersWithTenDigits)
 }

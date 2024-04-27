@@ -23,19 +23,21 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!")
     }
 
+    const local = KEY == "111111"
+
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz " + process.arch + "</b></p>",
       "<hr/>",
-      "<p style='text-align: center;'><b>Test randomPrimes(n)</b></p>",
-      "<hr/>",
-      ...testRandom(),
       "<p style='text-align: center;'><b>Test factors(n)</b></p>",
       "<hr/>",
-      ...testFactorization(),
+      ...testFactorization(local),
+      "<p style='text-align: center;'><b>Test randomPrimes(n)</b></p>",
+      "<hr/>",
+      ...testRandom(local),
       "<p style='text-align: center;'><b>Test sieve functions</b></p>",
       "<hr/>",
-      ...testSieve(KEY == "111111"),
+      ...testSieve(local),
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
 
     ]

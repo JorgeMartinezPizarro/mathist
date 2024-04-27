@@ -3,6 +3,7 @@
 import duration from "@/helpers/duration";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import percent from "@/helpers/percent";
+import { SieveReport } from "@/types";
 
 const WHLPRMS = new Uint32Array([2,3,5,7,11,13,17,19]);
 const FRSTSVPRM = 23;
@@ -168,15 +169,16 @@ function fillSieveBuffer(lwi, sb) {
 // 10**14 is not realistic.
 // LIMITED TO 1.2hours max allowed.
 //
+// https://en.wikipedia.org/wiki/Prime_number_theorem#Table_of_%CF%80(x),_x_/_log_x,_and_li(x)
+//
 // LIMIT    DURATION
 // 10**12   8 m
-// 10**13   1.2 h
-// 10**14   12 hours
-// 10**15   120 hours
+// 10**13   2 h
+// 10**14   20 hours
+// 10**15   200 hours
 //
 export default function countPrimes(LIMIT, cache = 1024*512) { 
   const separator = new Array(10).fill(" ").join("")
-  
   
   if ((LIMIT < 0) || (LIMIT > 10**13)) { 
     throw new Error("Value out of range " + LIMIT + ".")
@@ -245,8 +247,11 @@ export default function countPrimes(LIMIT, cache = 1024*512) {
       const elpsdx = getTimeMicro() - startx;
       
       return {
+        primes: [],
+        filename: "",
         length: count,
-        time: elpsdx
+        time: elpsdx,
+        isPartial: false
       }
     };
     
@@ -254,6 +259,9 @@ export default function countPrimes(LIMIT, cache = 1024*512) {
   }
 
   return {
+    filename: "",
+    isPartial: false,
+    primes: [],
     length: count,
     time: getTimeMicro() - startx
   }

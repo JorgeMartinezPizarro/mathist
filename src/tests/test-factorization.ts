@@ -20,9 +20,12 @@ interface TestFactorReport {
 let totalTests = 0
 
 //test the factorization and generate a report
-export default function testFactorization(): string[] {
+export default function testFactorization(local: boolean): string[] {
   
-  const randomTestSize = 5 * 10**3
+  const randomTestSize = local  
+    ? 10**3
+    : 10**4
+
   const elapsed = getTimeMicro()
 
   const randomArray = (n: number): bigint[] => new Array(randomTestSize).fill(0).map(() => BigInt(id(n)) + BigInt(1))
@@ -32,16 +35,47 @@ export default function testFactorization(): string[] {
   // STEP 2: run the reports and generate the html
   // ==============================
 
-  const testFullValues = new Array(6).fill(0).map((e, i) => i + 1)    // 1 to 6
-  const testRandomValues = new Array(17).fill(0).map((e, i) => i + 7) // 7 to 23
-  
+  const testFullValues = local  
+    ? [1, 2, 3]
+    : [1, 2, 3, 4, 5, 6]
+
+  const testRandomValues = local
+    ? new Array(20).fill(0).map((e, i) => i + 4) // 4 to 23
+    : new Array(19).fill(0).map((e, i) => i + 7) // 7 to 25
+
+  // tests in around 25 m
   totalTests = testFullValues.length + testRandomValues.length
-  
+
+  const testsCount = totalTests * randomTestSize
+
+  let errorsArray: string[] = []
   const testRows: string[] = [
     ...testFullValues
-      .reduce((acc: string[], n: number) => [...acc, ...testRow(fullArray(n))], []),
+      .reduce((acc: string[], n: number): string[] => {
+        const t = testRow(fullArray(n))
+        if (t[1].length > 0 && t[1][0] !== "") {
+          errorsArray = [
+            ...errorsArray,
+            ...t[1].map(error => "<p style='color=red;text-align:center;'" + error + "</p>"),
+            "<hr/>"
+          ]
+        }
+        
+        return [...acc, ...t[0]];
+      }, []),
     ...testRandomValues
-      .reduce((acc: string[], n: number) => [...acc, ...testRow(randomArray(n))], []),
+      .reduce((acc: string[], n: number): string[] => {
+        const t = testRow(randomArray(n))
+        if (t[1].length > 0 && t[1][0] !== "") {
+          errorsArray = [
+            ...errorsArray,
+            ...t[1].map(error => "<p style='color=red;text-align:center;'" + error + "</p>"),
+            "<hr/>"
+          ]
+        }
+        
+        return [...acc, ...t[0]];
+      }, []),
   ];
 
   const stringArray = [
@@ -71,7 +105,7 @@ export default function testFactorization(): string[] {
     "<th style='text-align: left; width: 80px;'>Result</th>",
     "</tr>",
     "<tr>",
-    "<td style=''>" + totalTests + "</td>",
+    "<td style=''>" + testsCount + "</td>",
     "<td style=''>-</td>",
     "<td style=''>-</td>",
     "<td style=''>-</td>",
@@ -83,6 +117,7 @@ export default function testFactorization(): string[] {
     "</tr>",
     "</tr></tbody></table>",
     "<hr/>",
+    ...errorsArray.slice(0, 1000),
     "<p style='text-align: center;'><b>Tested the following factorization algorithms</b></p>",
     "<p style='text-align: center;'>Brute force for factors up to 10**7</p>",
     "<p style='text-align: center;'>Brent algorithm for factors up to 10**11</p>",
@@ -93,7 +128,7 @@ export default function testFactorization(): string[] {
 }
 let c = 0
 
-function testRow(testValuesArray: bigint[]): string[] {
+function testRow(testValuesArray: bigint[]): string[][] {
   c++
   console.log("Test " + c + " from " + totalTests)
   const startX = getTimeMicro()
@@ -196,8 +231,11 @@ function testRow(testValuesArray: bigint[]): string[] {
 
   const testCountSort = testCount.toString()[0] + "E" + (testCount.toString().length - 1)
   
+  const error = testFactorizationArray.filter(test => !test.passed).map(test => test.error).join(". ")
+
   const maxFactorizationTime = testFactorizationArray.reduce((acc, test) => Math.max(acc, test.time), 0)
   const minFactorizationTime = testFactorizationArray.reduce((acc, test) => Math.min(acc, test.time), Infinity)
+
 
   const stringArray = [
     "<tr>",
@@ -209,9 +247,9 @@ function testRow(testValuesArray: bigint[]): string[] {
     "<td style=''>" + duration(maxFactorizationTime) + "</td>",
     "<td style=''>" + duration(minFactorizationTime) + "</td>",
     "<td style=''>" + duration(testFactorizationTime) + "</td>",
-    "<td style='text-align: center;color:white;" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testCount)) + "</td>",
+    "<td title='" + error + "' style='text-align: center;color:white;" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testCount)) + "</td>",
     "</tr>"
   ]
 
-  return stringArray;
+  return [stringArray, error.split(". ")];
 }
