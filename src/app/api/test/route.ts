@@ -19,11 +19,14 @@ export async function GET(request: Request): Promise<Response> {
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
     const start = getTimeMicro()
+    
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
 
     const local = KEY == "111111"
+
+    // Duration of the tests: local 10m, !local 33h.
 
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",

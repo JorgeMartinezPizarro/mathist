@@ -24,22 +24,23 @@ interface TestReport {
 
 export default function testSieve(local: boolean = true): string[] {
   const start = getTimeMicro();
-  // tests in around 20 minutes
     // STEP 1: define values to test
     // ==============================
     
     // if !local, tests takes 33 extra hours. use it on a server
     const testValues = local
-      ? [10**6, 10**7, 10**8, 10**9]
-      : [10**6, 10**7, 10**8, 10**9, 2*10**9, 4*10**9, 10**10, 10**11, 10**12, 10**13]
+      ? [10**6, 10**7, 10**8, 10**9, 2**32]
+      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12, 10**13]
 
+    
+    // TODO: group following 1500 tests into suites.
     const testLastValues: bigint[] = [
       ...local 
-        ? [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15)]
-        : [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18), BigInt(416)*BigInt(10**16)]
+        ? [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(2)**BigInt(62)]
+        : [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(2)**BigInt(62), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18), BigInt(2)**BigInt(62)]
       ,
       ...local
-        ? [BigInt(10**10)]
+        ? []
         : new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
@@ -82,10 +83,10 @@ export default function testSieve(local: boolean = true): string[] {
 
     const failedTests = countFailedTests(testArray)
     
-    
-
     const testArrayToDisplay = [
-      ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(-20).reverse(),
+      ...testArray.filter(test => !test.passed).sort((test1, test2) => test1.time - test2.time).reverse(),
+      ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(-10).reverse(),
+      ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(0, 10).reverse(),
     ]
 
     // STEP 3: create the test report
@@ -107,7 +108,7 @@ export default function testSieve(local: boolean = true): string[] {
         duration(test.BFTime) + 
       "</td><td>" + 
         duration(test.time) + 
-      "</td><td title='" + test.error + "' style='text-align: center;color: white;" + (test.passed ? "background: green;" : "background: red;") + "'>" +
+      "</td><td style='text-align: center;color: white;" + (test.passed ? "background: green;" : "background: red;") + "'>" +
         (test.passed ? "Passed" : "Failed") + 
       "</td></tr>"
     )
@@ -129,12 +130,12 @@ export default function testSieve(local: boolean = true): string[] {
 
     const stringArray = [
       "<table style='width: 850px;margin: 0 auto;'><thead>" + 
-      "<tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'># primes</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr>" + 
+      "<tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'># Primes</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr>" + 
       "</thead><tbody>",
       ...testRows,
       "<tr><td>" + (testArray.length - testRows.length) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
-      "<tr><th style='text-align: left;'># tests</th><th style='text-align: left;'># primes</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr>" + 
-      "<tr><td>" + testArray.length + "</td><td>" + totalCount + "</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td  style='text-align:center;color:white;" + (failedTests === 0 ? "background: green;" : "background: red;") + "'>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
+      "<tr><th style='text-align: left;'># Tests</th><th style='text-align: left;'>-</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr>" + 
+      "<tr><td>" + testArray.length + "</td><td>-</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td  style='text-align:center;color:white;" + (failedTests === 0 ? "background: green;" : "background: red;") + "'>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
       "</tbody></table>",
       "<hr/>",
       ...errorTests,
@@ -152,10 +153,12 @@ export default function testSieve(local: boolean = true): string[] {
 
 const checkLastGeneratedPrimes = (number: bigint): TestReport => {
   const start = getTimeMicro();
-  const sort = number.toString()[0] + "E" + (number.toString().length - 1)
+  let sort = number.toString()[0] + "E" + (number.toString().length - 1)
+  sort = "<span title='" + number + "'>" + sort+ "</span>";
+
   const stringArray: string[] = []
   let failed = false
-  let sr: SieveReport | false = false
+  let sr, bf: SieveReport | false = false
   try {
     sr = lastTenGenerated(number)
     
@@ -176,7 +179,7 @@ const checkLastGeneratedPrimes = (number: bigint): TestReport => {
     ESTime: 0,
     GSTime: 0,
     PSTime: 0,
-    name: "<span title='" + number + "'>BF to " + sort+ "</span>",
+    name: "BF to " + sort,
     passed: !failed,
     time: getTimeMicro() - start,
     count: sr && sr.length||0,
@@ -186,19 +189,27 @@ const checkLastGeneratedPrimes = (number: bigint): TestReport => {
 const checkLastPrimes = (number: bigint): TestReport => {
 
   const start = getTimeMicro();
-  const sort = number.toString()[0] + "E" + (number.toString().length - 1)
+  let sort = number.toString()[0] + "E" + (number.toString().length - 1)
+  sort = "<span title='" + number + "'>" + sort+ "</span>";
   const stringArray: string[] = []
   let failed = false
-  let sr: SieveReport | false = false
+  let sr, bf: SieveReport | false = false
 
   try {
     sr = lastTenEratosthenes(number)
+    bf = lastTenGenerated(number)
     sr.primes.forEach(p => {
       if (!isProbablePrime(p)) {
         stringArray.push("The generated number " + p + " is not prime!")
         failed = true
       }
     })
+    if (!arrayEquals(sr.primes, bf.primes)) {
+      failed = true
+      stringArray.push("Primes generated are not the same " + sort + "")
+      stringArray.push("BF: " +  bf.primes.join(", "))
+      stringArray.push("PS: " +  sr.primes.join(", "))
+    }
     if (sr.primes.length !== 10) {
         stringArray.push("Failed to generate 10 primes at checkLastPrimes(" + sort + ")")
         failed = true
@@ -211,12 +222,12 @@ const checkLastPrimes = (number: bigint): TestReport => {
 
   return {
     error: stringArray.join(". "),
-    BFTime: 0,
+    BFTime: bf && bf.time||0,
     SSTime: 0,
     ESTime: 0,
     GSTime: 0,
     PSTime: sr && sr.time||0,
-    name: "<span title='" + number + "'>PS to " + sort+ "</span>",
+    name: "PS to " + sort,
     passed: !failed,
     time: getTimeMicro() - start,
     count: sr && sr.length||0,
@@ -226,7 +237,8 @@ const checkLastPrimes = (number: bigint): TestReport => {
 const checkPrimeCounts = (n: number): TestReport => {
   
   // Needed to increase the cache from 512KB to 10MB for 10**13
-  const sort = n.toString()[0] + "E" + (n.toString().length - 1)
+  let sort = n.toString()[0] + "E" + (n.toString().length - 1)
+  sort = "<span title='" + n + "'>" + sort+ "</span>";
   const stringArray: string[] = []
   const cache = 1024**2 * 2**4
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
@@ -294,7 +306,7 @@ const checkPrimeCounts = (n: number): TestReport => {
     ESTime: ce && ce.time||0,
     GSTime: c && c.time||0,
     PSTime: lp && lp.time||0,
-    name: "<span title='" + n + "'>All algorithms to " + sort+ "</span>",
+    name: "All algorithms to " + sort,
     passed: !failed,
     time: getTimeMicro() - start,
     count: c && c.length||0

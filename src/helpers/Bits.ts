@@ -1,66 +1,7 @@
 import { MAX_ALLOCATABLE_ARRAY, MAX_SUPPORTED_SIEVE_LENGTH } from "@/Constants";
-import errorMessage from "@/helpers/errorMessage";
-import toHuman from "@/helpers/toHuman";
-
-// Up to 515b, it requires 58GB RAM
-export const MAX_COLUMNS = MAX_ALLOCATABLE_ARRAY            // 2.1b columns
-export const MAX_ROWS = 250;                                // 250 rows
-// TODO: make it efficient instead of looping use mod to compute position
-export default class Bits {
-  private array: BitView[] = new Array(0)
-  public length: number = 0
-  private row: number = 0
-  constructor(length: number) {
-    this.length = length
-    const array = new Array(0)
-    let count = 0
-    if (length > MAX_SUPPORTED_SIEVE_LENGTH) {
-      throw new Error("Value for Bits " + MAX_SUPPORTED_SIEVE_LENGTH)
-    }
-    try {
-      for (var i = MAX_ROWS - 1; i >= 0; i--) {
-        if (length > i * MAX_COLUMNS) {
-          count++
-          array.push(new BitView(MAX_COLUMNS))
-        }
-      }
-    } catch (error) {
-      // use toHuman to show up what this sizes means
-      throw new Error("Bits(" + length + ") fails allocating " + toHuman(count * MAX_COLUMNS / 8) + " of "  + toHuman(length / 8) + " RAM, " + errorMessage(error))
-    }
-    
-    this.array = array
-    this.row = this.array.length
-  }
-  get(n: number): boolean {
-    if (n >= this.length) {
-      throw new Error("Out of founds Bits.get(" + n + ")")
-    }
-    for (var i = this.row; i >= 0; i--){
-      if (n > i * MAX_COLUMNS) {
-        return this.array[i].getBit(n - i * MAX_COLUMNS) === 1;
-      }
-    }
-    return false;
-  }
-  set(n: number, j: boolean){
-    if (n >= this.length) {
-      throw new Error("Out of founds Bits.set(" + n + ", " + j + " )")
-    }
-    for (var i = this.row; i >= 0; i--){ 
-      if (n > i * MAX_COLUMNS) {
-        this.array[i].setBit(n - i * MAX_COLUMNS, j)
-        break;
-      }
-    }
-  }
-  toString() {
-    return this.array.toString()
-  }
-}
 
 // Works up to 2.1b
-export class BitView {
+export default class Bits {
   buffer: ArrayBuffer
   u8: Uint8Array
   constructor(length: number) {

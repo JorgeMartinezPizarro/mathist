@@ -12,20 +12,20 @@ interface TestRandomReport {
   passed: boolean;
   error: string;
   tries: number;
+  name: string;
 }
 
 let totalTests = 0
 
 export default function testRandom(local: boolean): string[] {
     const randomTestSize = local 
-      ? 10**2
+      ? 10**3
       : 10**4
     const start = getTimeMicro();
     
     
     // STEP 1: vales to evaluate
     // ==============================
-    // tests in around 25m
     
     const elapsed = getTimeMicro()
 
@@ -34,7 +34,9 @@ export default function testRandom(local: boolean): string[] {
     // STEP 2: run the reports and generate the html
     // ==============================
 
-    const testRandomValues = [1, 2, 5, 10, 50, 100, 200, 400]
+    const testRandomValues = local
+      ? [1, 2, 5, 10, 50, 100, 200]
+      : [1, 2, 5, 10, 50, 100, 200, 400, 600]
     
     totalTests = testRandomValues.length
 
@@ -59,24 +61,24 @@ export default function testRandom(local: boolean): string[] {
     const stringArray = [
       "<table style='width: 670px;margin: 0 auto;'><thead>",
       "<tr>",
-      "<th style='text-align:left'># primes</th>",
+      "<th style='text-align:left'># Tests</th>",
       "<th style='text-align:left'>Prime length</th>",
       "<th style='text-align:left'>Prime %</th>",
-      "<th style='text-align:left'># tries</th>",
-      "<th style='text-align:left'>avg time</th>",
+      "<th style='text-align:left'># Tries</th>",
+      "<th style='text-align:left'>Avg time</th>",
       "<th style='text-align:left'>Total time</th>",
       "<th style='text-align: left; width: 80px;'>-</th>",
       "</tr>",
       "</thead><tbody><tr>",
       ...testRows,
       "<tr>",
-      "<th style='text-align:left'># primes</th>",
+      "<th style='text-align:left'># Tests</th>",
       "<th style='text-align:left'>-</th>",
       "<th style='text-align:left'>-</th>",
       "<th style='text-align:left'>-</th>",
-      "<th style='text-align:left'>avg time</th>",
+      "<th style='text-align:left'>Avg time</th>",
       "<th style='text-align:left'>Total time</th>",
-      "<th style='text-align: left; width: 80px;'>Result</th>",
+      "<th style='text-align: left; width: 80px;'>-</th>",
       "</tr>",
       "<tr>",
       "<td style=''>" + randomTestCount + "</td>",
@@ -85,13 +87,14 @@ export default function testRandom(local: boolean): string[] {
       "<td style=''>-</td>",
       "<td style=''>" + duration(Math.round((getTimeMicro() - elapsed)/randomTestCount)) + "</td>",
       "<td style=''>" + duration(getTimeMicro() - elapsed) + "</td>",
+      "<td style=''>-</td>",
       "</tr>",
       "</tr></tbody></table>",
       "<hr/>",
       ...errorsArray.slice(0, 1000),
       "<p style='text-align: center;'><b>Used the following primaly algorithms</b></p>",
-      "<p style='text-align: center;'>Find factors for factors up to 1E23</p>",
-      "<p style='text-align: center;'>Miller-Rabin and Baillie probabilistic primaly test</p>",
+      "<p style='text-align: center;'>Find factors for values up to 1E23</p>",
+      "<p style='text-align: center;'>Miller-Rabin and Baillie probabilistic primaly test up to 1E3000</p>",
       "<hr/>",
     ]
 
@@ -116,7 +119,8 @@ function testRow(testValuesArray: number[]): string[][] {
     process.stdout.write("Randomized: " + percent(BigInt(Math.round(count)), BigInt(Math.round(maxCount))) + " in " + duration(getTimeMicro() - startX)+ "         ")
     count++
     const number = BigInt(n)
-    const sort = number.toString()[0] + "E" + (BigInt(number).toString().length - 1)
+    let sort = number.toString()[0] + "E" + (BigInt(number).toString().length - 1)
+    sort = "<span title='" + number + "'>" + sort+ "</span>";
     const start = getTimeMicro()
     let error = "";
     let failed = false;
@@ -133,6 +137,7 @@ function testRow(testValuesArray: number[]): string[][] {
     }
     
     return {
+      name: "Prime of length " + n,
       error,
       passed: !failed,
       time: getTimeMicro() - start,

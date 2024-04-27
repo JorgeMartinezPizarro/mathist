@@ -36,23 +36,22 @@ export default function testFactorization(local: boolean): string[] {
   // ==============================
 
   const testFullValues = local  
-    ? [1, 2, 3]
+    ? [1, 2, 3, 4]
     : [1, 2, 3, 4, 5, 6]
 
   const testRandomValues = local
-    ? new Array(20).fill(0).map((e, i) => i + 4) // 4 to 23
+    ? new Array(19).fill(0).map((e, i) => i + 5) // 4 to 23
     : new Array(19).fill(0).map((e, i) => i + 7) // 7 to 25
 
-  // tests in around 25 m
   totalTests = testFullValues.length + testRandomValues.length
 
-  const testsCount = totalTests * randomTestSize
+  const testsCount = testFullValues.reduce((acc, val) => acc + 10**val, 0) + randomTestSize * testRandomValues.length
 
   let errorsArray: string[] = []
   const testRows: string[] = [
     ...testFullValues
       .reduce((acc: string[], n: number): string[] => {
-        const t = testRow(fullArray(n))
+        const t = testRow(fullArray(n), n)
         if (t[1].length > 0 && t[1][0] !== "") {
           errorsArray = [
             ...errorsArray,
@@ -65,7 +64,7 @@ export default function testFactorization(local: boolean): string[] {
       }, []),
     ...testRandomValues
       .reduce((acc: string[], n: number): string[] => {
-        const t = testRow(randomArray(n))
+        const t = testRow(randomArray(n), n)
         if (t[1].length > 0 && t[1][0] !== "") {
           errorsArray = [
             ...errorsArray,
@@ -82,12 +81,12 @@ export default function testFactorization(local: boolean): string[] {
     "<table style='width: 970px;margin: 0 auto;'><thead>",
     "<tr>",
     "<th style='text-align:left'># Tests</th>",
-    "<th style='text-align:left'>max value</th>",
-    "<th style='text-align:left'># factors avg</th>",
-    "<th style='text-align:left'>factors length avg</th>",
-    "<th style='text-align:left'>avg Time</th>",
-    "<th style='text-align:left'>max time</th>",
-    "<th style='text-align:left'>min time</th>",
+    "<th style='text-align:left'>Max value</th>",
+    "<th style='text-align:left'># Factors avg</th>",
+    "<th style='text-align:left'>Factors length avg</th>",
+    "<th style='text-align:left'>Avg Time</th>",
+    "<th style='text-align:left'>Min time</th>",
+    "<th style='text-align:left'>Max time</th>",
     "<th style='text-align:left'>Total time</th>",
     "<th style='text-align: left; width: 80px;'>Result</th>",
     "</tr>",
@@ -128,7 +127,7 @@ export default function testFactorization(local: boolean): string[] {
 }
 let c = 0
 
-function testRow(testValuesArray: bigint[]): string[][] {
+function testRow(testValuesArray: bigint[], n: number): string[][] {
   c++
   console.log("Test " + c + " from " + totalTests)
   const startX = getTimeMicro()
@@ -144,7 +143,8 @@ function testRow(testValuesArray: bigint[]): string[][] {
     process.stdout.write("Factorized: " + percent(BigInt(Math.round(count)), BigInt(Math.round(maxCount))) + " in " + duration(getTimeMicro() - startX)+ "         ")
     count++
     const number = BigInt(n)
-    const sort = number.toString()[0] + "E" + (BigInt(number).toString().length - 1)
+    let sort = number.toString()[0] + "E" + (BigInt(number).toString().length - 1)
+    sort = "<span title='" + number + "'>" + sort+ "</span>";
     const start = getTimeMicro()
     let error = "";
     let failed = false;
@@ -168,7 +168,7 @@ function testRow(testValuesArray: bigint[]): string[][] {
     
     return {
       time: getTimeMicro() - start,
-      name: "<span title='" + number + "'>Factorize " + sort + "</span>",
+      name: "Factorize " + sort,
       passed: !failed,
       error,
       factorsCount,
@@ -186,8 +186,6 @@ function testRow(testValuesArray: bigint[]): string[][] {
 
   const testFactorizationPassedCount = testFactorizationArray.reduce((acc: number, val: TestFactorReport): number => acc + (val.passed ? 1 : 0), 0)
 
-  const testFactorizationFailedCount = testFactorizationArray.reduce((acc: number, val: TestFactorReport): number => acc + (val.passed ? 0 : 1), 0)
-
   const testFactorizationTime = testFactorizationArray.reduce((acc: number, val: TestFactorReport): number => acc + val.time, 0)
 
   const testFactoritzationCount = testFactorizationArray.length
@@ -201,53 +199,32 @@ function testRow(testValuesArray: bigint[]): string[][] {
     return acc + val.factorsAvgLength;
   }, 0)
 
-  const maxPrimeFound = testFactorizationArray.reduce((acc, val) => {
-    return max(acc, val.factors.reduce((acc2, val2) => {
-      return max(acc2, val2.prime)
-    }, BigInt(0)))
-  }, BigInt(0))
-
-  const minPrimeFound = testFactorizationArray.reduce((acc, val) => {
-    return min(acc, val.factors.reduce((acc2, val2) => {
-      return min(acc2, val2.prime)
-    }, BigInt(10)**BigInt(100)))
-  }, BigInt(10)**BigInt(100))
-
-  const totalPrimesFound = testFactorizationPrimeCount
-
   const factorTestCount = testFactorizationArray.length;
 
   const totalTestAverageFactorsLength = factorsAvgLength / factorTestCount
 
-  const minValue = testValuesArray.reduce((acc, val) => min(acc, val), BigInt(10)**BigInt(100))
-
-  const minValueSort = "<span title='" + minValue + "'>" + minValue.toString()[0] + "E" + (minValue.toString().length - 1) + ""
-
-  const maxValue = testValuesArray.reduce((acc, val) => max(acc, val), BigInt(0))
+  const maxValue = BigInt(10)**BigInt(n)
 
   const maxValueSort = "<span title='" + maxValue + "'>" + maxValue.toString()[0] + "E" + (maxValue.toString().length - 1) + ""
 
   const testCount = testValuesArray.length
 
-  const testCountSort = testCount.toString()[0] + "E" + (testCount.toString().length - 1)
-  
   const error = testFactorizationArray.filter(test => !test.passed).map(test => test.error).join(". ")
 
   const maxFactorizationTime = testFactorizationArray.reduce((acc, test) => Math.max(acc, test.time), 0)
   const minFactorizationTime = testFactorizationArray.reduce((acc, test) => Math.min(acc, test.time), Infinity)
 
-
   const stringArray = [
     "<tr>",
-    "<td style=''>" + testCountSort + "</td>",
+    "<td style=''>" + testCount + "</td>",
     "<td style=''>" + maxValueSort + "</td>",
     "<td style=''>" + Math.round(testFactorizationPrimeCountAvg * 100) / 100 + "</td>",
     "<td style=''>" + Math.round(totalTestAverageFactorsLength * 100) / 100 + "</td>",
     "<td style=''>" + duration(Math.round(testFactorizationTime/testCount)) + "</td>",
-    "<td style=''>" + duration(maxFactorizationTime) + "</td>",
     "<td style=''>" + duration(minFactorizationTime) + "</td>",
+    "<td style=''>" + duration(maxFactorizationTime) + "</td>",
     "<td style=''>" + duration(testFactorizationTime) + "</td>",
-    "<td title='" + error + "' style='text-align: center;color:white;" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testCount)) + "</td>",
+    "<td style='text-align: center;color:white;" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testCount)) + "</td>",
     "</tr>"
   ]
 

@@ -8,7 +8,7 @@ import id from "@/helpers/id";
 import errorMessage from "@/helpers/errorMessage";
 import percent from "@/helpers/percent";
 import { SieveReport } from "@/types";
-import { BitView } from "@/helpers/Bits";
+import Bits from "@/helpers/Bits";
 import { sqrt } from "./math";
 import isProbablePrime from "./isProbablePrime";
 
@@ -34,8 +34,8 @@ function lastTenEratosthenes(LIMIT: bigint): SieveReport {
   }
 
   const high = LIMIT;
-  const t = BigInt(10**5)
-  // Up to 10**18, 10**5 ensure 10 primes
+  const t = BigInt(10**4)
+  // Up to 10**18, 10**4 ensure 10 primes
   const low = high > t ? high - t : BigInt(1)
 
   return segmentedEratosthenesPartial(low, high)
@@ -46,7 +46,7 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
   const start = getTimeMicro()
   const primesArray = new Array();
 
-  let bigNumber = LIMIT % two === zero ? LIMIT + one : LIMIT
+  let bigNumber = LIMIT % two === zero ? LIMIT - one : LIMIT
   
   process.stdout.write("\r");
   process.stdout.write("\r");
@@ -122,7 +122,7 @@ function classicEratosthenesIterator(n: number, callback: any): void {
     const startx = getTimeMicro()
 
     callback(2);
-
+    
     if (lastNumber === 2) {
       return;
     }
@@ -131,7 +131,7 @@ function classicEratosthenesIterator(n: number, callback: any): void {
         // Initialization
         const memorySize = Math.round(lastNumber / 2);
         const upperLimit = Math.round(Math.sqrt(lastNumber));
-        const sieve: BitView = new BitView(memorySize)
+        const sieve: Bits = new Bits(memorySize)
 
         process.stdout.write("\r");
         process.stdout.write("\r");
@@ -155,7 +155,6 @@ function classicEratosthenesIterator(n: number, callback: any): void {
         
         for (var i = 1; i< sieve.length();i++) {
           if (2*i+1 <=n && sieve.getBit(i) === 0) {
-            
             callback(2 * i + 1)
           }
         }
@@ -194,7 +193,7 @@ function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): S
 
 // Get part of the segmentedEratosthenes only
 function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: number = 10): SieveReport {
-  const maxSS = BigInt(MAX_ALLOCATABLE_ARRAY) ** two
+  const maxSS = MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH
   if (high > maxSS) {
     throw new Error("Max value for segmented sieve is " + maxSS)
   } else if (high - low > 10**6) {
@@ -217,7 +216,7 @@ function segmentedEratosthenesPartial(low: bigint, high: bigint, maxLength: numb
   for (let segment = 0; segment < numSegments; segment++) {
       const start = low + BigInt(segment) * BigInt(segmentSize);
       const end = low + BigInt(segment + 1) * BigInt(segmentSize);
-      const sieve: BitView = new BitView(segmentSize)
+      const sieve: Bits = new Bits(segmentSize)
       // Sieve the segment using primes from the base sieve
       for (const t of primesToRoot) {
           const p = BigInt(t)
