@@ -56,13 +56,6 @@ export default function testRandom(local: boolean): string[] {
         }, []),
     ];
 
-    /*const rowsPercentsExact = [1, 2, 5]
-      .map(printPercentPrimes)
-
-    const rowPercentsEstimated = [10, 50, 100, 200, 400]
-      .map(printPercentPrimesEstimated)
-    */
-
     const stringArray = [
       "<table style='width: 670px;margin: 0 auto;'><thead>",
       "<tr>",
@@ -72,15 +65,15 @@ export default function testRandom(local: boolean): string[] {
       "<th style='text-align:left'># tries</th>",
       "<th style='text-align:left'>avg time</th>",
       "<th style='text-align:left'>Total time</th>",
-      "<th style='text-align: left; width: 80px;'>Result</th>",
+      "<th style='text-align: left; width: 80px;'>-</th>",
       "</tr>",
       "</thead><tbody><tr>",
       ...testRows,
       "<tr>",
       "<th style='text-align:left'># primes</th>",
-      "<th style='text-align:left'>Prime length</th>",
-      "<th style='text-align:left'>Prime %</th>",
-      "<th style='text-align:left'># tries</th>",
+      "<th style='text-align:left'>-</th>",
+      "<th style='text-align:left'>-</th>",
+      "<th style='text-align:left'>-</th>",
       "<th style='text-align:left'>avg time</th>",
       "<th style='text-align:left'>Total time</th>",
       "<th style='text-align: left; width: 80px;'>Result</th>",
@@ -89,9 +82,9 @@ export default function testRandom(local: boolean): string[] {
       "<td style=''>" + randomTestCount + "</td>",
       "<td style=''>-</td>",
       "<td style=''>-</td>",
+      "<td style=''>-</td>",
       "<td style=''>" + duration(Math.round((getTimeMicro() - elapsed)/randomTestCount)) + "</td>",
       "<td style=''>" + duration(getTimeMicro() - elapsed) + "</td>",
-      "<td style=''>-</td>",
       "</tr>",
       "</tr></tbody></table>",
       "<hr/>",
