@@ -66,7 +66,6 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
   process.stdout.write("\r");
   process.stdout.write("BF: Sieved 100.000% in " + (duration(getTimeMicro() - start)) + "                 \n")
 
-
   return {
     primes: primesArray.reverse(),
     filename: "",
@@ -80,28 +79,30 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
 function segmentedEratosthenesIterator(n: number, callback: any): void {
   
   const startx = getTimeMicro()
-  const nsqrt = Math.floor(Math.sqrt(n));
-  const S = Math.min(1024 * 1024 * 16, nsqrt)
-  const firstPrimes = classicOrSegmentedEratosthenes(nsqrt + 1, nsqrt + 1).primes
+  const initialSieveSize = Math.floor(Math.sqrt(n));
+  const segmentSize = initialSieveSize
+  const firstPrimes = classicOrSegmentedEratosthenes(initialSieveSize + 1, initialSieveSize + 1).primes.map(prime => Number(prime))
   process.stdout.write("\r");
   process.stdout.write("\r");
   process.stdout.write("SS: Sieved   0.000% in " + (duration(getTimeMicro() - startx)) + "       ")
   
-  let bloque: boolean[] = Array(S).fill(true)
-  for (let k = 0; k * S <= n; k++) {
+  const bloque: boolean[] = new Array(segmentSize)
+
+  const segmentsNumber = n / segmentSize
+
+  for (let k = 0; k <= segmentsNumber; k++) {
       bloque.fill(true)
-      bloque.length = S;
-      const start = k * S;
+      const start = k * segmentSize;
       for (const p of firstPrimes) {
-          const startIdx = Math.max(Math.floor((start + Number(p) - 1) / Number(p)), Number(p)) * Number(p) - start;
-          for (let j = startIdx; j < S; j += Number(p))
+          const startIdx = Math.max(Math.floor((start + p - 1) / p), p) * p - start;
+          for (let j = startIdx; j < segmentSize; j += p)
               bloque[j] = false;
       }
       if (k === 0) {
           bloque[0] = false;
           bloque[1] = false;
       }
-      for (let i = 0; i < S && start + i <= n; i++) {
+      for (let i = 0; i < segmentSize && start + i <= n; i++) {
           if (bloque[i]) {
               callback(start + i)
           }
@@ -109,7 +110,7 @@ function segmentedEratosthenesIterator(n: number, callback: any): void {
 
       process.stdout.write("\r");
       process.stdout.write("\r");
-      process.stdout.write("SS: Sieved " + percent(BigInt(k), BigInt(n)/BigInt(S)) + " in " + (duration(getTimeMicro() - startx)) + "       ")
+      process.stdout.write("SS: Sieved " + percent(BigInt(k), BigInt(n)/BigInt(segmentSize)) + " in " + (duration(getTimeMicro() - startx)) + "       ")
   }
 
   process.stdout.write("\r");

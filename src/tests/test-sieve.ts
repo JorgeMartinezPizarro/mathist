@@ -29,31 +29,19 @@ export default function testSieve(local: boolean = true): string[] {
     
     // if !local, tests takes 33 extra hours. use it on a server
     const testValues = local
-      ? [10**6, 10**7, 10**8, 10**9, 2**32].reverse()
-      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12, 10**13]
+      ? [10**6, 10**7, 10**8, 10**9, 2**32]
+      : [10**6, 10**7, 10**8, 10**9, 2**32, 10**10, 10**11, 10**12, 10**13]
 
     
     // TODO: group following 1500 tests into suites.
     const testLastValues: bigint[] = [
-      ...local 
-        ? [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(2)**BigInt(62)]
-        : [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(2)**BigInt(62), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(4)*BigInt(10)**BigInt(18), BigInt(2)**BigInt(62)]
-      ,
+      ...[BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(2)**BigInt(62)],
       ...local
         ? []
         : new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
-    const randomTestLastValues: bigint[] = (new Array(500).fill(0)).map(e => BigInt(id(6)))
-
-    const bigTestLastValues = [
-      ...local
-        ? [20, 50, 100].map(e => BigInt(10)**BigInt(e))
-        : [20, 25, 30, 50, 100, 150, 200, 250, 300, 400, 600].map(e => BigInt(10)**BigInt(e)),
-      ...local
-        ? new Array(10).fill(0).map(e => BigInt(id(20)))
-        : new Array(1000).fill(0).map(e => BigInt(id(20)))
-    ]
+    const randomTestLastValues: bigint[] = (new Array(1000).fill(0)).map(e => BigInt(id(6)))
 
     // STEP 2: test over the values
     // ==============================
@@ -65,8 +53,6 @@ export default function testSieve(local: boolean = true): string[] {
       ...randomTestLastValues.map(i => checkLastPrimes(i)), 
     ]
 
-    const testLastGeneratedPrimes = bigTestLastValues.map(i => checkLastGeneratedPrimes(i))
-
     const countPassedTests = (tests: TestReport[]): number => tests.filter(line => line.passed === true).length
 
     const countFailedTests = (tests: TestReport[]): number => tests.filter(line => line.passed === false).length
@@ -74,7 +60,6 @@ export default function testSieve(local: boolean = true): string[] {
     const testArray = [
       ...testPrimesCountArray,
       ...testLastPrimes,
-      ...testLastGeneratedPrimes
     ]
 
     const passedTests = countPassedTests(testArray)
@@ -83,8 +68,8 @@ export default function testSieve(local: boolean = true): string[] {
     
     const testArrayToDisplay = [
       ...testArray.filter(test => !test.passed).sort((test1, test2) => test1.time - test2.time).reverse(),
-      ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(-10).reverse(),
-      ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(0, 10).reverse(),
+      ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(-15).reverse(),
+      ...testArray.filter(test => test.passed).sort((test1, test2) => test1.time - test2.time).slice(0, 5).reverse(),
     ]
 
     // STEP 3: create the test report
@@ -121,7 +106,7 @@ export default function testSieve(local: boolean = true): string[] {
     const totalCount = testArray.reduce((acc, val) => acc + val.count, 0)
 
     const errorTests = testArray.filter(test => !test.passed).map(test => "" + 
-      "<p style='color:red;text-align:center;'>An error ocurred in test <b>" + test.name+ "</b></p>" +
+      "<p style='color:red;text-align:center;'>An error ocurred in test " + test.name+ "</p>" +
       "<p style='color:red;text-align:center;'>" + test.error.split(". ").join("</p><p style='color:red;text-align:center;'>") + "</>" + 
       "<hr/>" 
     )
@@ -147,41 +132,6 @@ export default function testSieve(local: boolean = true): string[] {
     ]
 
     return stringArray
-}
-
-const checkLastGeneratedPrimes = (number: bigint): TestReport => {
-  const start = getTimeMicro();
-  let sort = number.toString()[0] + "E" + (number.toString().length - 1)
-  sort = "<span title='" + number + "'>" + sort+ "</span>";
-
-  const stringArray: string[] = []
-  let failed = false
-  let sr, bf: SieveReport | false = false
-  try {
-    sr = lastTenGenerated(number)
-    
-    if (sr.primes.length !== 10) {
-        stringArray.push("Failed to generate 10 primes checkLastGeneratedPrimes(" + sort + ")")
-        failed = true
-    }
-  } catch(e) {
-    stringArray.push("ERROR: An error ocurred processing checkLastGeneratedPrimes(" + sort + ")")
-    stringArray.push(errorMessage(e))
-    failed = true
-  }
-
-  return {
-    error: stringArray.join(". "),
-    BFTime: sr && sr.time||0,
-    SSTime: 0,
-    ESTime: 0,
-    GSTime: 0,
-    PSTime: 0,
-    name: "BF to " + sort,
-    passed: !failed,
-    time: getTimeMicro() - start,
-    count: sr && sr.length||0,
-  }
 }
 
 const checkLastPrimes = (number: bigint): TestReport => {

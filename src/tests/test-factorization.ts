@@ -24,7 +24,7 @@ export default function testFactorization(local: boolean): string[] {
   
   const randomTestSize = local  
     ? 10**3
-    : 10**4
+    : 10**5
 
   const elapsed = getTimeMicro()
 
@@ -119,7 +119,7 @@ export default function testFactorization(local: boolean): string[] {
     ...errorsArray.slice(0, 1000),
     "<p style='text-align: center;'><b>Tested the following factorization algorithms</b></p>",
     "<p style='text-align: center;'>Brute force for factors up to 10**7</p>",
-    "<p style='text-align: center;'>Brent algorithm for factors up to 10**11</p>",
+    "<p style='text-align: center;'>Brent algorithm for factors up to 10**14</p>",
     "<hr/>",
   ]
   
@@ -151,6 +151,7 @@ function testRow(testValuesArray: bigint[], n: number): string[][] {
     let factorsCount = 0;
     let factorsLengthSum = 0;
     let factorsArray: PrimePower[] = []
+
     try {
       const f = factors(BigInt(number))
       factorsCount = f.factors.reduce((acc: number, val: PrimePower): number => {
