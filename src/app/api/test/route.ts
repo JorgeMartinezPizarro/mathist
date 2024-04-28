@@ -53,7 +53,7 @@ export async function GET(request: Request): Promise<Response> {
     
     fs.appendFileSync(filename, "</body></html>", 'utf8')
 
-    return Response.json( {time: getTimeMicro() - start, message: "test report generated under /files/report.html"} )
+    return Response.json( {time: getTimeMicro() - start, message: "test report generated under /files/test.html"} )
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }

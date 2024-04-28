@@ -1,4 +1,4 @@
-import { MAX_ALLOCATABLE_ARRAY, MAX_SUPPORTED_SIEVE_LENGTH } from "@/Constants";
+import { MAX_ALLOCATABLE_ARRAY } from "@/Constants";
 
 // Works up to 2.1b
 export default class Bits {

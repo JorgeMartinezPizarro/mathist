@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import { EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_CLASSIC_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH } from "@/Constants";
+import { EXCEL_MAX_COLS, EXCEL_MAX_ROWS, MAX_ALLOCATABLE_ARRAY, MAX_CLASSIC_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH, MAX_SUPPORTED_SIEVE_LENGTH } from "@/Constants";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import duration from "@/helpers/duration";
 import toHuman from "@/helpers/toHuman";
@@ -172,14 +172,18 @@ function classicEratosthenesIterator(n: number, callback: any): void {
 function segmentedEratosthenes(n: number, amount: number = MAX_DISPLAY_SIEVE): SieveReport {
   
   const start = getTimeMicro()
-  let result: number[] = []
+  let result: number[] = new Array()
   let resultado = 0;
 
   segmentedEratosthenesIterator(n, (prime: number) => {
     resultado++;
-    if (result.length > 2*amount)
-      result = result.slice(-amount)
-    result.push(prime)
+    try {
+      if (result.length === Math.max(10**7, amount))
+        result = result.slice(-amount)
+      result.push(prime)
+    } catch (e) {
+      throw new Error("Error pushing to primes array with length " + result.length + ", " + errorMessage(e))  
+    }
   })
   
   return {
@@ -270,6 +274,10 @@ function primesToExcel(LIMIT: number): SieveReport {
     throw new Error("Generated an empty file ...")
   }
 
+  if (LIMIT > MAX_SUPPORTED_SIEVE_LENGTH) {
+    throw new Error("That generates over 500GB primes, aborted.")
+  }
+
   const elapsed = getTimeMicro()
   const root = "./public/files/"
   const filename = "primes-to-" + LIMIT + "-hash-" + id(20) + ".csv"
@@ -336,21 +344,20 @@ function classicOrSegmentedEratosthenes(lastNumber: number, amountX: number = MA
     return {primes: [2], time: getTimeMicro() - elapsed, length: 1, filename: "", isPartial: false}
   } 
   
-  let arrayOfPrimes: number[] = Array()  
+  let arrayOfPrimes: number[] = new Array()
   let numberOfPrimes = 0
-  let e = getTimeMicro()
-
+  
   const primesIterator = lastNumber > MAX_CLASSIC_SIEVE_LENGTH ? segmentedEratosthenesIterator : classicEratosthenesIterator
   
   primesIterator(lastNumber, (p: number) => {
     try {
-      if (arrayOfPrimes.length > 2*amount) {
+      if (arrayOfPrimes.length === Math.max(10**7, amount)) {
         arrayOfPrimes = arrayOfPrimes.slice(-amount)
       }
       arrayOfPrimes.push(p)
       numberOfPrimes++
     } catch (e) {
-      "Error push " + arrayOfPrimes.length + "-th time in array at primes below " + lastNumber + " last prime generated is " + p + ". " + errorMessage(e)
+      throw new Error("Error push " + arrayOfPrimes.length + "-th time in array at primes below " + lastNumber + " last prime generated is " + p + ". " + errorMessage(e))
     }
   })
 
@@ -359,4 +366,4 @@ function classicOrSegmentedEratosthenes(lastNumber: number, amountX: number = MA
 
 export default eratosthenes;
 
-export { lastTenGenerated, lastTenEratosthenes, segmentedEratosthenes, classicOrSegmentedEratosthenes, classicEratosthenesIterator, segmentedEratosthenesIterator }
+export { lastTenGenerated, lastTenEratosthenes, segmentedEratosthenes, classicOrSegmentedEratosthenes }

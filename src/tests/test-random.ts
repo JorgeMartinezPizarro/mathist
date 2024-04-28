@@ -35,8 +35,8 @@ export default function testRandom(local: boolean): string[] {
     // ==============================
 
     const testRandomValues = local
-      ? [1, 2, 5, 10, 50, 100, 200]
-      : [1, 2, 5, 10, 50, 100, 200, 400, 600]
+      ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 200]
+      : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 200, 400, 600]
     
     totalTests = testRandomValues.length
 
@@ -67,7 +67,7 @@ export default function testRandom(local: boolean): string[] {
       "<th style='text-align:left'># Tries</th>",
       "<th style='text-align:left'>Avg time</th>",
       "<th style='text-align:left'>Total time</th>",
-      "<th style='text-align: left; width: 80px;'>-</th>",
+      "<th style='text-align: left; width: 80px;'>Result</th>",
       "</tr>",
       "</thead><tbody><tr>",
       ...testRows,
