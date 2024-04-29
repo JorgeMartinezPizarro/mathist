@@ -118,8 +118,8 @@ export default function testFactorization(local: boolean): string[] {
     "<hr/>",
     ...errorsArray.slice(0, 1000),
     "<p style='text-align: center;'><b>Tested the following factorization algorithms</b></p>",
-    "<p style='text-align: center;'>Brute force for factors up to 10**7</p>",
-    "<p style='text-align: center;'>Brent algorithm for factors up to 10**14</p>",
+    "<p style='text-align: center;'>Wheel divison for factors up to 1E7</p>",
+    "<p style='text-align: center;'>Brent algorithm for factors up to 1E13</p>",
     "<hr/>",
   ]
   

@@ -26,7 +26,7 @@ export async function GET(request: Request): Promise<Response> {
 
     const local = KEY == "111111"
 
-    // Duration of the tests: local 10m, !local 33h.
+    // Duration of the tests: local 10m, !local 40h.
 
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",

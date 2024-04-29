@@ -29,7 +29,7 @@ export default function testSieve(local: boolean = true): string[] {
     
     // if !local, tests takes 33 extra hours. use it on a server
     const testValues = local
-      ? [10**6, 10**7, 10**8, 10**9, 2**32]
+      ? [10**6, 10**7, 10**8, 10**9, 2**32, 10**10]
       : [10**6, 10**7, 10**8, 10**9, 2**32, 10**10, 10**11, 10**12, 10**13]
 
     
@@ -41,7 +41,7 @@ export default function testSieve(local: boolean = true): string[] {
         : new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
-    const randomTestLastValues: bigint[] = (new Array(1000).fill(0)).map(e => BigInt(id(6)))
+    const randomTestLastValues: bigint[] = (new Array(30000).fill(0)).map(e => BigInt(id(7)))
 
     // STEP 2: test over the values
     // ==============================

@@ -79,7 +79,7 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
 function segmentedEratosthenesIterator(n: number, callback: any): void {
   
   const startx = getTimeMicro()
-  const initialSieveSize = Math.floor(Math.sqrt(n));
+  const initialSieveSize = 10**8//Math.floor(Math.sqrt(n));
   const segmentSize = initialSieveSize
   const firstPrimes = classicOrSegmentedEratosthenes(initialSieveSize + 1, initialSieveSize + 1).primes.map(prime => Number(prime))
   process.stdout.write("\r");
