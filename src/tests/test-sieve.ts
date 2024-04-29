@@ -53,18 +53,14 @@ export default function testSieve(local: boolean = true): string[] {
       ...randomTestLastValues.map(i => checkLastPrimes(i)), 
     ]
 
-    const countPassedTests = (tests: TestReport[]): number => tests.filter(line => line.passed === true).length
-
-    const countFailedTests = (tests: TestReport[]): number => tests.filter(line => line.passed === false).length
-    
     const testArray = [
       ...testPrimesCountArray,
       ...testLastPrimes,
     ]
 
-    const passedTests = countPassedTests(testArray)
+    const passedTests = testArray.filter(line => line.passed === true).length
 
-    const failedTests = countFailedTests(testArray)
+    const failedTests = testArray.filter(line => line.passed === false).length
     
     const testArrayToDisplay = [
       ...testArray.filter(test => !test.passed).sort((test1, test2) => test1.time - test2.time).reverse(),
@@ -112,16 +108,16 @@ export default function testSieve(local: boolean = true): string[] {
     )
 
     const stringArray = [
-      "<table style='width: 850px;margin: 0 auto;'><thead>" + 
+      "<table style='width: 910px;margin: 0 auto;'><thead>" + 
       "<tr><th style='text-align: left;'>Test name</th><th style='text-align: left;'># Primes</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr>" + 
       "</thead><tbody>",
       ...testRows,
-      "<tr><td>" + (testArray.length - testRows.length) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
+      "<tr><td>" + (testArray.length - testRows.length) + " more</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>",
       "<tr><th style='text-align: left;'># Tests</th><th style='text-align: left;'>-</th><th style='text-align: left;'>SS time</th><th style='text-align: left;'>ES time</th><th style='text-align: left;'>GS time</th><th style='text-align: left;'>PS time</th><th style='text-align: left;'>BF time</th><th style='text-align: left;'>Total time</th><th style='text-align: left; width: 80px;'>Result</th></tr>" + 
       "<tr><td>" + testArray.length + "</td><td>-</td><td>" + SSTime + "</td><td>" + ESTime + "</td><td>" + GSTime + "</td><td>" + PSTime + "</td><td>" + BFTime + "</td><td>" + time + "</td><td  style='text-align:center;color:white;" + (failedTests === 0 ? "background: green;" : "background: red;") + "'>" + percent(BigInt(passedTests), BigInt(passedTests + failedTests)) + "</td>",
       "</tbody></table>",
       "<hr/>",
-      ...errorTests,
+      ...errorTests.slice(0, 1000),
       "<p style='text-align: center;'><b>Tested the following prime algorithms</b></p>",
       "<p style='text-align: center;'>SS: Segmented Sieve</p>",
       "<p style='text-align: center;'>ES: Eratosthenes' Sieve</p>",
@@ -146,20 +142,15 @@ const checkLastPrimes = (number: bigint): TestReport => {
   try {
     sr = lastTenEratosthenes(number)
     bf = lastTenGenerated(number)
-    sr.primes.forEach(p => {
-      if (!isProbablePrime(p)) {
-        stringArray.push("The generated number " + p + " is not prime!")
-        failed = true
-      }
-    })
     if (!arrayEquals(sr.primes, bf.primes)) {
       failed = true
       stringArray.push("Primes generated are not the same " + sort + "")
       stringArray.push("BF: " +  bf.primes.join(", "))
       stringArray.push("PS: " +  sr.primes.join(", "))
     }
-    if (sr.primes.length !== 10) {
-        stringArray.push("Failed to generate 10 primes at checkLastPrimes(" + sort + ")")
+    if (sr.primes.length !== bf.primes.length) {
+        stringArray.push("Failed to generate primes at checkLastPrimes(" + sort + ")")
+        stringArray.push("BF: " +  bf.primes.length + " !== PS: " + sr.primes.length)
         failed = true
     }
   } catch(e) {
@@ -188,7 +179,7 @@ const checkPrimeCounts = (n: number): TestReport => {
   let sort = n.toString()[0] + "E" + (n.toString().length - 1)
   sort = "<span title='" + n + "'>" + sort+ "</span>";
   const stringArray: string[] = []
-  const cache = 1024**2 * 2**4
+  const cache = Math.max(Math.sqrt(n), 1024*512)
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   const start = getTimeMicro()
   let failed = false;
@@ -197,7 +188,7 @@ const checkPrimeCounts = (n: number): TestReport => {
   let se: SieveReport | false = false
   let lp: SieveReport | false = false
   let bf: SieveReport | false = false
-
+  
   try {
     
     const limit = n

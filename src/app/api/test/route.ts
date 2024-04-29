@@ -26,7 +26,7 @@ export async function GET(request: Request): Promise<Response> {
 
     const local = KEY == "111111"
 
-    // Duration of the tests: local 10m, !local 40h.
+    // Duration of the tests: local 12m, !local 42h.
 
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
@@ -47,7 +47,7 @@ export async function GET(request: Request): Promise<Response> {
     
     const filename = "./public/files/test.html"
     
-    fs.writeFileSync(filename, '<html><head><style>hr {height: 1px;background-color: #1976d2!important;border: none;margin: 16px!important;} b, th, h3 {color: #1976d2;}</style><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')
+    fs.writeFileSync(filename, '<!DOCTYPE html><html><head><style>hr {height: 1px;background-color: #1976d2!important;border: none;margin: 16px!important;} b, th, h3 {color: #1976d2;}</style><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')
     stringArray.forEach(string => 
       fs.appendFileSync(filename, string, 'utf8')
     );

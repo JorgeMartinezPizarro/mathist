@@ -33,12 +33,10 @@ function lastTenEratosthenes(LIMIT: bigint): SieveReport {
     throw new Error("lastTenEratosthenes can be run with a max value of " + MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH)
   }
 
-  const high = LIMIT;
-  const t = BigInt(10**4)
-  // Up to 10**18, 10**4 ensure 10 primes
-  const low = high > t ? high - t : BigInt(1)
-
-  return segmentedEratosthenesPartial(low, high)
+  if (LIMIT < 10**6)
+    return segmentedEratosthenes(Number(LIMIT), 10)
+  else 
+    return segmentedEratosthenesPartial(LIMIT - BigInt(10**4), LIMIT)
 }
 
 function lastTenGenerated(LIMIT: bigint): SieveReport {
@@ -52,7 +50,7 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
   process.stdout.write("\r");
   process.stdout.write("BF: Sieved   0.000% in " + (duration(getTimeMicro() - start)) + "       ")
 
-  while (primesArray.length < 10) {
+  while (primesArray.length < 10 && bigNumber > BigInt(3)) {
     if (isProbablePrime(bigNumber)) {
       primesArray.push(bigNumber)
       process.stdout.write("\r");
@@ -79,7 +77,9 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
 function segmentedEratosthenesIterator(n: number, callback: any): void {
   
   const startx = getTimeMicro()
-  const initialSieveSize = Math.round(Math.sqrt(n)) * 10
+
+  const nsqrt = Math.floor(Math.sqrt(n));
+  const initialSieveSize = nsqrt
   const segmentSize = initialSieveSize
   const firstPrimes = classicOrSegmentedEratosthenes(initialSieveSize + 1, initialSieveSize + 1).primes.map(prime => Number(prime))
   process.stdout.write("\r");
@@ -88,7 +88,7 @@ function segmentedEratosthenesIterator(n: number, callback: any): void {
   
   const bloque: boolean[] = new Array(segmentSize)
 
-  const segmentsNumber = n / segmentSize
+  const segmentsNumber = Math.round(n / segmentSize)
 
   for (let k = 0; k <= segmentsNumber; k++) {
       bloque.fill(true)
@@ -110,7 +110,7 @@ function segmentedEratosthenesIterator(n: number, callback: any): void {
 
       process.stdout.write("\r");
       process.stdout.write("\r");
-      process.stdout.write("SS: Sieved " + percent(BigInt(k), BigInt(n)/BigInt(segmentSize)) + " in " + (duration(getTimeMicro() - startx)) + "       ")
+      process.stdout.write("SS: Sieved " + percent(BigInt(k), BigInt(segmentsNumber)) + " in " + (duration(getTimeMicro() - startx)) + "       ")
   }
 
   process.stdout.write("\r");
