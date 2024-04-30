@@ -50,7 +50,7 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
   process.stdout.write("\r");
   process.stdout.write("BF: Sieved   0.000% in " + (duration(getTimeMicro() - start)) + "       ")
 
-  while (primesArray.length < 10 && bigNumber > BigInt(3)) {
+  while (primesArray.length < 10 && bigNumber >= BigInt(3)) {
     if (isProbablePrime(bigNumber)) {
       primesArray.push(bigNumber)
       process.stdout.write("\r");
@@ -60,6 +60,9 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
     bigNumber-=two
   }
 
+  if (primesArray.length < 10 && LIMIT >= BigInt(2))
+    primesArray.push(2)
+  
   process.stdout.write("\r");
   process.stdout.write("\r");
   process.stdout.write("BF: Sieved 100.000% in " + (duration(getTimeMicro() - start)) + "                 \n")
@@ -67,7 +70,7 @@ function lastTenGenerated(LIMIT: bigint): SieveReport {
   return {
     primes: primesArray.reverse(),
     filename: "",
-    length: 10,
+    length: primesArray.length,
     isPartial: true,
     time: getTimeMicro() - start,
   }
