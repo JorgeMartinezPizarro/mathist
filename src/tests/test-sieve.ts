@@ -1,11 +1,10 @@
-import { lastTenGenerated, segmentedEratosthenes, lastTenEratosthenes, classicOrSegmentedEratosthenes } from '@/helpers/eratosthenes'
+import { lastTenGenerated, lastTenEratosthenes, segmentedEratosthenes, classicOrSegmentedEratosthenes } from '@/helpers/eratosthenes'
 import errorMessage from '@/helpers/errorMessage'
 import countPrimes from "@/helpers/countPrimes"
 import duration from '@/helpers/duration'
 import percent from '@/helpers/percent'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import { MAX_CLASSIC_SIEVE_LENGTH } from '@/Constants'
-import isProbablePrime from '@/helpers/isProbablePrime'
 import id from '@/helpers/id'
 import { SieveReport } from '@/types'
 

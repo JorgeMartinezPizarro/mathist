@@ -121,7 +121,7 @@ function isPrimeForSure(n) {
 }
 
 function isProbablePrime(n) {
-	return isMillerRabinProbablePrime(n) && isBaillieProbablePrime
+	return isMillerRabinProbablePrime(n) && isBaillieProbablePrime(n)
 }
 
 export default isProbablePrime
