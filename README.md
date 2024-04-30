@@ -23,9 +23,11 @@ npm run start
 
 Open [localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Running in production will fail the `sieve` to `DOWNLOAD`, since `public/files` generated on the fly are not accessible, so we need `docker` to solve this issue.
+Running in production will fail the `sieve` to `DOWNLOAD`, since `public/files` generated on the fly are not accessible, so we need a webserver serving the `public/files` directory.
 
 ## Docker
+
+The easiest way to deploy the website is using `docker`.
 
 There is a version of mathist dockerized under [hub.docker.com](https://hub.docker.com/repository/docker/jorgemartinezpizarro/mathist).
 
@@ -81,6 +83,6 @@ server {
 }
 ```
 
-For this to work you need to set up a valid value for `YOUR_DOMAIN` and `VOLUME_PATH`.
+For this to work you need to set up a valid value for `YOUR_DOMAIN` and `VOLUME_PATH`. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
 
 To start the containers use `docker compose up -d`.

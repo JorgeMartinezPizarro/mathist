@@ -3,7 +3,6 @@
 import duration from "@/helpers/duration";
 import getTimeMicro from "@/helpers/getTimeMicro";
 import percent from "@/helpers/percent";
-import { SieveReport } from "@/types";
 
 const WHLPRMS = new Uint32Array([2,3,5,7,11,13,17,19]);
 const FRSTSVPRM = 23;
@@ -177,7 +176,7 @@ function fillSieveBuffer(lwi, sb) {
 // 10**14   20 hours
 // 10**15   200 hours
 //
-export default function countPrimes(LIMIT, cache = 1024*512) { 
+function doIt(LIMIT, cache = 1024*512) { 
   const separator = new Array(10).fill(" ").join("")
   
   if ((LIMIT < 0) || (LIMIT > 10**13)) { 
@@ -238,10 +237,6 @@ export default function countPrimes(LIMIT, cache = 1024*512) {
         process.stdout.write("\r");
         process.stdout.write("GS: Sieved " + percent(BigInt(Math.round(lwi)), BigInt(Math.round(lwilmt))) + " in " + duration(getTimeMicro() - startx)+ separator)
         pgfnc();
-      } else {
-        process.stdout.write("\r");
-        process.stdout.write("\r");
-        process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + separator + "\n")
       }
       
       const elpsdx = getTimeMicro() - startx;
@@ -265,4 +260,13 @@ export default function countPrimes(LIMIT, cache = 1024*512) {
     length: count,
     time: getTimeMicro() - startx
   }
+}
+
+export default function countPrimes(LIMIT, cache) {
+  const start = getTimeMicro()
+  const result = doIt(LIMIT, cache)
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - start) + "      \n")
+  return result;
 }

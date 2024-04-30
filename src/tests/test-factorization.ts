@@ -84,13 +84,13 @@ export default function testFactorization(local: boolean): string[] {
     "<th style='text-align:left'>Max value</th>",
     "<th style='text-align:left'># Factors avg</th>",
     "<th style='text-align:left'>Factors length avg</th>",
-    "<th style='text-align:left'>Avg Time</th>",
+    "<th style='text-align:left'>Avg time</th>",
     "<th style='text-align:left'>Min time</th>",
     "<th style='text-align:left'>Max time</th>",
     "<th style='text-align:left'>Total time</th>",
     "<th style='text-align: left; width: 80px;'>Result</th>",
     "</tr>",
-    "</thead><tbody><tr>",
+    "</thead><tbody>",
     ...testRows,
     "<tr>",
     "<th style='text-align:left'># Tests</th>",
@@ -144,7 +144,7 @@ function testRow(testValuesArray: bigint[], n: number): string[][] {
     count++
     const number = BigInt(n)
     let sort = number.toString()[0] + "E" + (BigInt(number).toString().length - 1)
-    sort = "<span title='" + number + "'>" + sort+ "</span>";
+    sort = "<span title='" + number + "'>" + sort + "</span>";
     const start = getTimeMicro()
     let error = "";
     let failed = false;

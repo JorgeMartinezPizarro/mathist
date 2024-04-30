@@ -59,24 +59,28 @@ export default function testRandom(local: boolean): string[] {
     ];
 
     const stringArray = [
-      "<table style='width: 670px;margin: 0 auto;'><thead>",
+      "<table style='width: 770px;margin: 0 auto;'><thead>",
       "<tr>",
       "<th style='text-align:left'># Tests</th>",
       "<th style='text-align:left'>Prime length</th>",
       "<th style='text-align:left'>Prime %</th>",
       "<th style='text-align:left'># Tries</th>",
       "<th style='text-align:left'>Avg time</th>",
+      "<th style='text-align:left'>Min time</th>",
+      "<th style='text-align:left'>Max time</th>",
       "<th style='text-align:left'>Total time</th>",
       "<th style='text-align: left; width: 80px;'>Result</th>",
       "</tr>",
-      "</thead><tbody><tr>",
+      "</thead><tbody>",
       ...testRows,
       "<tr>",
       "<th style='text-align:left'># Tests</th>",
       "<th style='text-align:left'>-</th>",
       "<th style='text-align:left'>-</th>",
       "<th style='text-align:left'>-</th>",
-      "<th style='text-align:left'>Avg time</th>",
+      "<th style='text-align:left'>-</th>",
+      "<th style='text-align:left'>-</th>",
+      "<th style='text-align:left'>-</th>",
       "<th style='text-align:left'>Total time</th>",
       "<th style='text-align: left; width: 80px;'>-</th>",
       "</tr>",
@@ -85,7 +89,9 @@ export default function testRandom(local: boolean): string[] {
       "<td style=''>-</td>",
       "<td style=''>-</td>",
       "<td style=''>-</td>",
-      "<td style=''>" + duration(Math.round((getTimeMicro() - elapsed)/randomTestCount)) + "</td>",
+      "<td style=''>-</td>",
+      "<td style=''>-</td>",
+      "<td style=''>-</td>",
       "<td style=''>" + duration(getTimeMicro() - elapsed) + "</td>",
       "<td style=''>-</td>",
       "</tr>",
@@ -94,7 +100,7 @@ export default function testRandom(local: boolean): string[] {
       ...errorsArray.slice(0, 1000),
       "<p style='text-align: center;'><b>Used the following primaly algorithms</b></p>",
       "<p style='text-align: center;'>Find factors for values up to 1E23</p>",
-      "<p style='text-align: center;'>Miller-Rabin and Baillie probabilistic primaly test up to 1E600</p>",
+      "<p style='text-align: center;'>Miller-Rabin and Baillie probabilistic primaly test up to 1E3000</p>",
       "<hr/>",
     ]
 
@@ -157,7 +163,11 @@ function testRow(testValuesArray: number[]): string[][] {
 
   const testFactorizationTime = testFactorizationArray.reduce((acc: number, val: TestRandomReport): number => acc + val.time, 0)
 
-  const testFactoritzationCount = testFactorizationArray.length
+  const testFactoritzationMaxTime = testFactorizationArray.reduce((acc: number, val: TestRandomReport): number => Math.max(acc, val.time), -Infinity)
+
+  const testFactorizationMinTime = testFactorizationArray.reduce((acc: number, val: TestRandomReport): number => Math.min(acc, val.time), Infinity)
+
+  const testFactorizationCount = testFactorizationArray.length
 
   const testCountSort = totalTests.toString()[0] + "E" + (totalTests.toString().length - 1)
 
@@ -174,8 +184,10 @@ function testRow(testValuesArray: number[]): string[][] {
     "<td style=''>" + (l < 10 ? percentPrimes(l) : percentPrimesEstimated(l)) + "</td>",
     "<td style=''>" + totalTries + "</td>",
     "<td style=''>" + duration(Math.round(testFactorizationTime / testFactorizationArray.length)) + "</td>",
+    "<td style=''>" + duration(testFactorizationMinTime) + "</td>",
+    "<td style=''>" + duration(testFactoritzationMaxTime) + "</td>",
     "<td style=''>" + duration(testFactorizationTime) + "</td>",
-    "<td style='text-align: center;color:white;" + (testFactorizationPassedCount === testFactoritzationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testFactoritzationCount)) + "</td>",
+    "<td style='text-align: center;color:white;" + (testFactorizationPassedCount === testFactorizationCount ? "background: green;" : "background: red;") + "'>" + percent(BigInt(testFactorizationPassedCount), BigInt(testFactorizationCount)) + "</td>",
     "</tr>"
   ]
 
