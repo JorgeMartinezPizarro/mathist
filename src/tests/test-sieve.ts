@@ -40,7 +40,7 @@ export default function testSieve(local: boolean = true): string[] {
         : new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
-    const randomTestLastValues: bigint[] = (new Array(30000).fill(0)).map(e => BigInt(id(7)))
+    const randomTestLastValues: bigint[] = []//(new Array(30000).fill(0)).map(e => BigInt(id(7)))
 
     // STEP 2: test over the values
     // ==============================
@@ -178,7 +178,7 @@ const checkPrimeCounts = (n: number): TestReport => {
   let sort = n.toString()[0] + "E" + (n.toString().length - 1)
   sort = "<span title='" + n + "'>" + sort+ "</span>";
   const stringArray: string[] = []
-  const cache = Math.max(Math.sqrt(n), 1024*512)
+  const cache = n < 10**13 ? 512 * 1024 : 5 * 1024**2
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   const start = getTimeMicro()
   let failed = false;

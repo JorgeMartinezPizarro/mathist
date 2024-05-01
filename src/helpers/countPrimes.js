@@ -176,7 +176,7 @@ function fillSieveBuffer(lwi, sb) {
 // 10**14   20 hours
 // 10**15   200 hours
 //
-function doIt(LIMIT, cache = 1024*512) { 
+export default function countPrimes(LIMIT, cache = 1024*512) { 
   const separator = new Array(10).fill(" ").join("")
   
   if ((LIMIT < 0) || (LIMIT > 10**13)) { 
@@ -250,8 +250,16 @@ function doIt(LIMIT, cache = 1024*512) {
       }
     };
     
+    process.stdout.write("\r");
+    process.stdout.write("\r");
+    process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - start) + "      \n")
+ 
     return pgfnc();
   }
+
+  process.stdout.write("\r");
+  process.stdout.write("\r");
+  process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - start) + "      \n")
 
   return {
     filename: "",
@@ -260,13 +268,4 @@ function doIt(LIMIT, cache = 1024*512) {
     length: count,
     time: getTimeMicro() - startx
   }
-}
-
-export default function countPrimes(LIMIT, cache) {
-  const start = getTimeMicro()
-  const result = doIt(LIMIT, cache)
-  process.stdout.write("\r");
-  process.stdout.write("\r");
-  process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - start) + "      \n")
-  return result;
 }
