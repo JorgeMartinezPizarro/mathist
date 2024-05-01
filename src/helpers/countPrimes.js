@@ -252,14 +252,14 @@ export default function countPrimes(LIMIT, cache = 1024*512) {
     
     process.stdout.write("\r");
     process.stdout.write("\r");
-    process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - start) + "      \n")
+    process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "      \n")
  
     return pgfnc();
   }
 
   process.stdout.write("\r");
   process.stdout.write("\r");
-  process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - start) + "      \n")
+  process.stdout.write("GS: Sieved 100.000% in " + duration(getTimeMicro() - startx) + "      \n")
 
   return {
     filename: "",

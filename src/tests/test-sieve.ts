@@ -40,7 +40,7 @@ export default function testSieve(local: boolean = true): string[] {
         : new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
-    const randomTestLastValues: bigint[] = []//(new Array(30000).fill(0)).map(e => BigInt(id(7)))
+    const randomTestLastValues: bigint[] = (new Array(30000).fill(0)).map(e => BigInt(id(7)))
 
     // STEP 2: test over the values
     // ==============================
@@ -240,7 +240,7 @@ const checkPrimeCounts = (n: number): TestReport => {
   return {
     error: stringArray.join(". "),
     BFTime: bf && bf.time||0,
-    SSTime: se && se?.time||0,
+    SSTime: se && se.time||0,
     ESTime: ce && ce.time||0,
     GSTime: c && c.time||0,
     PSTime: lp && lp.time||0,

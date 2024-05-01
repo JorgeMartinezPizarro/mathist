@@ -7,6 +7,9 @@ import getTimeMicro from '@/helpers/getTimeMicro'
 import testRandom from '@/tests/test-random'
 import testFactorization from '@/tests/test-factorization'
 import testSieve from '@/tests/test-sieve'
+import {lucasLehmerTest} from '@/helpers/isMersennePrime'
+import eratosthenes from '@/helpers/eratosthenes'
+import percent from '@/helpers/percent'
 
 export async function GET(request: Request): Promise<Response> {  
 
@@ -44,7 +47,8 @@ export async function GET(request: Request): Promise<Response> {
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
 
     ]
-    
+
+    stringArray.push("Found " + stringArray.length + " mersenne primes in " + duration(getTimeMicro() - start))
     const filename = "./public/files/test.html"
     
     fs.writeFileSync(filename, '<!DOCTYPE html><html><head><style>hr {height: 1px;background-color: #1976d2!important;border: none;margin: 16px!important;} b, th, h3 {color: #1976d2;}</style><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')

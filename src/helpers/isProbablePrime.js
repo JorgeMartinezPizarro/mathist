@@ -1,6 +1,9 @@
 // Use js to import - export from s-bpsw cause types do not exist
 import { isProbablePrime as isBaillieProbablePrime } from "s-bpsw"
 import { isPrime } from "mathjs";
+import duration from "./duration";
+import getTimeMicro from "./getTimeMicro";
+import percent from "./percent";
 
 // Javascript program Miller-Rabin primality test
 // based on JavaScript code found at https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin/
