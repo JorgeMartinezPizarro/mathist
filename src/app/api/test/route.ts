@@ -48,7 +48,6 @@ export async function GET(request: Request): Promise<Response> {
 
     ]
 
-    stringArray.push("Found " + stringArray.length + " mersenne primes in " + duration(getTimeMicro() - start))
     const filename = "./public/files/test.html"
     
     fs.writeFileSync(filename, '<!DOCTYPE html><html><head><style>hr {height: 1px;background-color: #1976d2!important;border: none;margin: 16px!important;} b, th, h3 {color: #1976d2;}</style><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')
