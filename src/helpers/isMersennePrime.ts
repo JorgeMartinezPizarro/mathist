@@ -13,18 +13,16 @@ function lucasLehmerTest(p: number) {
 
     const mersenneNumber = BigInt(2) ** BigInt(p) - BigInt(1);
 
-    const m = (a: bigint, b: bigint): bigint => gaussMultiplication(a.toString(), b.toString())
-
     let s = BigInt(4);
     
-    for (let i = 3; i <= p; i++) {
-        //if (false && s > 10**6) 
-        //s = (karatsubaMultiplication(s.toString(), s.toString()) - BigInt(2)) % mersenneNumber;
+    // (x**2 - 2)**2 - 2 = x**4 + 4 - 4 * x**2 - 2 = x**4 - 4 * x**2 + 2 
+
+    for (let i = 3; i <= p; i+=1) {
+        //if (s > 10**8) 
+          //  s = (gaussMultiplication(s.toString(), s.toString()) - BigInt(2)) % mersenneNumber;
         //else
-        //s = bigintModArith.modPow(s, BigInt(2), mersenneNumber)
-        //s = s - BigInt(2) % mersenneNumber
-        s = (s**BigInt(2) - BigInt(2)) % mersenneNumber
-        
+            //s = (s**BigInt(4) - BigInt(4) * s**BigInt(2) + BigInt(2)) % mersenneNumber
+            s = (s**BigInt(2) - BigInt(2)) % mersenneNumber
         
         process.stdout.write("\r");
         process.stdout.write("\r");
@@ -34,8 +32,8 @@ function lucasLehmerTest(p: number) {
 
     process.stdout.write("\r");
     process.stdout.write("\r");
-    process.stdout.write("LL: Tested 100.000% in " + duration(getTimeMicro() - start) + " " + p +  "               \n")
-    
+    process.stdout.write("LL: Tested 100.000% in " + duration(getTimeMicro() - start) +  " " + p +  "               \n")
+
     return s % mersenneNumber === BigInt(0)
 }
 
