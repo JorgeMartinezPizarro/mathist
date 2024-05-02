@@ -10,6 +10,7 @@ import testSieve from '@/tests/test-sieve'
 import {lucasLehmerTest} from '@/helpers/isMersennePrime'
 import eratosthenes from '@/helpers/eratosthenes'
 import percent from '@/helpers/percent'
+import testMersenne from '@/tests/test-mersenne'
 
 export async function GET(request: Request): Promise<Response> {  
 
@@ -44,8 +45,10 @@ export async function GET(request: Request): Promise<Response> {
       "<p style='text-align: center;'><b>Test sieve functions</b></p>",
       "<hr/>",
       ...testSieve(local),
+      "<p style='text-align: center;'><b>Test Mersenne primes</b></p>",
+      "<hr/>",
+      ...testMersenne(local),
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
-
     ]
 
     const filename = "./public/files/test.html"
@@ -62,4 +65,3 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }
-

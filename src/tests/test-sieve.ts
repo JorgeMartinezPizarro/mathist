@@ -28,7 +28,7 @@ export default function testSieve(local: boolean = true): string[] {
     
     // if !local, tests takes 33 extra hours. use it on a server
     const testValues = local
-      ? [10**6, 10**7, 10**8, 10**9, 2**32, 10**10]
+      ? [10**6, 10**7, 10**8, 10**9]
       : [10**6, 10**7, 10**8, 10**9, 2**32, 10**10, 10**11, 10**12, 10**13]
 
     
@@ -40,7 +40,7 @@ export default function testSieve(local: boolean = true): string[] {
         : new Array(1000).fill(0).map(e => BigInt(id(12)))
     ]
     
-    const randomTestLastValues: bigint[] = (new Array(30000).fill(0)).map(e => BigInt(id(7)))
+    const randomTestLastValues: bigint[] = (new Array(local ? 1000 : 30000).fill(0)).map(e => BigInt(id(7)))
 
     // STEP 2: test over the values
     // ==============================
@@ -174,11 +174,11 @@ const checkLastPrimes = (number: bigint): TestReport => {
 
 const checkPrimeCounts = (n: number): TestReport => {
   
-  // Needed to increase the cache from 512KB to 10MB for 10**13
+  // Needed to increase the cache from 512KB to 13MB for 10**13
   let sort = n.toString()[0] + "E" + (n.toString().length - 1)
   sort = "<span title='" + n + "'>" + sort+ "</span>";
   const stringArray: string[] = []
-  const cache = n < 10**13 ? 512 * 1024 : 5 * 1024**2
+  const cache = n < 10**13 ? 512 * 1024 : 13 * 1024**2
   const skipClassicSieve = n > MAX_CLASSIC_SIEVE_LENGTH // From that the classic sieve does not worth.
   const start = getTimeMicro()
   let failed = false;

@@ -13,6 +13,7 @@
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.15.14",
     "bigint-gcd": "^1.0.28",
+    "bigint-mod-arith": "^3.3.1",
     "decimal.js": "^10.4.3",
     "fft-js": "^0.0.12",
     "mathjs": "^12.4.1",
