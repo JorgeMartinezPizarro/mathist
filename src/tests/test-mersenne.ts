@@ -12,7 +12,7 @@ export default function testMersenne(local: boolean): string[] {
     ].slice(0, local ? 25 : 38)*/
     let c = 0
     const start = getTimeMicro()
-    const n = local ? 1000 : 100000
+    const n = local ? 5000 : 100000
     const primes = eratosthenes(n, n).primes.map(n => Number(n))
     const mersennePrimes = primes.filter(prime => {
         try {

@@ -159,6 +159,7 @@ function factor(n: bigint): Factor {
 
 const brentFactor = (n: bigint): bigint => {
     
+    const start = getTimeMicro()
     // TODO: generate more f x y to test if the first two sets fail
     const s = sqrt(n)
 
@@ -181,6 +182,7 @@ const brentFactor = (n: bigint): bigint => {
         x = f(x);
         y = f(f(y));
         d = gcd(abs(x - y), n);
+        if (getTimeMicro() - start > 5 * 1000**2) throw new Error("Failed brent to find a factor in 5 seconds")
     }
 
     if (d === n) {
@@ -193,6 +195,7 @@ const brentFactor = (n: bigint): bigint => {
             x = f(x) % n;
             y = f(f(y)) % n;
             d = gcd(abs(x - y), n);
+            if (getTimeMicro() - start > 5 * 1000**2) throw new Error("Failed brent to find a factor in 5 seconds")
         }
     }
 
