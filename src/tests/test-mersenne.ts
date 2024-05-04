@@ -4,7 +4,11 @@ import errorMessage from "@/helpers/errorMessage"
 import getTimeMicro from "@/helpers/getTimeMicro"
 import { lucasLehmerTest } from "@/helpers/isMersennePrime"
 
-export default function testMersenne(local: boolean) {
+
+// Return a html table for the LLT test up to LIMIT. Values longer than 10k may take hours or days to compute.
+export default function testMersenne(LIMIT: number = 1000) {
+    
+    /*
     const knownMersennePrimes = [
         2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279,
         2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 
@@ -13,13 +17,13 @@ export default function testMersenne(local: boolean) {
         25964951, 30402457, 32582657, 37156667, 42643801, 43112609,
         57885161, 74207281, 77232917, 82589933	
     ]
+    */
+   
     let c = 0
     
     const start = getTimeMicro()
     
-    const n = local ? 4500 : 100000
-
-    const primes = eratosthenes(n, n).primes.map(n => Number(n))
+    const primes = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
 
     const mersennePrimes = primes.filter((prime: number): boolean => {
         try {

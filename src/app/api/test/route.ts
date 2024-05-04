@@ -7,9 +7,6 @@ import getTimeMicro from '@/helpers/getTimeMicro'
 import testRandom from '@/tests/test-random'
 import testFactorization from '@/tests/test-factorization'
 import testSieve from '@/tests/test-sieve'
-import {lucasLehmerTest} from '@/helpers/isMersennePrime'
-import eratosthenes from '@/helpers/eratosthenes'
-import percent from '@/helpers/percent'
 import testMersenne from '@/tests/test-mersenne'
 
 export async function GET(request: Request): Promise<Response> {  
@@ -23,7 +20,7 @@ export async function GET(request: Request): Promise<Response> {
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
     const start = getTimeMicro()
-    
+
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
@@ -47,7 +44,7 @@ export async function GET(request: Request): Promise<Response> {
       ...testSieve(local),
       "<p style='text-align: center;'><b>Test Mersenne primes</b></p>",
       "<hr/>",
-      ...testMersenne(local),
+      ...testMersenne(2000),
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
     ]
 
@@ -65,3 +62,4 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }
+

@@ -17,7 +17,7 @@ export function ln(a: bigint): bigint {
 // https://stackoverflow.com/a/53684036/4219083
 export function sqrt(value: bigint): bigint {
     if (value < zero) {
-        throw 'Square root of negative numbers is not supported'
+        throw new Error('Square root of negative numbers is not supported')
     }
     // The method give incorrect values for small numbers, so check it separately
     if ([zero, one].includes(value))  {

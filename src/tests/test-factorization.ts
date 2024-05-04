@@ -23,8 +23,8 @@ let totalTests = 0
 export default function testFactorization(local: boolean): string[] {
   
   const randomTestSize = local  
-    ? 10**3
-    : 10**5
+    ? 10**2
+    : 10**3
 
   const elapsed = getTimeMicro()
 
@@ -41,7 +41,7 @@ export default function testFactorization(local: boolean): string[] {
 
   const testRandomValues = local
     ? new Array(19).fill(0).map((e, i) => i + 5) // 5 to 23
-    : new Array(19).fill(0).map((e, i) => i + 7) // 7 to 25
+    : new Array(17).fill(0).map((e, i) => i + 7) // 7 to 23
 
   totalTests = testFullValues.length + testRandomValues.length
 

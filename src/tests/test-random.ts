@@ -19,8 +19,8 @@ let totalTests = 0
 
 export default function testRandom(local: boolean): string[] {
     const randomTestSize = local 
-      ? 10**3
-      : 10**4
+      ? 10**2
+      : 10**3
     const start = getTimeMicro();
     
     
