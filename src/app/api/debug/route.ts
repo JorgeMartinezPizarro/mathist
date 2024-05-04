@@ -23,14 +23,15 @@ export async function GET(request: Request): Promise<Response> {
 
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
+    const LIMIT: number = parseInt(searchParams.get('LIMIT') || "100");
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
     const start = getTimeMicro()
 
-    const primes = eratosthenes(10000, 10000).primes.map(p => Number(p))
+    const primes = eratosthenes(LIMIT, LIMIT).primes.map(p => Number(p))
 
-    const chunkedPrimes: number[][] = chunkArray(primes, 8)
+    const chunkedPrimes: number[][] = chunkArray(primes, 4)
 
     const mersennePrimesFound = (await processArray(chunkedPrimes)).reduce((acc, val) => [...acc, ...val.filter(mp => mp.isPrime)], [])
 
@@ -52,7 +53,7 @@ export async function GET(request: Request): Promise<Response> {
     
     fs.appendFileSync(filename, "</body></html>", 'utf8')
 
-    return Response.json({result: mersennePrimesFound, time: getTimeMicro() - start})
+    return Response.json({message: "report generated under /files/debug.html", time: getTimeMicro() - start})
 
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
