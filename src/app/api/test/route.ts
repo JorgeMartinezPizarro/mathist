@@ -44,7 +44,7 @@ export async function GET(request: Request): Promise<Response> {
       ...testSieve(local),
       "<p style='text-align: center;'><b>Test Mersenne primes</b></p>",
       "<hr/>",
-      ...testMersenne(10000),
+      ...testMersenne(20000),
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
     ]
 

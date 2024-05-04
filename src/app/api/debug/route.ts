@@ -31,7 +31,7 @@ export async function GET(request: Request): Promise<Response> {
 
     const primes = eratosthenes(LIMIT, LIMIT).primes.map(p => Number(p))
 
-    const chunkedPrimes: number[][] = chunkArray(primes, 4)
+    const chunkedPrimes: number[][] = chunkArray(primes, 2)
 
     const mersennePrimesFound = (await processArray(chunkedPrimes)).reduce((acc, val) => [...acc, ...val.filter(mp => mp.isPrime)], [])
 
@@ -63,6 +63,7 @@ export async function GET(request: Request): Promise<Response> {
 async function processArray(array: number[][]): Promise<MersennePrime[][]> {
   const resultArray = await Promise.all(array.map(async (items) => {
       // Perform asynchronous operation on each item
+      console.log("Starting thread")
       const result = await doIt(items);
       return result;
   }));
@@ -70,46 +71,48 @@ async function processArray(array: number[][]): Promise<MersennePrime[][]> {
 }
 
 async function doIt(number: number[]): Promise<MersennePrime[]> {
-  
-  return new Promise((accept, reject) => { // Renamed parameter to 'accept'
+  return new Promise((accept, reject) => {
     try {
-      // Array to store promises for each worker
       const promises: Promise<any>[] = [];
 
-      // Create and start each worker thread
       for (let i = 0; i < number.length; i++) {
         promises.push(new Promise((innerResolve, innerReject) => {
           try {
-            // Get the absolute path to the worker script
             const workerScriptPath = resolve('./src/app/api/debug/thread.js');
-
-            // Create a new worker thread
             const worker = new Worker(workerScriptPath, { workerData: number[i] });
 
-            // Listen for messages from the worker thread
             worker.on('message', (result) => {
-                // Resolve the inner promise with the result
-                innerResolve(JSON.parse(result));
+              console.log(`Worker ${i}: received result`);
+              innerResolve(JSON.parse(result));
             });
 
-            // Handle errors from the worker thread
             worker.on('error', (error) => {
-                console.error(error);
-                innerReject(new Error('Internal Server Error. ' + errorMessage(error)));
+              console.error(`Worker ${i}: error`, error);
+              innerReject(new Error('Internal Server Error. ' + errorMessage(error)));
+            });
+
+            worker.on('exit', (code) => {
+              console.log(`Worker ${i}: exited with code ${code}`);
             });
           } catch (error) {
-              innerReject(new Error("An error ocurred. " + errorMessage(error)));
+            console.error(`Worker ${i}: exception`, error);
+            innerReject(new Error("An error ocurred. " + errorMessage(error)));
           }
         }));
       }
 
-      // Resolve the outer promise with results from all worker threads
       Promise.all(promises)
-        .then((results) => accept(results)) // Renamed parameter to 'accept'
-        .catch((error) => reject(error));
-
+        .then((results) => {
+          console.log('All workers resolved');
+          accept(results);
+        })
+        .catch((error) => {
+          console.error('Error in Promise.all', error);
+          reject(error);
+        });
     } catch (error) {
-        reject(new Error("An error ocurred. " + errorMessage(error)));
+      console.error('Outer promise catch', error);
+      reject(new Error("An error ocurred. " + errorMessage(error)));
     }
   });
 }
