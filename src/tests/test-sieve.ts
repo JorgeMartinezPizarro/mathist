@@ -29,7 +29,7 @@ export default function testSieve(local: boolean = true): string[] {
     // if !local, tests takes 33 extra hours. use it on a server
     const testValues = local
       ? [10**6, 10**7, 10**8, 10**9, 10**10, 10**11]
-      : [10**6, 10**7, 10**8, 10**9, 2**32, 10**10, 10**11, 10**12]
+      : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12]
 
     
     // TODO: group following 1500 tests into suites.

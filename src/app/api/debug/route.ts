@@ -22,7 +22,11 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!")
     }
     const start = getTimeMicro()
-    const result = await doIt(BigInt(100), 4)
+
+    const firstMersennePrimes = [2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279,
+      2203, 2281, 3217, 4253, 4423]
+
+    const result = await doIt(4423, 4)
 
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
@@ -48,7 +52,7 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
-async function doIt(number: bigint, numThreads: number): Promise<any[]> {
+async function doIt(number: number, numThreads: number): Promise<any[]> {
   return new Promise((accept, reject) => { // Renamed parameter to 'accept'
     try {
       // Array to store promises for each worker
