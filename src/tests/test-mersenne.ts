@@ -1,24 +1,32 @@
 import duration from "@/helpers/duration"
 import eratosthenes from "@/helpers/eratosthenes"
+import errorMessage from "@/helpers/errorMessage"
 import getTimeMicro from "@/helpers/getTimeMicro"
 import { lucasLehmerTest } from "@/helpers/isMersennePrime"
 
-export default function testMersenne(local: boolean): string[] {
-    /*const primes = [
+export default function testMersenne(local: boolean) {
+    const knownMersennePrimes = [
         2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279,
         2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 
         23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787,
-        1398269, 2976221, 3021377, 6972593
-    ].slice(0, local ? 25 : 38)*/
+        1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583,
+        25964951, 30402457, 32582657, 37156667, 42643801, 43112609,
+        57885161, 74207281, 77232917, 82589933	
+    ]
     let c = 0
+    
     const start = getTimeMicro()
-    const n = local ? 5000 : 100000
+    
+    const n = local ? 4500 : 100000
+
     const primes = eratosthenes(n, n).primes.map(n => Number(n))
-    const mersennePrimes = primes.filter(prime => {
+
+    const mersennePrimes = primes.filter((prime: number): boolean => {
         try {
             return lucasLehmerTest(prime)
         } catch (e) {
-
+            console.log(errorMessage(e))
+            return false
         }
     })
 

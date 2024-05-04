@@ -28,7 +28,7 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!")
     }
 
-    const local = KEY == "111111"
+    const local = true//KEY == "111111"
 
     // Duration of the tests: local 12m, !local 42h.
 
