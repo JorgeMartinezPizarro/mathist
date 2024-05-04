@@ -5,8 +5,13 @@ import errorMessage from '@/helpers/errorMessage'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import { resolve } from 'path'; // Import resolve function to handle file paths
-import testMersenne from '@/tests/test-mersenne';
 import duration from '@/helpers/duration';
+import eratosthenes from '@/helpers/eratosthenes';
+
+interface MersennePrime {
+  p: number;
+  isPrime: boolean;
+}
 
 export async function GET(request: Request): Promise<Response> {  
 
@@ -23,16 +28,18 @@ export async function GET(request: Request): Promise<Response> {
     }
     const start = getTimeMicro()
 
-    const firstMersennePrimes = [2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279,
-      2203, 2281, 3217, 4253, 4423]
+    const primes = eratosthenes(10000, 10000).primes.map(p => Number(p))
 
-    const result = await doIt(4423, 4)
+    const chunkedPrimes: number[][] = chunkArray(primes, 8)
+
+    const mersennePrimesFound = (await processArray(chunkedPrimes)).reduce((acc, val) => [...acc, ...val.filter(mp => mp.isPrime)], [])
 
     const stringArray = [
-      "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
+      "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz " + process.arch + "</b></p>",
       "<hr/>",
-      // ADD result here
+      ...mersennePrimesFound.map(mp => "<p style='text-align: center;'>" + mp.p + "</p>"),
+      "<p style='text-align: center;'>" + mersennePrimesFound.length +" primes found</p>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
     ]
 
@@ -45,33 +52,43 @@ export async function GET(request: Request): Promise<Response> {
     
     fs.appendFileSync(filename, "</body></html>", 'utf8')
 
-    return Response.json({result, time: getTimeMicro() - start})
+    return Response.json({result: mersennePrimesFound, time: getTimeMicro() - start})
 
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
 }
 
-async function doIt(number: number, numThreads: number): Promise<any[]> {
+async function processArray(array: number[][]): Promise<MersennePrime[][]> {
+  const resultArray = await Promise.all(array.map(async (items) => {
+      // Perform asynchronous operation on each item
+      const result = await doIt(items);
+      return result;
+  }));
+  return resultArray;
+}
+
+async function doIt(number: number[]): Promise<MersennePrime[]> {
+  
   return new Promise((accept, reject) => { // Renamed parameter to 'accept'
     try {
       // Array to store promises for each worker
       const promises: Promise<any>[] = [];
 
       // Create and start each worker thread
-      for (let i = 0; i < numThreads; i++) {
+      for (let i = 0; i < number.length; i++) {
         promises.push(new Promise((innerResolve, innerReject) => {
           try {
             // Get the absolute path to the worker script
             const workerScriptPath = resolve('./src/app/api/debug/thread.js');
 
             // Create a new worker thread
-            const worker = new Worker(workerScriptPath, { workerData: number });
+            const worker = new Worker(workerScriptPath, { workerData: number[i] });
 
             // Listen for messages from the worker thread
             worker.on('message', (result) => {
                 // Resolve the inner promise with the result
-                innerResolve(result);
+                innerResolve(JSON.parse(result));
             });
 
             // Handle errors from the worker thread
@@ -94,4 +111,11 @@ async function doIt(number: number, numThreads: number): Promise<any[]> {
         reject(new Error("An error ocurred. " + errorMessage(error)));
     }
   });
+}
+
+function chunkArray(array: number[], chunkSize: number) {
+  return Array.from(
+    { length: Math.ceil(array.length / chunkSize) },
+    (_, index) => array.slice(index * chunkSize, (index + 1) * chunkSize)   
+  );
 }

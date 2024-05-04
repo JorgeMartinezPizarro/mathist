@@ -40,7 +40,7 @@ export default function testFactorization(local: boolean): string[] {
     : [1, 2, 3, 4, 5, 6]
 
   const testRandomValues = local
-    ? new Array(19).fill(0).map((e, i) => i + 5) // 5 to 23
+    ? new Array(18).fill(0).map((e, i) => i + 5) // 5 to 22
     : new Array(17).fill(0).map((e, i) => i + 7) // 7 to 23
 
   totalTests = testFullValues.length + testRandomValues.length
