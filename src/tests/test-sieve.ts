@@ -192,12 +192,17 @@ const checkPrimeCounts = (n: number): TestReport => {
   let bf: SieveReport | false = false
   
   try {
-    
+    console.log("Checking prime generation with sieves up to " + sort)
     const limit = n
+    console.log("GS")
     c = countPrimes(limit, cache)
+    console.log("ES")
     ce = !skipClassicSieve ? classicOrSegmentedEratosthenes(limit, 10) : {primes: [], length: 0, filename: "", isPartial: false, time: 0}
+    console.log("SS")
     se = segmentedEratosthenes(limit)
+    console.log("PS")
     lp = lastTenEratosthenes(BigInt(limit))
+    console.log("BF")
     bf = lastTenGenerated(BigInt(limit))
     
     if (skipClassicSieve) {

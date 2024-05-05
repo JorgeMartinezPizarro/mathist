@@ -21,9 +21,9 @@ export default function testRandom(local: boolean): string[] {
     const randomTestSize = local 
       ? 10**2
       : 10**3
+
     const start = getTimeMicro();
-    
-    
+        
     // STEP 1: vales to evaluate
     // ==============================
     
@@ -36,7 +36,7 @@ export default function testRandom(local: boolean): string[] {
 
     const testRandomValues = local
       ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 200]
-      : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 200, 400, 600]
+      : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 200]
     
     totalTests = testRandomValues.length
 

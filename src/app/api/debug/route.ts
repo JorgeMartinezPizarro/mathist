@@ -27,11 +27,12 @@ export async function GET(request: Request): Promise<Response> {
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
+
     const start = getTimeMicro()
 
     const primes = eratosthenes(LIMIT, LIMIT).primes.map(p => Number(p))
 
-    const chunkedPrimes: number[][] = chunkArray(primes, 2)
+    const chunkedPrimes: number[][] = chunkArray(primes, 1000)
 
     const mersennePrimesFound = (await processArray(chunkedPrimes)).reduce((acc, val) => [...acc, ...val.filter(mp => mp.isPrime)], [])
 
@@ -83,7 +84,7 @@ async function doIt(number: number[]): Promise<MersennePrime[]> {
 
             worker.on('message', (result) => {
               console.log(`Worker ${i}: received result`);
-              innerResolve(JSON.parse(result));
+              innerResolve(result);
             });
 
             worker.on('error', (error) => {
@@ -103,7 +104,7 @@ async function doIt(number: number[]): Promise<MersennePrime[]> {
 
       Promise.all(promises)
         .then((results) => {
-          console.log('All workers resolved');
+          console.log('All workers resolved' + promises.length + " " + results.length);
           accept(results);
         })
         .catch((error) => {
