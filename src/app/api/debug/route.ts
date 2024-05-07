@@ -40,9 +40,9 @@ export async function GET(request: Request): Promise<Response> {
 
     //const numbers = eratosthenes(n, n).primes.map(p => Number(p))
 
-    const numbers = KNOWN_MERSENNE_PRIMES.slice(0, 34)
+    const numbers = KNOWN_MERSENNE_PRIMES.slice(27, 28)
 
-    const m = await sendPrimesInBatches(numbers, 17) // 500 seems to be the more effective batch size.
+    const m = await sendPrimesInBatches(numbers, 100) // 500 seems to be the more effective batch size.
     
     const stringArray = [
       "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",

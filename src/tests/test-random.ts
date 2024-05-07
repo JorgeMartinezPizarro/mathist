@@ -18,12 +18,8 @@ interface TestRandomReport {
 let totalTests = 0
 
 export default function testRandom(local: boolean): string[] {
-    const randomTestSize = local 
-      ? 10**2
-      : 10**4
+    const randomTestSize = local ? 10**2 : 10**5
 
-    const start = getTimeMicro();
-        
     // STEP 1: vales to evaluate
     // ==============================
     

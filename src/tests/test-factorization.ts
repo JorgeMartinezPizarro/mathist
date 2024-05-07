@@ -22,9 +22,7 @@ let totalTests = 0
 //test the factorization and generate a report
 export default function testFactorization(local: boolean): string[] {
   
-  const randomTestSize = local  
-    ? 10**2
-    : 10**5
+  const randomTestSize = local ? 10**2 : 10**5
 
   const elapsed = getTimeMicro()
 
