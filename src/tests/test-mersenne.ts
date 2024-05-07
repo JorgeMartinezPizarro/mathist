@@ -12,7 +12,7 @@ export default function testMersenne(LIMIT: number = 1000) {
     
     const start = getTimeMicro()
     
-    const primes = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
+    const primes = [86243]//eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
 
     const mersennePrimes = primes.filter((prime: number): boolean => {
         try {

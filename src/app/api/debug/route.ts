@@ -3,15 +3,18 @@ import fs from 'fs'
 
 import errorMessage from '@/helpers/errorMessage'
 import getTimeMicro from '@/helpers/getTimeMicro'
-import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
-import { resolve } from 'path'; // Import resolve function to handle file paths
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
+import { KNOWN_MERSENNE_PRIMES } from '@/Constants';
 
 interface MersennePrime {
   p: number;
   isPrime: boolean;
 }
+
+//https://en.wikipedia.org/wiki/Pocklington_primality_test
+
+//https://es.wikipedia.org/wiki/N%C3%BAmero_primo_de_Mersenne
 
 export async function GET(request: Request): Promise<Response> {  
 
@@ -20,6 +23,8 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   try {
+
+    // TODO: use a temp file to record the processed values. Make the search resumable. Maybe we can just pack all this search into Scala code and use the mather just to link to the results.
 
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
@@ -30,18 +35,22 @@ export async function GET(request: Request): Promise<Response> {
 
     const start = getTimeMicro()
 
-    const primes = eratosthenes(LIMIT, LIMIT).primes.map(p => Number(p))
+    const n = LIMIT
 
-    const chunkedPrimes: number[][] = chunkArray(primes, 1000)
+    //const numbers = eratosthenes(n, n).primes.map(p => Number(p))
 
-    const mersennePrimesFound = (await processArray(chunkedPrimes)).reduce((acc, val) => [...acc, ...val.filter(mp => mp.isPrime)], [])
+    const numbers = KNOWN_MERSENNE_PRIMES.slice(0, 30)
 
+    const m = await sendPrimesInBatches(numbers, 32) // 500 seems to be the more effective batch size.
+    
     const stringArray = [
       "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz " + process.arch + "</b></p>",
       "<hr/>",
-      ...mersennePrimesFound.map(mp => "<p style='text-align: center;'>" + mp.p + "</p>"),
-      "<p style='text-align: center;'>" + mersennePrimesFound.length +" primes found</p>",
+      ...m.map((mp: MersennePrime) => "<p style='text-align: center;'>2**" + mp.p + " - 1</p>"),
+      "<hr/>",
+      "<p style='text-align: center;'>" + m.length +" primes found</p>",
+      "<hr/>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
     ]
 
@@ -61,66 +70,43 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
-async function processArray(array: number[][]): Promise<MersennePrime[][]> {
-  const resultArray = await Promise.all(array.map(async (items) => {
-      // Perform asynchronous operation on each item
-      console.log("Starting thread")
-      const result = await doIt(items);
-      return result;
-  }));
-  return resultArray;
+async function processPrimes(primes: number[]): Promise<MersennePrime[]>  {
+  // Your logic to send the primes to the REST API and process the response
+  // Example:
+  const url = 'http://37.27.102.105:8080/lltp';
+
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+        numbers: primes.join(","),
+        numThreads: 16,
+    }),
+  }
+
+  console.log("Requesting", url, options)
+
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
+  }
+
+
+  return (await response.json()).filter((p: MersennePrime) => p.isPrime)
 }
 
-async function doIt(number: number[]): Promise<MersennePrime[]> {
-  return new Promise((accept, reject) => {
-    try {
-      const promises: Promise<any>[] = [];
-
-      for (let i = 0; i < number.length; i++) {
-        promises.push(new Promise((innerResolve, innerReject) => {
-          try {
-            const workerScriptPath = resolve('./src/app/api/debug/thread.js');
-            const worker = new Worker(workerScriptPath, { workerData: number[i] });
-
-            worker.on('message', (result) => {
-              console.log(`Worker ${i}: received result`);
-              innerResolve(result);
-            });
-
-            worker.on('error', (error) => {
-              console.error(`Worker ${i}: error`, error);
-              innerReject(new Error('Internal Server Error. ' + errorMessage(error)));
-            });
-
-            worker.on('exit', (code) => {
-              console.log(`Worker ${i}: exited with code ${code}`);
-            });
-          } catch (error) {
-            console.error(`Worker ${i}: exception`, error);
-            innerReject(new Error("An error ocurred. " + errorMessage(error)));
-          }
-        }));
-      }
-
-      Promise.all(promises)
-        .then((results) => {
-          console.log('All workers resolved' + promises.length + " " + results.length);
-          accept(results);
-        })
-        .catch((error) => {
-          console.error('Error in Promise.all', error);
-          reject(error);
-        });
-    } catch (error) {
-      console.error('Outer promise catch', error);
-      reject(new Error("An error ocurred. " + errorMessage(error)));
-    }
-  });
-}
-
-function chunkArray(array: number[], chunkSize: number) {
-  return Array.from(
-    { length: Math.ceil(array.length / chunkSize) },
-    (_, index) => array.slice(index * chunkSize, (index + 1) * chunkSize)   
-  );
+async function sendPrimesInBatches(primesArray: number[], batchSize: number): Promise<MersennePrime[]> {
+  
+  const mersennePrimes: MersennePrime[] = new Array();
+  
+  for (let i = 0; i < primesArray.length; i += batchSize) {
+      const batch = primesArray.slice(i, i + batchSize);
+      const response = await processPrimes(batch);
+      mersennePrimes.push(...response)
+  }
+  
+  return mersennePrimes
 }
