@@ -40,10 +40,10 @@ export default function testSieve(local: boolean = true): string[] {
       ,
       ...local
         ? []
-        : new Array(1000).fill(0).map(e => BigInt(id(12)))
+        : new Array(10000).fill(0).map(e => BigInt(id(12)))
     ]
     
-    const randomTestLastValues: bigint[] = (new Array(local ? 100 : 30000).fill(0)).map(e => BigInt(id(7)))
+    const randomTestLastValues: bigint[] = (new Array(local ? 100 : 50000).fill(0)).map(e => BigInt(id(7)))
 
     // STEP 2: test over the values
     // ==============================

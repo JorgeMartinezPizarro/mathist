@@ -1,5 +1,6 @@
 import os from 'node:os' 
 import fs from 'fs' 
+import fetch from 'node-fetch';
 
 import errorMessage from '@/helpers/errorMessage'
 import getTimeMicro from '@/helpers/getTimeMicro'
@@ -39,9 +40,9 @@ export async function GET(request: Request): Promise<Response> {
 
     //const numbers = eratosthenes(n, n).primes.map(p => Number(p))
 
-    const numbers = KNOWN_MERSENNE_PRIMES.slice(0, 30)
+    const numbers = KNOWN_MERSENNE_PRIMES.slice(0, 34)
 
-    const m = await sendPrimesInBatches(numbers, 32) // 500 seems to be the more effective batch size.
+    const m = await sendPrimesInBatches(numbers, 17) // 500 seems to be the more effective batch size.
     
     const stringArray = [
       "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
@@ -66,7 +67,7 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({message: "report generated under /files/debug.html", time: getTimeMicro() - start})
 
   } catch (error) {
-    return Response.json({ error: errorMessage(error) }, { status: 500 });
+    return Response.json({ error: "Error generating mersenne report. " + errorMessage(error) }, { status: 500 });
   }
 }
 
@@ -84,18 +85,21 @@ async function processPrimes(primes: number[]): Promise<MersennePrime[]>  {
         numbers: primes.join(","),
         numThreads: 16,
     }),
+    timeout: 86400 * 1000, // A day. No timeouts wanted.
   }
 
   console.log("Requesting", url, options)
 
-  const response = await fetch(url, options);
+  const response = await fetch(url, options)
 
   if (!response.ok) {
     throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
   }
 
 
-  return (await response.json()).filter((p: MersennePrime) => p.isPrime)
+  const x: any = (await response.json())
+
+  return x.filter((p: MersennePrime) => p.isPrime)
 }
 
 async function sendPrimesInBatches(primesArray: number[], batchSize: number): Promise<MersennePrime[]> {

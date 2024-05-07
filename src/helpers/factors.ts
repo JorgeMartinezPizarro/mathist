@@ -182,7 +182,7 @@ const brentFactor = (n: bigint): bigint => {
         x = f(x);
         y = f(f(y));
         d = gcd(abs(x - y), n);
-        if (getTimeMicro() - start > 5 * 1000**2) throw new Error("Failed brent to find a factor in 5 seconds")
+        if (getTimeMicro() - start > 5 * 1000**2) throw new Error("Failed brent to find a factor in 5 seconds. First iteration f=x**2+1 modn, x=2, y=2")
     }
 
     if (d === n) {
@@ -195,7 +195,7 @@ const brentFactor = (n: bigint): bigint => {
             x = f(x) % n;
             y = f(f(y)) % n;
             d = gcd(abs(x - y), n);
-            if (getTimeMicro() - start > 5 * 1000**2) throw new Error("Failed brent to find a factor in 5 seconds")
+            if (getTimeMicro() - start > 5 * 1000**2) throw new Error("Failed brent to find a factor in 5 seconds. Second iteration f=x**3+1 modn, x=3, y=5")
         }
     }
 
