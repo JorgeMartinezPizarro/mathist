@@ -7,8 +7,6 @@ import errorMessage from '@/helpers/errorMessage'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
-import { KNOWN_MERSENNE_PRIMES } from '@/Constants';
-import { lucasLehmerTest } from '@/helpers/isMersennePrime';
 
 export interface MersennePrime {
   p: number;
@@ -34,14 +32,13 @@ export async function GET(request: Request): Promise<Response> {
 
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
-    const LIMIT: number = parseInt(searchParams.get('LIMIT') || "100");
+    const LIMIT: number = parseInt(searchParams.get('maxPrime') || "100");
+    const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "100");
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
 
-    const numberOfThreads = 8
-
-    const numbers = eratosthenes(10000, 10000).primes.map(n => Number(n))
+    const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
 
     const t = await sendPrimesInBatchesJS(numbers, numberOfThreads)
 
