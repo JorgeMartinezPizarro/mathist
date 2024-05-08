@@ -4,6 +4,7 @@ import getTimeMicro from './getTimeMicro';
 
 // Function to perform the Lucas-Lehmer test
 function lucasLehmerTest(p: number) {
+
     const start = getTimeMicro()
     
     if (p === 2) return true; // 2^2 - 1 = 3 is prime

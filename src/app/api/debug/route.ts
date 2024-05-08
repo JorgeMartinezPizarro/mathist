@@ -1,14 +1,16 @@
 import os from 'node:os' 
 import fs from 'fs' 
 import fetch from 'node-fetch';
+import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 
 import errorMessage from '@/helpers/errorMessage'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
 import { KNOWN_MERSENNE_PRIMES } from '@/Constants';
+import { lucasLehmerTest } from '@/helpers/isMersennePrime';
 
-interface MersennePrime {
+export interface MersennePrime {
   p: number;
   isPrime: boolean;
 }
@@ -18,6 +20,9 @@ interface MersennePrime {
 //https://es.wikipedia.org/wiki/N%C3%BAmero_primo_de_Mersenne
 
 export async function GET(request: Request): Promise<Response> {  
+
+  const start = getTimeMicro();
+  let elapsed = getTimeMicro();
 
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
@@ -34,25 +39,39 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!")
     }
 
-    const start = getTimeMicro()
+    const numberOfThreads = 8
 
-    const n = LIMIT
+    const numbers = eratosthenes(10000, 10000).primes.map(n => Number(n))
 
-    //const numbers = eratosthenes(n, n).primes.map(p => Number(p))
+    const t = await sendPrimesInBatchesJS(numbers, numberOfThreads)
 
-    const numbers = KNOWN_MERSENNE_PRIMES.slice(27, 28)
+    const mersennePrimesJS = t.filter(p=>p.isPrime)
 
-    const m = await sendPrimesInBatches(numbers, 100) // 500 seems to be the more effective batch size.
-    
+    const timeForJSLLTP = getTimeMicro() - elapsed
+
+    elapsed = getTimeMicro()    
+
+    const mersennePrimesScala = await sendPrimesInBatchesScala(numbers, 500, numberOfThreads)
+    const timeForScalaLLTP = getTimeMicro() - elapsed
+
     const stringArray = [
       "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
-      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz " + process.arch + "</b></p>",
+      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz , " + os.cpus().length + " cores, " + process.arch + "</b></p>",
       "<hr/>",
-      ...m.map((mp: MersennePrime) => "<p style='text-align: center;'>2**" + mp.p + " - 1</p>"),
+      ...mersennePrimesJS.map((mp: MersennePrime) => "<p style='text-align: center;'>2**" + mp.p + " - 1</p>"),
       "<hr/>",
-      "<p style='text-align: center;'>" + m.length +" primes found</p>",
+      "<p style='text-align: center;'>" + mersennePrimesJS.length +" primes found</p>",
       "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
+      "<p style='text-align: center;'>It took " + duration(timeForJSLLTP) + " to generate the report, " + duration(Math.floor(timeForJSLLTP/mersennePrimesJS.length)) + " for each prime</p>",
+      "<hr/>",
+      ...mersennePrimesScala.map((mp: MersennePrime) => "<p style='text-align: center;'>2**" + mp.p + " - 1</p>"),
+      "<hr/>",
+      "<p style='text-align: center;'>" + mersennePrimesScala.length +" primes found</p>",
+      "<hr/>",
+      "<p style='text-align: center;'>It took " + duration(timeForScalaLLTP) + " to generate the report, " + duration(Math.floor(timeForScalaLLTP/mersennePrimesScala.length)) + " for each prime</p>",
+      "<hr/>",
+      "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report</p>",
+      "<hr/>",
     ]
 
     const filename = "./public/files/debug.html"
@@ -71,9 +90,10 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
-async function processPrimes(primes: number[]): Promise<MersennePrime[]>  {
-  // Your logic to send the primes to the REST API and process the response
-  // Example:
+// TODO: benchmark scala VS js bigint. First results, js wins by 10%.
+// Use scala for the computation!
+async function processPrimes(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
+  
   const url = 'http://37.27.102.105:8080/lltp';
 
   const options = {
@@ -83,7 +103,7 @@ async function processPrimes(primes: number[]): Promise<MersennePrime[]>  {
     },
     body: JSON.stringify({
         numbers: primes.join(","),
-        numThreads: 16,
+        numThreads,
     }),
     timeout: 86400 * 1000, // A day. No timeouts wanted.
   }
@@ -102,15 +122,77 @@ async function processPrimes(primes: number[]): Promise<MersennePrime[]>  {
   return x.filter((p: MersennePrime) => p.isPrime)
 }
 
-async function sendPrimesInBatches(primesArray: number[], batchSize: number): Promise<MersennePrime[]> {
+async function sendPrimesInBatchesScala(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
   
   const mersennePrimes: MersennePrime[] = new Array();
   
   for (let i = 0; i < primesArray.length; i += batchSize) {
       const batch = primesArray.slice(i, i + batchSize);
-      const response = await processPrimes(batch);
+      const response = await processPrimes(batch, numThreads);
       mersennePrimes.push(...response)
   }
   
   return mersennePrimes
+}
+
+async function sendPrimesInBatchesJS(primesArray: number[], numberOfThreads: number): Promise<MersennePrime[]> {
+  
+  const mersennePrimes: MersennePrime[] = new Array();
+  
+  for (let i = 0; i < primesArray.length; i += numberOfThreads) {
+      const batch = primesArray.slice(i, i + numberOfThreads);
+      const response = await computeLLTP(batch);
+      mersennePrimes.push(...response)
+  }
+  
+  return mersennePrimes
+}
+
+async function computeLLTP(numbers: number[]): Promise<MersennePrime[]> {
+  if (isMainThread) {
+      // This is the main thread
+      
+      const workerPromises: Promise<MersennePrime>[] = [];
+
+      for (let i = 0; i < numbers.length; i++) {
+        const number = numbers[i]
+          // Create a new worker
+          const worker = new Worker('./src/app/api/debug/thread.mjs', { // Adjust the path here
+              workerData: number
+          });
+
+          // Create a promise that resolves with the result from the worker
+          const workerPromise = new Promise<MersennePrime>((resolve, reject) => {
+              // Listen for messages from the worker
+              worker.on('message', message => {
+                  // Assuming the worker sends back MersennePrime objects
+                  resolve(message as MersennePrime);
+              });
+
+              // Handle errors
+              worker.on('error', error => {
+                  console.error(`Worker error: ${error}`);
+                  reject(error);
+              });
+
+              // Handle worker exit
+              worker.on('exit', code => {
+                  if (code !== 0) {
+                      console.error(`Worker stopped with exit code ${code}`);
+                      reject(new Error(`Worker stopped with exit code ${code}`));
+                  }
+              });
+          });
+
+          workerPromises.push(workerPromise)
+
+      }
+
+      // Wait for all worker promises to resolve
+      return await Promise.all(workerPromises);
+  } else {
+      // This is a worker thread, not the main thread
+      console.error('This script should be run as the main thread.');
+      return [];
+  }
 }
