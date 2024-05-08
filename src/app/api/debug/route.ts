@@ -2,11 +2,13 @@ import os from 'node:os'
 import fs from 'fs' 
 import fetch from 'node-fetch';
 import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
+import _ from "lodash"
 
 import errorMessage from '@/helpers/errorMessage'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
+import { MERSENNE_TABLE } from '@/Constants';
 
 export interface MersennePrime {
   p: number;
@@ -33,7 +35,8 @@ export async function GET(request: Request): Promise<Response> {
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
     const LIMIT: number = parseInt(searchParams.get('maxPrime') || "100");
-    const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "100");
+    const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "16");
+
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
@@ -51,21 +54,32 @@ export async function GET(request: Request): Promise<Response> {
     const mersennePrimesScala = await sendPrimesInBatchesScala(numbers, 500, numberOfThreads)
     const timeForScalaLLTP = getTimeMicro() - elapsed
 
+    if (!_.isEqual(mersennePrimesJS, mersennePrimesScala )) {
+      throw new Error("WTF underteministic computation!")
+    }
+
+    const report = mersennePrimesJS.map(mp => {
+      const mersenneRow = MERSENNE_TABLE.find(mr => mr.prime === mp.p)
+      return "<tr><td style='text-align: center'>" + mersenneRow?.position + "</td><td style='text-align: center'>" + mersenneRow?.prime + "</td><td style='text-align: center'>" + mersenneRow?.discoveryDate + "</td><td style='text-align: center'>" + mersenneRow?.discoveredBy + "</td></tr>"
+    })
+
     const stringArray = [
       "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz , " + os.cpus().length + " cores, " + process.arch + "</b></p>",
       "<hr/>",
-      ...mersennePrimesJS.map((mp: MersennePrime) => "<p style='text-align: center;'>2**" + mp.p + " - 1</p>"),
+      "<table style='margin: 0 auto; width: 700px;'><thead><tr><th>#</th><th>Prime</th><th>Date</th><th>Finder</th></tr></thead><tbody>",
+      ...report,
+      "</tbody></table>",
       "<hr/>",
-      "<p style='text-align: center;'>" + mersennePrimesJS.length +" primes found</p>",
+      "<p style='text-align: center;'>" + mersennePrimesJS.length +" Mersenne primes found</p>",
       "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(timeForJSLLTP) + " to generate the report, " + duration(Math.floor(timeForJSLLTP/mersennePrimesJS.length)) + " for each prime</p>",
+      "<p style='text-align: center;'><b>Javascript</b></p>",
       "<hr/>",
-      ...mersennePrimesScala.map((mp: MersennePrime) => "<p style='text-align: center;'>2**" + mp.p + " - 1</p>"),
+      "<p style='text-align: center;'>It took " + duration(timeForJSLLTP) + " to test " + + " " + numberOfThreads + " javascript workers, " + duration(Math.floor(timeForJSLLTP/mersennePrimesJS.length)) + " for each prime</p>",
       "<hr/>",
-      "<p style='text-align: center;'>" + mersennePrimesScala.length +" primes found</p>",
+      "<p style='text-align: center;'><b>Scala</b></p>",
       "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(timeForScalaLLTP) + " to generate the report, " + duration(Math.floor(timeForScalaLLTP/mersennePrimesScala.length)) + " for each prime</p>",
+      "<p style='text-align: center;'>It took " + duration(timeForScalaLLTP) + " to test " + numbers.length + " primes using "+ numberOfThreads + " scala threads, " + duration(Math.floor(timeForScalaLLTP/mersennePrimesScala.length)) + " for each prime</p>",
       "<hr/>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report</p>",
       "<hr/>",
