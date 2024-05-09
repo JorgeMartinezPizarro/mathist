@@ -1,7 +1,7 @@
 import os from 'node:os' 
 import fs from 'fs' 
 import fetch from 'node-fetch';
-import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
+import { Worker, isMainThread } from 'worker_threads';
 import _ from "lodash"
 
 import errorMessage from '@/helpers/errorMessage'
@@ -31,7 +31,10 @@ export async function GET(request: Request): Promise<Response> {
   try {
 
     // TODO: use a temp file to record the processed values. Make the search resumable. Maybe we can just pack all this search into Scala code and use the mather just to link to the results.
-
+    
+    ////////////////////////////////////////////////////////////////////////////
+    // Benchmark scala VS python vs js bigint
+    ////////////////////////////////////////////////////////////////////////////
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
     const LIMIT: number = parseInt(searchParams.get('maxPrime') || "100");
@@ -43,6 +46,18 @@ export async function GET(request: Request): Promise<Response> {
 
     const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
 
+    const mersennePrimesFortran = await sendPrimesInBatchesFortran(numbers, numberOfThreads, numberOfThreads)
+
+    const timeForFortranLLTP = getTimeMicro() - elapsed
+
+    elapsed = getTimeMicro()
+    
+    const mersennePrimesPython = await sendPrimesInBatchesPython(numbers, numberOfThreads, numberOfThreads)
+
+    const timeForPythonLLTP = getTimeMicro() - elapsed
+
+    elapsed = getTimeMicro()
+
     const t = await sendPrimesInBatchesJS(numbers, numberOfThreads)
 
     const mersennePrimesJS = t.filter(p=>p.isPrime)
@@ -52,26 +67,39 @@ export async function GET(request: Request): Promise<Response> {
     elapsed = getTimeMicro()    
 
     const mersennePrimesScala = await sendPrimesInBatchesScala(numbers, 500, numberOfThreads)
+
     const timeForScalaLLTP = getTimeMicro() - elapsed
 
-    if (!_.isEqual(mersennePrimesJS, mersennePrimesScala )) {
+    if (
+      !_.isEqual(mersennePrimesJS, mersennePrimesScala || 
+      !_.isEqual(mersennePrimesJS, mersennePrimesPython)  || 
+      !_.isEqual(mersennePrimesPython, mersennePrimesFortran) 
+    )) {
       throw new Error("WTF underteministic computation!")
     }
 
-    const report = mersennePrimesJS.map(mp => {
+    const mersennePrimesRow = mersennePrimesJS.map(mp => {
       const mersenneRow = MERSENNE_TABLE.find(mr => mr.prime === mp.p)
-      return "<tr><td style='text-align: center'>" + mersenneRow?.position + "</td><td style='text-align: center'>" + mersenneRow?.prime + "</td><td style='text-align: center'>" + mersenneRow?.discoveryDate + "</td><td style='text-align: center'>" + mersenneRow?.discoveredBy + "</td></tr>"
+      return "<tr><td style='text-align: center'>" + mersenneRow?.position + "</td><td style='text-align: center'>2**" + mersenneRow?.prime + "-1</td><td style='text-align: center'>" + mersenneRow?.discoveryDate + "</td><td style='text-align: center'>" + mersenneRow?.discoveredBy + "</td></tr>"
     })
 
     const stringArray = [
       "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz , " + os.cpus().length + " cores, " + process.arch + "</b></p>",
       "<hr/>",
-      "<table style='margin: 0 auto; width: 700px;'><thead><tr><th>#</th><th>Prime</th><th>Date</th><th>Finder</th></tr></thead><tbody>",
-      ...report,
+      "<table style='margin: 0 auto; width: 700px;'><thead><tr><th>#</th><th>Mersenne prime</th><th>Date</th><th>Finder</th></tr></thead><tbody>",
+      ...mersennePrimesRow,
       "</tbody></table>",
       "<hr/>",
       "<p style='text-align: center;'>" + mersennePrimesJS.length +" Mersenne primes found</p>",
+      "<hr/>",
+      "<p style='text-align: center;'><b>Fortran</b></p>",
+      "<hr/>",
+      "<p style='text-align: center;'>It took " + duration(timeForFortranLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " fortran threads, " + duration(Math.floor(timeForFortranLLTP/mersennePrimesJS.length)) + " for each prime</p>",
+      "<hr/>",
+      "<p style='text-align: center;'><b>Python</b></p>",
+      "<hr/>",
+      "<p style='text-align: center;'>It took " + duration(timeForPythonLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " python threads, " + duration(Math.floor(timeForPythonLLTP/mersennePrimesJS.length)) + " for each prime</p>",
       "<hr/>",
       "<p style='text-align: center;'><b>Javascript</b></p>",
       "<hr/>",
@@ -101,9 +129,115 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
-// TODO: benchmark scala VS js bigint. First results, js wins by 10%.
+///////////////////////////////////////////////////////////
+// Use fortran for the computation!
+///////////////////////////////////////////////////////////
+async function sendPrimesInBatchesFortran(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
+  
+  const mersennePrimes: MersennePrime[] = new Array();
+  
+  for (let i = 0; i < primesArray.length; i += batchSize) {
+      const batch = primesArray.slice(i, i + batchSize);
+      const response = await computeLLTPFortran(batch, numThreads);
+      mersennePrimes.push(...response)
+  }
+  
+  return mersennePrimes
+}
+
+async function computeLLTPFortran(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
+  
+  const url = 'http://37.27.102.105:5001/lltp';
+
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+        numbers: primes,
+        numThreads,
+    }),
+    timeout: 86400 * 1000, // A day. No timeouts wanted.
+  }
+
+  console.log("Requesting", url, options)
+
+  const response = await fetch(url, options)
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
+  }
+
+
+  const x: any = (await response.json())
+
+  return x.results.filter((p: MersennePrime) => p.isPrime)
+}
+
+///////////////////////////////////////////////////////////
+// Use python for the computation!
+///////////////////////////////////////////////////////////
+async function sendPrimesInBatchesPython(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
+  
+  const mersennePrimes: MersennePrime[] = new Array();
+  
+  for (let i = 0; i < primesArray.length; i += batchSize) {
+      const batch = primesArray.slice(i, i + batchSize);
+      const response = await computeLLTPPython(batch, numThreads);
+      mersennePrimes.push(...response)
+  }
+  
+  return mersennePrimes
+}
+
+async function computeLLTPPython(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
+  
+  const url = 'http://37.27.102.105:5000/lltp';
+
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+        numbers: primes,
+        numThreads,
+    }),
+    timeout: 86400 * 1000, // A day. No timeouts wanted.
+  }
+
+  console.log("Requesting", url, options)
+
+  const response = await fetch(url, options)
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
+  }
+
+
+  const x: any = (await response.json())
+
+  return x.results.filter((p: MersennePrime) => p.isPrime)
+}
+
+///////////////////////////////////////////////////////////
 // Use scala for the computation!
-async function processPrimes(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
+///////////////////////////////////////////////////////////
+async function sendPrimesInBatchesScala(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
+  
+  const mersennePrimes: MersennePrime[] = new Array();
+  
+  for (let i = 0; i < primesArray.length; i += batchSize) {
+      const batch = primesArray.slice(i, i + batchSize);
+      const response = await computeLLTPScala(batch, numThreads);
+      mersennePrimes.push(...response)
+  }
+  
+  return mersennePrimes
+}
+
+async function computeLLTPScala(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
   const url = 'http://37.27.102.105:8080/lltp';
 
@@ -133,33 +267,23 @@ async function processPrimes(primes: number[], numThreads: number): Promise<Mers
   return x.filter((p: MersennePrime) => p.isPrime)
 }
 
-async function sendPrimesInBatchesScala(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
-  
-  const mersennePrimes: MersennePrime[] = new Array();
-  
-  for (let i = 0; i < primesArray.length; i += batchSize) {
-      const batch = primesArray.slice(i, i + batchSize);
-      const response = await processPrimes(batch, numThreads);
-      mersennePrimes.push(...response)
-  }
-  
-  return mersennePrimes
-}
-
+///////////////////////////////////////////////////////////
+// Use Js for the computation
+///////////////////////////////////////////////////////////
 async function sendPrimesInBatchesJS(primesArray: number[], numberOfThreads: number): Promise<MersennePrime[]> {
-  
+    
   const mersennePrimes: MersennePrime[] = new Array();
   
   for (let i = 0; i < primesArray.length; i += numberOfThreads) {
       const batch = primesArray.slice(i, i + numberOfThreads);
-      const response = await computeLLTP(batch);
+      const response = await computeLLTPJs(batch);
       mersennePrimes.push(...response)
   }
   
   return mersennePrimes
 }
 
-async function computeLLTP(numbers: number[]): Promise<MersennePrime[]> {
+async function computeLLTPJs(numbers: number[]): Promise<MersennePrime[]> {
   if (isMainThread) {
       // This is the main thread
       
