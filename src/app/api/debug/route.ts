@@ -53,58 +53,36 @@ export async function GET(request: Request): Promise<Response> {
 
     const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
 
-    /*const mersennePrimesFortran = await sendPrimesInBatchesFortran(numbers, numberOfThreads, numberOfThreads)
-
-    const timeForFortranLLTP = getTimeMicro() - elapsed
-
-    elapsed = getTimeMicro()*/
-    
-    /*const mersennePrimesPython = await sendPrimesInBatchesPython(numbers, numberOfThreads, numberOfThreads)
-
+    const mersennePrimesPython = await sendPrimesInBatchesPython(numbers, numberOfThreads, numberOfThreads)
     const timeForPythonLLTP = getTimeMicro() - elapsed
-
     elapsed = getTimeMicro()
 
-    */
-
     const mersennePrimesGo = (await (sendPrimesInBatchesGo(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
-
     const timeForGoLLTP = getTimeMicro() - elapsed
-
     elapsed = getTimeMicro()
    
     const mersennePrimesJS = (await sendPrimesInBatchesJS(numbers, numberOfThreads)).filter(p=>p.isPrime)
-
     const timeForJSLLTP = getTimeMicro() - elapsed
-
     elapsed = getTimeMicro()    
 
     const mersennePrimesScala = await sendPrimesInBatchesScala(numbers, 500, numberOfThreads)
-
     const timeForScalaLLTP = getTimeMicro() - elapsed
 
     const mersenneReport: MersenneReport[] = [
-      //{language: "Fortran", maxPrime: LIMIT, time: timeForFortranLLTP, mersennePrimes: mersennePrimesFortran},
-      //{language: "Python", maxPrime: LIMIT, time: timeForPythonLLTP, mersennePrimes: mersennePrimesPython},
+      {language: "Python", maxPrime: LIMIT, time: timeForPythonLLTP, mersennePrimes: mersennePrimesPython},
       {language: "Go", maxPrime: LIMIT, time: timeForGoLLTP, mersennePrimes: mersennePrimesGo},
       {language: "Javascript", maxPrime: LIMIT, time: timeForJSLLTP, mersennePrimes: mersennePrimesJS},
       {language: "Scala", maxPrime: LIMIT, time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala},
     ]
 
-    if (
-      !_.isEqual(mersennePrimesJS, mersennePrimesScala) || 
-      !_.isEqual(mersennePrimesJS, mersennePrimesGo) /*|| 
-      !_.isEqual(mersennePrimesJS, mersennePrimesFortran)  || 
-      !_.isEqual(mersennePrimesPython, mersennePrimesFortran)*/ 
-    ) {
-      console.log("////////////////////////////////////////////////")
-      console.log(mersennePrimesGo)
-      console.log("////////////////////////////////////////////////")
-      console.log(mersennePrimesJS)
-      console.log("////////////////////////////////////////////////")
-      console.log(mersennePrimesScala)
-      console.log("////////////////////////////////////////////////")
-      throw new Error("WTF underteministic computation!")
+    for (var i = 0; i<mersenneReport.length - 1; i++) {
+      if (!_.isEqual(mersenneReport[i].mersennePrimes, mersenneReport[i+1].mersennePrimes)) {
+        console.log("////////////////////////////////////////////////")
+        console.log(mersenneReport[i].mersennePrimes)
+        console.log("////////////////////////////////////////////////")
+        console.log(mersenneReport[i+1].mersennePrimes)
+        throw new Error("WTF underteministic computation!")
+      }
     }
 
     const mersennePrimesRow = mersennePrimesScala.map(mp => {
@@ -113,7 +91,6 @@ export async function GET(request: Request): Promise<Response> {
     })
 
     const benchmarkRows = mersenneReport.reduce((acc: string[], val: MersenneReport) => {
-      
       return [...acc,
         "<hr/>",
         "<p style='text-align: center;'><b>"  + val.language + "</b></p>",
