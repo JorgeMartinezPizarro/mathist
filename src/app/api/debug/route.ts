@@ -15,6 +15,13 @@ export interface MersennePrime {
   isPrime: boolean;
 }
 
+export interface MersenneReport {
+  language: string;
+  maxPrime: number;
+  time: number;
+  mersennePrimes: MersennePrime[];
+}
+
 //https://en.wikipedia.org/wiki/Pocklington_primality_test
 
 //https://es.wikipedia.org/wiki/N%C3%BAmero_primo_de_Mersenne
@@ -46,11 +53,11 @@ export async function GET(request: Request): Promise<Response> {
 
     const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
 
-    const mersennePrimesFortran = await sendPrimesInBatchesFortran(numbers, numberOfThreads, numberOfThreads)
+    /*const mersennePrimesFortran = await sendPrimesInBatchesFortran(numbers, numberOfThreads, numberOfThreads)
 
     const timeForFortranLLTP = getTimeMicro() - elapsed
 
-    elapsed = getTimeMicro()
+    elapsed = getTimeMicro()*/
     
     /*const mersennePrimesPython = await sendPrimesInBatchesPython(numbers, numberOfThreads, numberOfThreads)
 
@@ -59,9 +66,8 @@ export async function GET(request: Request): Promise<Response> {
     elapsed = getTimeMicro()
 
     */
-   const t = await sendPrimesInBatchesJS(numbers, numberOfThreads)
-
-    const mersennePrimesJS = t.filter(p=>p.isPrime)
+   
+    const mersennePrimesJS = (await sendPrimesInBatchesJS(numbers, numberOfThreads)).filter(p=>p.isPrime)
 
     const timeForJSLLTP = getTimeMicro() - elapsed
 
@@ -71,18 +77,41 @@ export async function GET(request: Request): Promise<Response> {
 
     const timeForScalaLLTP = getTimeMicro() - elapsed
 
+    const mersenneReport: MersenneReport[] = [
+      //{language: "Fortran", maxPrime: LIMIT, time: timeForFortranLLTP, mersennePrimes: mersennePrimesFortran},
+      //{language: "Python", maxPrime: LIMIT, time: timeForPythonLLTP, mersennePrimes: mersennePrimesPython},
+      {language: "Javascript", maxPrime: LIMIT, time: timeForJSLLTP, mersennePrimes: mersennePrimesJS},
+      {language: "Scala", maxPrime: LIMIT, time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala},
+    ]
+
     if (
-      !_.isEqual(mersennePrimesJS, mersennePrimesScala || 
-      !_.isEqual(mersennePrimesJS, mersennePrimesFortran) /* || 
+      !_.isEqual(mersennePrimesJS, mersennePrimesScala /*|| 
+      !_.isEqual(mersennePrimesJS, mersennePrimesFortran)  || 
       !_.isEqual(mersennePrimesPython, mersennePrimesFortran)*/ 
     )) {
+      console.log("////////////////////////////////////////////////")
+      console.log(mersennePrimesJS)
+      console.log("////////////////////////////////////////////////")
+      console.log(mersennePrimesScala)
+      console.log("////////////////////////////////////////////////")
       throw new Error("WTF underteministic computation!")
     }
 
-    const mersennePrimesRow = mersennePrimesJS.map(mp => {
+    const mersennePrimesRow = mersennePrimesScala.map(mp => {
       const mersenneRow = MERSENNE_TABLE.find(mr => mr.prime === mp.p)
       return "<tr><td style='text-align: center'>" + mersenneRow?.position + "</td><td style='text-align: center'>2**" + mersenneRow?.prime + "-1</td><td style='text-align: center'>" + mersenneRow?.discoveryDate + "</td><td style='text-align: center'>" + mersenneRow?.discoveredBy + "</td></tr>"
     })
+
+    const benchmarkRows = mersenneReport.reduce((acc: string[], val: MersenneReport) => {
+      
+      return [...acc,
+        "<hr/>",
+        "<p style='text-align: center;'><b>"  + val.language + "</b></p>",
+        "<hr/>",
+        "<p style='text-align: center;'>It took " + duration(val.time) + " to test " + numbers.length + " primes using " + numberOfThreads + " threads.",
+
+      ]
+    }, [])
 
     const stringArray = [
       "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
@@ -92,23 +121,8 @@ export async function GET(request: Request): Promise<Response> {
       ...mersennePrimesRow,
       "</tbody></table>",
       "<hr/>",
-      "<p style='text-align: center;'>" + mersennePrimesJS.length +" Mersenne primes found</p>",
-      "<hr/>",
-      "<p style='text-align: center;'><b>Fortran</b></p>",
-      "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(timeForFortranLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " fortran threads, " + duration(Math.floor(timeForFortranLLTP/mersennePrimesJS.length)) + " for each prime</p>",
-      /*"<hr/>",
-      "<p style='text-align: center;'><b>Python</b></p>",
-      "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(timeForPythonLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " python threads, " + duration(Math.floor(timeForPythonLLTP/mersennePrimesJS.length)) + " for each prime</p>",*/
-      "<hr/>",
-      "<p style='text-align: center;'><b>Javascript</b></p>",
-      "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(timeForJSLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " javascript workers, " + duration(Math.floor(timeForJSLLTP/mersennePrimesJS.length)) + " for each prime</p>",
-      "<hr/>",
-      "<p style='text-align: center;'><b>Scala</b></p>",
-      "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(timeForScalaLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " scala threads, " + duration(Math.floor(timeForScalaLLTP/mersennePrimesScala.length)) + " for each prime</p>",
+      "<p style='text-align: center;'>" + mersennePrimesScala.length +" Mersenne primes found</p>",
+      ...benchmarkRows,
       "<hr/>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report</p>",
       "<hr/>",
@@ -172,7 +186,7 @@ async function computeLLTPFortran(primes: number[], numThreads: number): Promise
 
 
   const x: any = (await response.json())
-
+  console.log(x)
   return x.results.filter((p: MersennePrime) => p.isPrime)
 }
 
@@ -290,12 +304,16 @@ async function computeLLTPJs(numbers: number[]): Promise<MersennePrime[]> {
       
       const workerPromises: Promise<MersennePrime>[] = [];
 
+      
+
       for (let i = 0; i < numbers.length; i++) {
         const number = numbers[i]
           // Create a new worker
           const worker = new Worker('./src/app/api/debug/thread.mjs', { // Adjust the path here
               workerData: number
           });
+
+          console.log("Requesting for p = " + number)
 
           // Create a promise that resolves with the result from the worker
           const workerPromise = new Promise<MersennePrime>((resolve, reject) => {
