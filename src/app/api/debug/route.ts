@@ -204,7 +204,7 @@ async function computeLLTPPython(primes: number[], numThreads: number): Promise<
     },
     body: JSON.stringify({
         numbers: primes,
-        numThreads,
+        num_processes: numThreads,
     }),
     timeout: 86400 * 1000, // A day. No timeouts wanted.
   }
