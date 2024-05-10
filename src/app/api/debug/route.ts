@@ -37,7 +37,7 @@ export async function GET(request: Request): Promise<Response> {
     ////////////////////////////////////////////////////////////////////////////
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
-    const LIMIT: number = parseInt(searchParams.get('maxPrime') || "100");
+    const LIMIT: number = parseInt(searchParams.get('maxPrime') || "128");
     const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "16");
 
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
@@ -52,13 +52,14 @@ export async function GET(request: Request): Promise<Response> {
 
     elapsed = getTimeMicro()
     
-    const mersennePrimesPython = await sendPrimesInBatchesPython(numbers, numberOfThreads, numberOfThreads)
+    /*const mersennePrimesPython = await sendPrimesInBatchesPython(numbers, numberOfThreads, numberOfThreads)
 
     const timeForPythonLLTP = getTimeMicro() - elapsed
 
     elapsed = getTimeMicro()
 
-    const t = await sendPrimesInBatchesJS(numbers, numberOfThreads)
+    */
+   const t = await sendPrimesInBatchesJS(numbers, numberOfThreads)
 
     const mersennePrimesJS = t.filter(p=>p.isPrime)
 
@@ -72,8 +73,8 @@ export async function GET(request: Request): Promise<Response> {
 
     if (
       !_.isEqual(mersennePrimesJS, mersennePrimesScala || 
-      !_.isEqual(mersennePrimesJS, mersennePrimesPython)  || 
-      !_.isEqual(mersennePrimesPython, mersennePrimesFortran) 
+      !_.isEqual(mersennePrimesJS, mersennePrimesFortran) /* || 
+      !_.isEqual(mersennePrimesPython, mersennePrimesFortran)*/ 
     )) {
       throw new Error("WTF underteministic computation!")
     }
@@ -96,10 +97,10 @@ export async function GET(request: Request): Promise<Response> {
       "<p style='text-align: center;'><b>Fortran</b></p>",
       "<hr/>",
       "<p style='text-align: center;'>It took " + duration(timeForFortranLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " fortran threads, " + duration(Math.floor(timeForFortranLLTP/mersennePrimesJS.length)) + " for each prime</p>",
-      "<hr/>",
+      /*"<hr/>",
       "<p style='text-align: center;'><b>Python</b></p>",
       "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(timeForPythonLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " python threads, " + duration(Math.floor(timeForPythonLLTP/mersennePrimesJS.length)) + " for each prime</p>",
+      "<p style='text-align: center;'>It took " + duration(timeForPythonLLTP) + " to test " + numbers.length + " primes using " + numberOfThreads + " python threads, " + duration(Math.floor(timeForPythonLLTP/mersennePrimesJS.length)) + " for each prime</p>",*/
       "<hr/>",
       "<p style='text-align: center;'><b>Javascript</b></p>",
       "<hr/>",
