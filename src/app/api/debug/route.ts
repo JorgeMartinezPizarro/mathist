@@ -66,6 +66,12 @@ export async function GET(request: Request): Promise<Response> {
     elapsed = getTimeMicro()
 
     */
+
+    const mersennePrimesGo = (await (sendPrimesInBatchesGo(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
+
+    const timeForGoLLTP = getTimeMicro() - elapsed
+
+    elapsed = getTimeMicro()
    
     const mersennePrimesJS = (await sendPrimesInBatchesJS(numbers, numberOfThreads)).filter(p=>p.isPrime)
 
@@ -80,15 +86,19 @@ export async function GET(request: Request): Promise<Response> {
     const mersenneReport: MersenneReport[] = [
       //{language: "Fortran", maxPrime: LIMIT, time: timeForFortranLLTP, mersennePrimes: mersennePrimesFortran},
       //{language: "Python", maxPrime: LIMIT, time: timeForPythonLLTP, mersennePrimes: mersennePrimesPython},
+      {language: "Go", maxPrime: LIMIT, time: timeForGoLLTP, mersennePrimes: mersennePrimesGo},
       {language: "Javascript", maxPrime: LIMIT, time: timeForJSLLTP, mersennePrimes: mersennePrimesJS},
       {language: "Scala", maxPrime: LIMIT, time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala},
     ]
 
     if (
-      !_.isEqual(mersennePrimesJS, mersennePrimesScala /*|| 
+      !_.isEqual(mersennePrimesJS, mersennePrimesScala) || 
+      !_.isEqual(mersennePrimesJS, mersennePrimesGo) /*|| 
       !_.isEqual(mersennePrimesJS, mersennePrimesFortran)  || 
       !_.isEqual(mersennePrimesPython, mersennePrimesFortran)*/ 
-    )) {
+    ) {
+      console.log("////////////////////////////////////////////////")
+      console.log(mersennePrimesGo)
       console.log("////////////////////////////////////////////////")
       console.log(mersennePrimesJS)
       console.log("////////////////////////////////////////////////")
@@ -203,7 +213,7 @@ async function sendPrimesInBatchesPython(primesArray: number[], batchSize: numbe
       mersennePrimes.push(...response)
   }
   
-  return mersennePrimes
+  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
 }
 
 async function computeLLTPPython(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
@@ -249,7 +259,7 @@ async function sendPrimesInBatchesScala(primesArray: number[], batchSize: number
       mersennePrimes.push(...response)
   }
   
-  return mersennePrimes
+  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
 }
 
 async function computeLLTPScala(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
@@ -267,8 +277,6 @@ async function computeLLTPScala(primes: number[], numThreads: number): Promise<M
     }),
     timeout: 86400 * 1000, // A day. No timeouts wanted.
   }
-
-  console.log("Requesting", url, options)
 
   const response = await fetch(url, options)
 
@@ -295,7 +303,7 @@ async function sendPrimesInBatchesJS(primesArray: number[], numberOfThreads: num
       mersennePrimes.push(...response)
   }
   
-  return mersennePrimes
+  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
 }
 
 async function computeLLTPJs(numbers: number[]): Promise<MersennePrime[]> {
@@ -304,16 +312,12 @@ async function computeLLTPJs(numbers: number[]): Promise<MersennePrime[]> {
       
       const workerPromises: Promise<MersennePrime>[] = [];
 
-      
-
       for (let i = 0; i < numbers.length; i++) {
         const number = numbers[i]
           // Create a new worker
           const worker = new Worker('./src/app/api/debug/thread.mjs', { // Adjust the path here
               workerData: number
           });
-
-          console.log("Requesting for p = " + number)
 
           // Create a promise that resolves with the result from the worker
           const workerPromise = new Promise<MersennePrime>((resolve, reject) => {
@@ -349,4 +353,50 @@ async function computeLLTPJs(numbers: number[]): Promise<MersennePrime[]> {
       console.error('This script should be run as the main thread.');
       return [];
   }
+}
+
+///////////////////////////////////////////////////////////
+// Use GO for the computation!
+///////////////////////////////////////////////////////////
+async function sendPrimesInBatchesGo(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
+  
+  const mersennePrimes: MersennePrime[] = new Array();
+  
+  for (let i = 0; i < primesArray.length; i += batchSize) {
+      const batch = primesArray.slice(i, i + batchSize);
+      const response = await computeLLTPGo(batch, numThreads);
+      mersennePrimes.push(...response)
+  }
+  
+  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
+}
+
+async function computeLLTPGo(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
+  
+  const url = 'http://37.27.102.105:5002/lltp';
+
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+        numbers: primes.join(","),
+        num_threads: numThreads,
+    }),
+    timeout: 86400 * 1000, // A day. No timeouts wanted.
+  }
+
+  console.log("Requesting", url, options)
+
+  const response = await fetch(url, options)
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
+  }
+
+
+  const x: any = (await response.json())
+
+  return x.filter((p: MersennePrime) => p.isPrime).map((mp: any) => {return {isPrime: mp.isPrime, p: Number(mp.p)}})
 }
