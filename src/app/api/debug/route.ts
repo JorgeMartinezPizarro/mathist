@@ -53,10 +53,6 @@ export async function GET(request: Request): Promise<Response> {
 
     const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
 
-    const mersennePrimesPython = await sendPrimesInBatchesPython(numbers, numberOfThreads, numberOfThreads)
-    const timeForPythonLLTP = getTimeMicro() - elapsed
-    elapsed = getTimeMicro()
-
     const mersennePrimesGo = (await (sendPrimesInBatchesGo(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
     const timeForGoLLTP = getTimeMicro() - elapsed
     elapsed = getTimeMicro()
@@ -69,7 +65,6 @@ export async function GET(request: Request): Promise<Response> {
     const timeForScalaLLTP = getTimeMicro() - elapsed
 
     const mersenneReport: MersenneReport[] = [
-      {language: "Python", maxPrime: LIMIT, time: timeForPythonLLTP, mersennePrimes: mersennePrimesPython},
       {language: "Go", maxPrime: LIMIT, time: timeForGoLLTP, mersennePrimes: mersennePrimesGo},
       {language: "Javascript", maxPrime: LIMIT, time: timeForJSLLTP, mersennePrimes: mersennePrimesJS},
       {language: "Scala", maxPrime: LIMIT, time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala},
@@ -129,98 +124,6 @@ export async function GET(request: Request): Promise<Response> {
   } catch (error) {
     return Response.json({ error: "Error generating mersenne report. " + errorMessage(error) }, { status: 500 });
   }
-}
-
-///////////////////////////////////////////////////////////
-// Use fortran for the computation!
-///////////////////////////////////////////////////////////
-async function sendPrimesInBatchesFortran(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
-  
-  const mersennePrimes: MersennePrime[] = new Array();
-  
-  for (let i = 0; i < primesArray.length; i += batchSize) {
-      const batch = primesArray.slice(i, i + batchSize);
-      const response = await computeLLTPFortran(batch, numThreads);
-      mersennePrimes.push(...response)
-  }
-  
-  return mersennePrimes
-}
-
-async function computeLLTPFortran(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
-  
-  const url = 'http://37.27.102.105:5001/lltp';
-
-  const options = {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-        numbers: primes,
-        numThreads,
-    }),
-    timeout: 86400 * 1000, // A day. No timeouts wanted.
-  }
-
-  console.log("Requesting", url, options)
-
-  const response = await fetch(url, options)
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
-  }
-
-
-  const x: any = (await response.json())
-  console.log(x)
-  return x.results.filter((p: MersennePrime) => p.isPrime)
-}
-
-///////////////////////////////////////////////////////////
-// Use python for the computation!
-///////////////////////////////////////////////////////////
-async function sendPrimesInBatchesPython(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
-  
-  const mersennePrimes: MersennePrime[] = new Array();
-  
-  for (let i = 0; i < primesArray.length; i += batchSize) {
-      const batch = primesArray.slice(i, i + batchSize);
-      const response = await computeLLTPPython(batch, numThreads);
-      mersennePrimes.push(...response)
-  }
-  
-  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
-}
-
-async function computeLLTPPython(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
-  
-  const url = 'http://37.27.102.105:5000/lltp';
-
-  const options = {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-        numbers: primes,
-        num_processes: numThreads,
-    }),
-    timeout: 86400 * 1000, // A day. No timeouts wanted.
-  }
-
-  console.log("Requesting", url, options)
-
-  const response = await fetch(url, options)
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
-  }
-
-
-  const x: any = (await response.json())
-
-  return x.results.filter((p: MersennePrime) => p.isPrime)
 }
 
 ///////////////////////////////////////////////////////////
