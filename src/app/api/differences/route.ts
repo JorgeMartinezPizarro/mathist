@@ -17,6 +17,7 @@ export async function GET(request: Request) {
     if (length > MAX_SERIES_DIFFERENCES_SIZE)
       throw new Error("Max length allowed " + (MAX_SERIES_DIFFERENCES_SIZE))
 
+    // TODO: Generate full row of series difference
     const array = series(2 * length - 1, name)
     const diff = differences(array)
     const result = diff.slice(0, length).map(subDiff => subDiff.slice(0, length))

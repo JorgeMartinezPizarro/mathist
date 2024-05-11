@@ -40,7 +40,7 @@ export async function GET(request: Request): Promise<Response> {
     // TODO: use a temp file to record the processed values. Make the search resumable. Maybe we can just pack all this search into Scala code and use the mather just to link to the results.
     
     ////////////////////////////////////////////////////////////////////////////
-    // Benchmark scala VS python vs js bigint
+    // Benchmark Scala VS Go vs Js bigint
     ////////////////////////////////////////////////////////////////////////////
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
@@ -53,11 +53,11 @@ export async function GET(request: Request): Promise<Response> {
 
     const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
 
-    const mersennePrimesGo = (await (sendPrimesInBatchesGo(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
+    const mersennePrimesGo = (await (sendPrimesInBatchesGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
     const timeForGoLLTP = getTimeMicro() - elapsed
     elapsed = getTimeMicro()
    
-    const mersennePrimesJS = (await sendPrimesInBatchesJS(numbers, numberOfThreads)).filter(p=>p.isPrime)
+    const mersennePrimesJS = (await sendPrimesInBatchesJS(numbers, 500, numberOfThreads)).filter(p=>p.isPrime)
     const timeForJSLLTP = getTimeMicro() - elapsed
     elapsed = getTimeMicro()    
 
@@ -103,7 +103,7 @@ export async function GET(request: Request): Promise<Response> {
       ...mersennePrimesRow,
       "</tbody></table>",
       "<hr/>",
-      "<p style='text-align: center;'>" + mersennePrimesScala.length +" Mersenne primes found</p>",
+      "<p style='text-align: center;'>" + mersennePrimesScala.length + " Mersenne primes found</p>",
       ...benchmarkRows,
       "<hr/>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report</p>",
@@ -173,65 +173,91 @@ async function computeLLTPScala(primes: number[], numThreads: number): Promise<M
 ///////////////////////////////////////////////////////////
 // Use Js for the computation
 ///////////////////////////////////////////////////////////
-async function sendPrimesInBatchesJS(primesArray: number[], numberOfThreads: number): Promise<MersennePrime[]> {
-    
-  const mersennePrimes: MersennePrime[] = new Array();
-  
-  for (let i = 0; i < primesArray.length; i += numberOfThreads) {
-      const batch = primesArray.slice(i, i + numberOfThreads);
-      const response = await computeLLTPJs(batch);
-      mersennePrimes.push(...response)
+async function sendPrimesInBatchesJS(primesArray: number[], batchSize: number, numberOfThreads: number): Promise<MersennePrime[]> {
+  const mersennePrimes: MersennePrime[] = [];
+
+  // Process primes in batches
+  for (let i = 0; i < primesArray.length; i += batchSize) {
+      const batch = primesArray.slice(i, i + batchSize);
+
+      try {
+          // Await the completion of the current batch computation
+          const response = await computeLLTPJs(batch, numberOfThreads);
+          console.log("////////////////////////////////////////////////////////////////////////")
+          // Push the results of the current batch to the mersennePrimes array
+          mersennePrimes.push(...response);
+      } catch (error) {
+          console.error(`Error processing batch. ` + errorMessage(error));
+          // You may choose to handle or log the error here
+      }
   }
-  
-  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
+
+  // Sort the mersennePrimes array before returning
+  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p);
 }
 
-async function computeLLTPJs(numbers: number[]): Promise<MersennePrime[]> {
+async function computeLLTPJs(numbers: number[], numThreads: number): Promise<MersennePrime[]> {
   if (isMainThread) {
-      // This is the main thread
-      
-      const workerPromises: Promise<MersennePrime>[] = [];
+    // This is the main thread
 
-      for (let i = 0; i < numbers.length; i++) {
-        const number = numbers[i]
-          // Create a new worker
-          const worker = new Worker('./src/app/api/debug/thread.mjs', { // Adjust the path here
-              workerData: number
-          });
+    console.log("Requesting numbers " + numbers.join(", ") + " with numThreads = " + numThreads)
+    
+    const workerPromises: Promise<MersennePrime>[] = []; // Adjusted to hold single promises
+    let currentIndex = 0;
 
-          // Create a promise that resolves with the result from the worker
-          const workerPromise = new Promise<MersennePrime>((resolve, reject) => {
-              // Listen for messages from the worker
-              worker.on('message', message => {
-                  // Assuming the worker sends back MersennePrime objects
-                  resolve(message as MersennePrime);
-              });
+    // Function to create a new worker
+    const createWorker = (number: number) => {
+      const worker = new Worker('./src/app/api/debug/thread.mjs', {
+        workerData: number
+      });
 
-              // Handle errors
-              worker.on('error', error => {
-                  console.error(`Worker error: ${error}`);
-                  reject(error);
-              });
+      // Create a promise that resolves with the result from the worker
+      const workerPromise = new Promise<MersennePrime>((resolve, reject) => { // Adjusted to resolve single MersennePrime
+        // Listen for messages from the worker
+        worker.on('message', message => {
+          // Assuming the worker sends back a single MersennePrime object
+          resolve(message as MersennePrime);
+        });
 
-              // Handle worker exit
-              worker.on('exit', code => {
-                  if (code !== 0) {
-                      console.error(`Worker stopped with exit code ${code}`);
-                      reject(new Error(`Worker stopped with exit code ${code}`));
-                  }
-              });
-          });
+        // Handle errors
+        worker.on('error', error => {
+          reject(error);
+        });
 
-          workerPromises.push(workerPromise)
+        // Handle worker exit
+        worker.on('exit', code => {
+          if (code !== 0) {
+            reject(new Error(`Worker stopped with exit code ${code}`));
+          }
+        });
+      });
 
+      // Push the worker promise to the array
+      workerPromises.push(workerPromise);
+    };
+
+    // Start the workers
+    for (const number of numbers) {
+      createWorker(number);
+    }
+
+    // Return a promise that resolves when all workers are done
+    return Promise.allSettled(workerPromises).then(results => {
+      const mergedResults: MersennePrime[] = [];
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          // Push the resolved MersennePrime object to the mergedResults array
+          mergedResults.push(result.value);
+        } else {
+          console.error(`Worker promise rejected: ${result.reason}`);
+        }
       }
-
-      // Wait for all worker promises to resolve
-      return await Promise.all(workerPromises);
+      return mergedResults.sort((a, b) => a.p - b.p);
+    });
   } else {
-      // This is a worker thread, not the main thread
-      console.error('This script should be run as the main thread.');
-      return [];
+    // This is a worker thread, not the main thread
+    console.error('This script should be run as the main thread.');
+    return [];
   }
 }
 
