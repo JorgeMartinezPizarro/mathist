@@ -1,3 +1,5 @@
+'use client'
+
 import { Alert, Button, FormGroup, TextField } from "@mui/material";
 import { useState } from "react";
 

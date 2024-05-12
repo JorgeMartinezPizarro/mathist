@@ -61,20 +61,7 @@ export async function GET(request: Request): Promise<Response> {
       filename = "/files/debug.html"
     }
     else if (mode === "primes") {
-      const array = series(2 * LIMIT - 1, "prime")
-      const diff = differences(array, 2)
-      const result = diff.slice(0, LIMIT).map(subDiff => subDiff.slice(0, LIMIT))
-
-      const table = result[0].map((number, i) => "<tr><td style='text-align: center;'>" + (i + 1)  + "</td><td style='text-align: center;'>" + number + "</td><td style='text-align: center;'>" + result[1][i] + "</td><td style='text-align: center;'>" + result[2][i] + "</td></tr>")
-      
-      strings = [
-        "<table style='width: 500px; margin: 0 auto;'><thead>",
-        "<tr><th>n</th><th>Pn</th><th>diff1</th><th>diff2</th></tr>",
-        "</thead>",
-        "<tbody>",
-        ...table,
-        "</tbody></table>",
-      ]
+      strings = await primesDifferences(LIMIT)
       filename = "/files/primes.html"
     }
 
@@ -97,11 +84,29 @@ export async function GET(request: Request): Promise<Response> {
     
     fs.appendFileSync(filepath, "</body></html>", 'utf8')
 
-    return Response.json({message: "report generated under " + filepath, time: getTimeMicro() - start})
+    return Response.json({message: "Report generated under " + filename, time: getTimeMicro() - start})
 
   } catch (error) {
-    return Response.json({ error: "Error generating mersenne report. " + errorMessage(error) }, { status: 500 });
+    return Response.json({ error: "Error generating report. " + errorMessage(error) }, { status: 500 });
   }
+}
+
+async function primesDifferences(LIMIT: number): Promise<string[]> {
+  const array = series(2 * LIMIT - 1, "prime")
+  const diff = differences(array, 2)
+  const result = diff.slice(0, LIMIT).map(subDiff => subDiff.slice(0, LIMIT))
+
+  const table = result[0].map((number, i) => "<tr><td style='text-align: center;'>" + (i + 1)  + "</td><td style='text-align: center;'>" + number + "</td><td style='text-align: center;'>" + result[1][i] + "</td><td style='text-align: center;'>" + result[2][i] + "</td></tr>")
+  
+  const strings = [
+    "<table style='width: 500px; margin: 0 auto;'><thead>",
+    "<tr><th>n</th><th>Pn</th><th>Δ(Pn)</th><th>Δ2(Pn)</th></tr>",
+    "</thead>",
+    "<tbody>",
+    ...table,
+    "</tbody></table>",
+  ]
+  return strings
 }
 
 async function mersennePrimesBenchmark(LIMIT: number, numberOfThreads: number): Promise<string[]> {
