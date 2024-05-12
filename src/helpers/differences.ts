@@ -1,7 +1,8 @@
-export default function differences(array: bigint[]): bigint[][] {
+export default function differences(array: bigint[], deep: number = 2): bigint[][] {
     
     const matrix: bigint[][] = [array]
-    for (var a=0;a<array.length;a++) {
+    for (var a=0;a<array.length&& a < deep;a++) {
+        
         const l: bigint[] = [];
 
         for (var i=1; i<matrix[a].length;i++) {

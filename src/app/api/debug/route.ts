@@ -9,6 +9,8 @@ import getTimeMicro from '@/helpers/getTimeMicro'
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
 import { MERSENNE_TABLE } from '@/Constants';
+import series from '@/helpers/series';
+import differences from '@/helpers/differences';
 
 export interface MersennePrime {
   p: number;
@@ -29,8 +31,7 @@ export interface MersenneReport {
 export async function GET(request: Request): Promise<Response> {  
 
   const start = getTimeMicro();
-  let elapsed = getTimeMicro();
-
+  
   (BigInt.prototype as any).toJSON = function() {
     return this.toString()
   }
@@ -46,13 +47,67 @@ export async function GET(request: Request): Promise<Response> {
     const KEY: string = searchParams.get('KEY') || "";
     const LIMIT: number = parseInt(searchParams.get('maxPrime') || "128");
     const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "16");
-
+    const mode = searchParams.get("mode") || "mersenne"
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!")
     }
 
-    const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
+    let strings: string[] = []
 
+    let filename = ''
+
+    if (mode === "mersenne") {
+      strings = await mersennePrimesBenchmark(LIMIT, numberOfThreads)
+      filename = "/files/debug.html"
+    }
+    else if (mode === "primes") {
+      const array = series(2 * LIMIT - 1, "prime")
+      const diff = differences(array, 2)
+      const result = diff.slice(0, LIMIT).map(subDiff => subDiff.slice(0, LIMIT))
+
+      const table = result[0].map((number, i) => "<tr><td style='text-align: center;'>" + (i + 1)  + "</td><td style='text-align: center;'>" + number + "</td><td style='text-align: center;'>" + result[1][i] + "</td><td style='text-align: center;'>" + result[2][i] + "</td></tr>")
+      
+      strings = [
+        "<table style='width: 500px; margin: 0 auto;'><thead>",
+        "<tr><th>n</th><th>Pn</th><th>diff1</th><th>diff2</th></tr>",
+        "</thead>",
+        "<tbody>",
+        ...table,
+        "</tbody></table>",
+      ]
+      filename = "/files/primes.html"
+    }
+
+    const filepath = "./public" + filename
+
+    const stringArray = [
+      "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
+      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz , " + os.cpus().length + " cores, " + process.arch + "</b></p>",
+      "<hr/>",
+      ...strings,
+      "</hr>",
+      "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report</p>",
+      "<hr/>",
+    ]
+    
+    fs.writeFileSync(filepath, '<!DOCTYPE html><html><head><style>hr {height: 1px;background-color: #1976d2!important;border: none;margin: 16px!important;} b, th, h3 {color: #1976d2;}</style><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')
+    stringArray.forEach(string => 
+      fs.appendFileSync(filepath, string, 'utf8')
+    );
+    
+    fs.appendFileSync(filepath, "</body></html>", 'utf8')
+
+    return Response.json({message: "report generated under " + filepath, time: getTimeMicro() - start})
+
+  } catch (error) {
+    return Response.json({ error: "Error generating mersenne report. " + errorMessage(error) }, { status: 500 });
+  }
+}
+
+async function mersennePrimesBenchmark(LIMIT: number, numberOfThreads: number): Promise<string[]> {
+    const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
+    
+    let elapsed = getTimeMicro();
     const mersennePrimesGo = (await (sendPrimesInBatchesGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
     const timeForGoLLTP = getTimeMicro() - elapsed
     elapsed = getTimeMicro()
@@ -96,9 +151,6 @@ export async function GET(request: Request): Promise<Response> {
     }, [])
 
     const stringArray = [
-      "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
-      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz , " + os.cpus().length + " cores, " + process.arch + "</b></p>",
-      "<hr/>",
       "<table style='margin: 0 auto; width: 700px;'><thead><tr><th>#</th><th>Mersenne prime</th><th>Date</th><th>Finder</th></tr></thead><tbody>",
       ...mersennePrimesRow,
       "</tbody></table>",
@@ -106,24 +158,9 @@ export async function GET(request: Request): Promise<Response> {
       "<p style='text-align: center;'>" + mersennePrimesScala.length + " Mersenne primes found</p>",
       ...benchmarkRows,
       "<hr/>",
-      "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report</p>",
-      "<hr/>",
     ]
 
-    const filename = "./public/files/debug.html"
-    
-    fs.writeFileSync(filename, '<!DOCTYPE html><html><head><style>hr {height: 1px;background-color: #1976d2!important;border: none;margin: 16px!important;} b, th, h3 {color: #1976d2;}</style><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')
-    stringArray.forEach(string => 
-      fs.appendFileSync(filename, string, 'utf8')
-    );
-    
-    fs.appendFileSync(filename, "</body></html>", 'utf8')
-
-    return Response.json({message: "report generated under /files/debug.html", time: getTimeMicro() - start})
-
-  } catch (error) {
-    return Response.json({ error: "Error generating mersenne report. " + errorMessage(error) }, { status: 500 });
-  }
+    return stringArray
 }
 
 ///////////////////////////////////////////////////////////
@@ -200,7 +237,7 @@ async function computeLLTPJs(numbers: number[], numThreads: number): Promise<Mer
   if (isMainThread) {
     // This is the main thread
 
-    console.log("Requesting numbers " + numbers.join(", ") + " with numThreads = " + numThreads)
+    console.log("Requesting " + numbers.length + " numbers up to " + numbers.slice(-1)[0] + "  with numThreads = " + numThreads)
     
     const workerPromises: Promise<MersennePrime>[] = []; // Adjusted to hold single promises
     let currentIndex = 0;
@@ -306,3 +343,5 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
 
   return x.filter((p: MersennePrime) => p.isPrime).map((mp: any) => {return {isPrime: mp.isPrime, p: Number(mp.p)}})
 }
+
+// lim (x,y) => (0,1) x**3*y = z
