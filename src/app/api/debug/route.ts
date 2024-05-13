@@ -28,7 +28,7 @@ export interface MersenneReport {
 
 //https://es.wikipedia.org/wiki/N%C3%BAmero_primo_de_Mersenne
 
-export async function GET(request: Request): Promise<Response> {  
+export async function GET(request: Request): Promise<Response> {
 
   const start = getTimeMicro();
   
@@ -37,9 +37,8 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   try {
-
-    // TODO: use a temp file to record the processed values. Make the search resumable. Maybe we can just pack all this search into Scala code and use the mather just to link to the results.
     
+    // TODO: use a temp file to record the processed values. Make the search resumable. Maybe we can just pack all this search into Scala code and use the mather just to link to the results.
     ////////////////////////////////////////////////////////////////////////////
     // Benchmark Scala VS Go vs Js bigint
     ////////////////////////////////////////////////////////////////////////////
@@ -47,9 +46,9 @@ export async function GET(request: Request): Promise<Response> {
     const KEY: string = searchParams.get('KEY') || "";
     const LIMIT: number = parseInt(searchParams.get('maxPrime') || "128");
     const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "16");
-    const mode = searchParams.get("mode") || "mersenne"
+    const mode = searchParams.get("mode") || "mersenne";
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
-      throw new Error("Forbidden!")
+      throw new Error("Forbidden!");
     }
 
     let strings: string[] = []
@@ -58,7 +57,7 @@ export async function GET(request: Request): Promise<Response> {
 
     if (mode === "mersenne") {
       strings = await mersennePrimesBenchmark(LIMIT, numberOfThreads)
-      filename = "/files/debug.html"
+      filename = "/files/mersenne.html"
     }
     else if (mode === "primes") {
       strings = await primesDifferences(LIMIT)
@@ -110,24 +109,25 @@ async function primesDifferences(LIMIT: number): Promise<string[]> {
 }
 
 async function mersennePrimesBenchmark(LIMIT: number, numberOfThreads: number): Promise<string[]> {
-    const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
     
+  const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
     let elapsed = getTimeMicro();
-    const mersennePrimesGo = (await (sendPrimesInBatchesGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
+  
+    const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
     const timeForGoLLTP = getTimeMicro() - elapsed
     elapsed = getTimeMicro()
    
-    const mersennePrimesJS = (await sendPrimesInBatchesJS(numbers, 500, numberOfThreads)).filter(p=>p.isPrime)
+    /*const mersennePrimesJS = (await computeMersenneJS(numbers, 500, numberOfThreads)).filter(p=>p.isPrime)
     const timeForJSLLTP = getTimeMicro() - elapsed
     elapsed = getTimeMicro()    
 
-    const mersennePrimesScala = await sendPrimesInBatchesScala(numbers, 500, numberOfThreads)
+    const mersennePrimesScala = await computeMersenneScala(numbers, 500, numberOfThreads)
     const timeForScalaLLTP = getTimeMicro() - elapsed
-
+    */
     const mersenneReport: MersenneReport[] = [
       {language: "Go", maxPrime: LIMIT, time: timeForGoLLTP, mersennePrimes: mersennePrimesGo},
-      {language: "Javascript", maxPrime: LIMIT, time: timeForJSLLTP, mersennePrimes: mersennePrimesJS},
-      {language: "Scala", maxPrime: LIMIT, time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala},
+      //{language: "Javascript", maxPrime: LIMIT, time: timeForJSLLTP, mersennePrimes: mersennePrimesJS},
+      //{language: "Scala", maxPrime: LIMIT, time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala},
     ]
 
     for (var i = 0; i<mersenneReport.length - 1; i++) {
@@ -140,7 +140,7 @@ async function mersennePrimesBenchmark(LIMIT: number, numberOfThreads: number): 
       }
     }
 
-    const mersennePrimesRow = mersennePrimesScala.map(mp => {
+    const mersennePrimesRow = mersennePrimesGo.map(mp => {
       const mersenneRow = MERSENNE_TABLE.find(mr => mr.prime === mp.p)
       return "<tr><td style='text-align: center'>" + mersenneRow?.position + "</td><td style='text-align: center'>2**" + mersenneRow?.prime + "-1</td><td style='text-align: center'>" + mersenneRow?.discoveryDate + "</td><td style='text-align: center'>" + mersenneRow?.discoveredBy + "</td></tr>"
     })
@@ -160,7 +160,7 @@ async function mersennePrimesBenchmark(LIMIT: number, numberOfThreads: number): 
       ...mersennePrimesRow,
       "</tbody></table>",
       "<hr/>",
-      "<p style='text-align: center;'>" + mersennePrimesScala.length + " Mersenne primes found</p>",
+      "<p style='text-align: center;'>" + mersennePrimesGo.length + " Mersenne primes found</p>",
       ...benchmarkRows,
       "<hr/>",
     ]
@@ -171,7 +171,7 @@ async function mersennePrimesBenchmark(LIMIT: number, numberOfThreads: number): 
 ///////////////////////////////////////////////////////////
 // Use scala for the computation!
 ///////////////////////////////////////////////////////////
-async function sendPrimesInBatchesScala(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
+async function computeMersenneScala(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
   
   const mersennePrimes: MersennePrime[] = new Array();
   
@@ -200,6 +200,8 @@ async function computeLLTPScala(primes: number[], numThreads: number): Promise<M
     timeout: 86400 * 1000, // A day. No timeouts wanted.
   }
 
+  console.log("Requesting", url, options)
+
   const response = await fetch(url, options)
 
   if (!response.ok) {
@@ -215,7 +217,7 @@ async function computeLLTPScala(primes: number[], numThreads: number): Promise<M
 ///////////////////////////////////////////////////////////
 // Use Js for the computation
 ///////////////////////////////////////////////////////////
-async function sendPrimesInBatchesJS(primesArray: number[], batchSize: number, numberOfThreads: number): Promise<MersennePrime[]> {
+async function computeMersenneJS(primesArray: number[], batchSize: number, numberOfThreads: number): Promise<MersennePrime[]> {
   const mersennePrimes: MersennePrime[] = [];
 
   // Process primes in batches
@@ -306,7 +308,7 @@ async function computeLLTPJs(numbers: number[], numThreads: number): Promise<Mer
 ///////////////////////////////////////////////////////////
 // Use GO for the computation!
 ///////////////////////////////////////////////////////////
-async function sendPrimesInBatchesGo(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
+async function computeMersenneGo(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
   
   const mersennePrimes: MersennePrime[] = new Array();
   
@@ -348,5 +350,3 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
 
   return x.filter((p: MersennePrime) => p.isPrime).map((mp: any) => {return {isPrime: mp.isPrime, p: Number(mp.p)}})
 }
-
-// lim (x,y) => (0,1) x**3*y = z
