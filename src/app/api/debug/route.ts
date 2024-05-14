@@ -46,6 +46,7 @@ export async function GET(request: Request): Promise<Response> {
     const KEY: string = searchParams.get('KEY') || "";
     const LIMIT: number = parseInt(searchParams.get('maxPrime') || "128");
     const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "16");
+    const language: string = searchParams.get("lang") || "go"
     const mode = searchParams.get("mode") || "mersenne";
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!");
@@ -56,12 +57,14 @@ export async function GET(request: Request): Promise<Response> {
     let filename = ''
 
     if (mode === "mersenne") {
+      const languages = language === "all" ? ["go", "scala", "javascript"] : [language]
       const numbers = eratosthenes(LIMIT, LIMIT).primes.map(p=>Number(p))
-      strings = await mersennePrimesBenchmark(numbers, numberOfThreads)
+      strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
       filename = "/files/mersenne.html"
     } else if (mode === "mersenne-check") {
+      const languages = language === "all" ? ["go", "scala", "javascript"] : [language]
       const numbers = KNOWN_MERSENNE_PRIMES.slice(0, LIMIT)
-      strings = await mersennePrimesBenchmark(numbers, numberOfThreads)
+      strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
       filename = "/files/mersenne-check.html"
     }
     else if (mode === "primes") {
@@ -121,29 +124,38 @@ async function primesDifferences(LIMIT: number): Promise<string[]> {
   return strings
 }
 
-async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: number): Promise<string[]> {
+async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: number, languages: string[]): Promise<string[]> {
     
-  //const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
-  //const numbers = KNOWN_MERSENNE_PRIMES.slice(0, 33)
     let elapsed = getTimeMicro();
-  
-    const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, 17))).filter(p=>p.isPrime)
-    const timeForGoLLTP = getTimeMicro() - elapsed
-    elapsed = getTimeMicro()
-   
-    /*const mersennePrimesJS = (await computeMersenneJS(numbers, 500, numberOfThreads)).filter(p=>p.isPrime)
-    const timeForJSLLTP = getTimeMicro() - elapsed
-    elapsed = getTimeMicro()    
+    const mersenneReport: MersenneReport[] = []
 
-    const mersennePrimesScala = await computeMersenneScala(numbers, 500, numberOfThreads)
-    const timeForScalaLLTP = getTimeMicro() - elapsed
-    */
-    const mersenneReport: MersenneReport[] = [
-      {language: "Go", maxPrime: numbers.slice(-1)[0], time: timeForGoLLTP, mersennePrimes: mersennePrimesGo},
-      //{language: "Javascript", maxPrime: LIMIT, time: timeForJSLLTP, mersennePrimes: mersennePrimesJS},
-      //{language: "Scala", maxPrime: LIMIT, time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala},
-    ]
+    if (languages.includes("go")) {
+      const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
+      const timeForGoLLTP = getTimeMicro() - elapsed
+      mersenneReport.push(
+        {language: "go", maxPrime: numbers.slice(-1)[0], time: timeForGoLLTP, mersennePrimes: mersennePrimesGo}
+      )
+      elapsed = getTimeMicro()
+    } 
+    if (languages.includes("javascript")) {
+      const mersennePrimesJS = (await computeMersenneJS(numbers, 500, numberOfThreads)).filter(p=>p.isPrime)
+      const timeForJSLLTP = getTimeMicro() - elapsed
+      elapsed = getTimeMicro()    
 
+      mersenneReport.push(
+        {language: "javascript", maxPrime: numbers.slice(-1)[0], time: timeForJSLLTP, mersennePrimes: mersennePrimesJS}
+      )
+      elapsed = getTimeMicro()
+    } 
+    if (languages.includes("scala")) {
+      const mersennePrimesScala = await computeMersenneScala(numbers, 500, numberOfThreads)
+      const timeForScalaLLTP = getTimeMicro() - elapsed
+      mersenneReport.push(
+        {language: "scala", maxPrime: numbers.slice(-1)[0], time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala}
+      )
+      elapsed = getTimeMicro()
+    }  
+    
     for (var i = 0; i<mersenneReport.length - 1; i++) {
       if (!_.isEqual(mersenneReport[i].mersennePrimes, mersenneReport[i+1].mersennePrimes)) {
         console.log("////////////////////////////////////////////////")
@@ -154,7 +166,11 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       }
     }
 
-    const mersennePrimesRow = mersennePrimesGo.map(mp => {
+    if (mersenneReport.length < 1) {
+      return []
+    }
+
+    const mersennePrimesRow = mersenneReport[0].mersennePrimes.map(mp => {
       const mersenneRow = MERSENNE_TABLE.find(mr => mr.prime === mp.p)
       return "<tr><td style='text-align: center'>" + mersenneRow?.position + "</td><td style='text-align: center'>2**" + mersenneRow?.prime + "-1</td><td style='text-align: center'>" + mersenneRow?.discoveryDate + "</td><td style='text-align: center'>" + mersenneRow?.discoveredBy + "</td></tr>"
     })
@@ -174,7 +190,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       ...mersennePrimesRow,
       "</tbody></table>",
       "<hr/>",
-      "<p style='text-align: center;'>" + mersennePrimesGo.length + " Mersenne primes found</p>",
+      "<p style='text-align: center;'>" + mersenneReport[0].mersennePrimes.length + " Mersenne primes found</p>",
       ...benchmarkRows,
       "<hr/>",
     ]
