@@ -8,7 +8,7 @@ import errorMessage from '@/helpers/errorMessage'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
-import { MERSENNE_TABLE } from '@/Constants';
+import { KNOWN_MERSENNE_PRIMES, MERSENNE_TABLE } from '@/Constants';
 import series from '@/helpers/series';
 import differences from '@/helpers/differences';
 
@@ -56,12 +56,25 @@ export async function GET(request: Request): Promise<Response> {
     let filename = ''
 
     if (mode === "mersenne") {
-      strings = await mersennePrimesBenchmark(LIMIT, numberOfThreads)
+      const numbers = eratosthenes(LIMIT, LIMIT).primes.map(p=>Number(p))
+      strings = await mersennePrimesBenchmark(numbers, numberOfThreads)
       filename = "/files/mersenne.html"
+    } else if (mode === "mersenne-check") {
+      const numbers = KNOWN_MERSENNE_PRIMES.slice(0, LIMIT)
+      strings = await mersennePrimesBenchmark(numbers, numberOfThreads)
+      filename = "/files/mersenne-check.html"
     }
     else if (mode === "primes") {
       strings = await primesDifferences(LIMIT)
       filename = "/files/primes.html"
+    } else if (mode === "json") {
+      filename = "/files/data.json"
+      const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
+      const objects = numbers.map((p: number, i: number) => ({n: i+1, pn: p}))
+      fs.writeFileSync("./public/files/data.json", JSON.stringify(objects))
+      return Response.json({message: "Report generated under " + filename, time: getTimeMicro() - start})
+    } else {
+      throw new Error("Unknown mode " + mode);
     }
 
     const filepath = "./public" + filename
@@ -108,12 +121,13 @@ async function primesDifferences(LIMIT: number): Promise<string[]> {
   return strings
 }
 
-async function mersennePrimesBenchmark(LIMIT: number, numberOfThreads: number): Promise<string[]> {
+async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: number): Promise<string[]> {
     
-  const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
+  //const numbers = eratosthenes(LIMIT, LIMIT).primes.map(n => Number(n))
+  //const numbers = KNOWN_MERSENNE_PRIMES.slice(0, 33)
     let elapsed = getTimeMicro();
   
-    const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
+    const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, 17))).filter(p=>p.isPrime)
     const timeForGoLLTP = getTimeMicro() - elapsed
     elapsed = getTimeMicro()
    
@@ -125,7 +139,7 @@ async function mersennePrimesBenchmark(LIMIT: number, numberOfThreads: number): 
     const timeForScalaLLTP = getTimeMicro() - elapsed
     */
     const mersenneReport: MersenneReport[] = [
-      {language: "Go", maxPrime: LIMIT, time: timeForGoLLTP, mersennePrimes: mersennePrimesGo},
+      {language: "Go", maxPrime: numbers.slice(-1)[0], time: timeForGoLLTP, mersennePrimes: mersennePrimesGo},
       //{language: "Javascript", maxPrime: LIMIT, time: timeForJSLLTP, mersennePrimes: mersennePrimesJS},
       //{language: "Scala", maxPrime: LIMIT, time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala},
     ]
@@ -344,7 +358,6 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
   if (!response.ok) {
     throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
   }
-
 
   const x: any = (await response.json())
 
