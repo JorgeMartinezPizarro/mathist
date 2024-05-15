@@ -1,3 +1,4 @@
+// https://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test#Proof_of_correctness
 import os from 'node:os' 
 import fs from 'fs' 
 import fetch from 'node-fetch';
@@ -48,24 +49,23 @@ export async function GET(request: Request): Promise<Response> {
     const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "16");
     const language: string = searchParams.get("lang") || "go"
     const mode = searchParams.get("mode") || "mersenne";
+    
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
       throw new Error("Forbidden!");
     }
 
     let strings: string[] = []
 
-    let filename = ''
+    let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}.html`
 
     if (mode === "mersenne") {
       const languages = language === "all" ? ["go", "scala", "javascript"] : [language]
       const numbers = eratosthenes(LIMIT, LIMIT).primes.map(p=>Number(p))
       strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
-      filename = "/files/mersenne.html"
     } else if (mode === "mersenne-check") {
       const languages = language === "all" ? ["go", "scala", "javascript"] : [language]
       const numbers = KNOWN_MERSENNE_PRIMES.slice(0, LIMIT)
       strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
-      filename = "/files/mersenne-check.html"
     }
     else if (mode === "primes") {
       strings = await primesDifferences(LIMIT)

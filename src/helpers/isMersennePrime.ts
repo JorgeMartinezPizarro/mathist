@@ -2,6 +2,7 @@ import percent from './percent';
 import duration from './duration';
 import getTimeMicro from './getTimeMicro';
 
+// TODO: add the logic here to test faster PRP before https://github.com/preda/gpuowl
 // Function to perform the Lucas-Lehmer test
 function lucasLehmerTest(p: number) {
 
