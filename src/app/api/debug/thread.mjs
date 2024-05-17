@@ -1,17 +1,18 @@
 import { workerData, parentPort } from 'worker_threads';
+import bigInt from "big-integer";
 
-// Try the probabilistic test PRP
-function isProbableMersennePrime(p) {
-  let x = BigInt(3)
-  if (p === 3) return true;
+function prpTest(p) {
   
-  const mersenneNumber = (BigInt(1) << BigInt(p)) - BigInt(1);
+  let x = BigInt(3);
+  const m = BigInt(2) ** BigInt(p) - BigInt(1); // Mersenne number
 
-  for (let i = 1; i<=p; i++) {
-    x = (x**BigInt(2)) % mersenneNumber
+  // Iterate the PRP test
+  for (let i = 1; i <= p; i++) {
+      x = (x ** BigInt(2)) % m;
   }
 
-  return x === BigInt(9)
+  // Check if the result is probably prime
+  return x === BigInt(9);
 }
 
 function hasSmallFactors(p) {
@@ -30,11 +31,11 @@ function computeLLT(workerData) {
   
   const p = workerData
 
-  if (p === 2) return {p: 2, isPrime: true}; // 2^2 - 1 = 3 is prime
+  if (p === 2 || p === 3) return {p, isPrime: true}; // 2^2 - 1 = 3 is prime
 
   if (p <= 1 || p % 2 === 0) return {p, isPrime: false}; // Mersenne number for p <= 1 or even p is not prime
 
-  if (hasSmallFactors(p) || !isProbableMersennePrime(p)) {
+  if (hasSmallFactors(p) || !prpTest(p)) {
     return {
       p,
       isPrime: false
@@ -51,7 +52,6 @@ function computeLLT(workerData) {
 
   const isPrime = (s % mersenneNumber === BigInt(0))
 
-  // Simulate some processing time
   return {
     p: workerData,
     isPrime: isPrime

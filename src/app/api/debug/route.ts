@@ -1,4 +1,6 @@
+// TODO: review:
 // https://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test#Proof_of_correctness
+// https://github.com/preda/gpuowl
 import os from 'node:os' 
 import fs from 'fs' 
 import fetch from 'node-fetch';
@@ -12,6 +14,7 @@ import eratosthenes from '@/helpers/eratosthenes';
 import { KNOWN_MERSENNE_PRIMES, MERSENNE_TABLE } from '@/Constants';
 import series from '@/helpers/series';
 import differences from '@/helpers/differences';
+import { lucasLehmerTest } from '@/helpers/isMersennePrime';
 
 export interface MersennePrime {
   p: number;
@@ -54,16 +57,17 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!");
     }
 
+    
     let strings: string[] = []
 
     let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}.html`
 
     if (mode === "mersenne") {
-      const languages = language === "all" ? ["go", "scala", "javascript"] : [language]
+      const languages = language === "all" ? ["rust", "go", "scala"/*, "javascript"*/] : [language]
       const numbers = eratosthenes(LIMIT, LIMIT).primes.map(p=>Number(p))
       strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
     } else if (mode === "mersenne-check") {
-      const languages = language === "all" ? ["go", "scala", "javascript"] : [language]
+    const languages = language === "all" ? ["rust", "go", "scala", /*"javascript"*/] : [language]
       const numbers = KNOWN_MERSENNE_PRIMES.slice(0, LIMIT)
       strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
     }
@@ -129,8 +133,16 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
     let elapsed = getTimeMicro();
     const mersenneReport: MersenneReport[] = []
 
+    if (languages.includes("rust")) {
+      const mersennePrimesRust = (await (computeMersenneRust(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
+      const timeForRustLLTP = getTimeMicro() - elapsed
+      mersenneReport.push(
+        {language: "rust", maxPrime: numbers.slice(-1)[0], time: timeForRustLLTP, mersennePrimes: mersennePrimesRust}
+      )
+      elapsed = getTimeMicro()
+    } 
     if (languages.includes("go")) {
-      const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
+      const mersennePrimesGo = (await (computeMersenneGo(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
       const timeForGoLLTP = getTimeMicro() - elapsed
       mersenneReport.push(
         {language: "go", maxPrime: numbers.slice(-1)[0], time: timeForGoLLTP, mersennePrimes: mersennePrimesGo}
@@ -138,7 +150,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       elapsed = getTimeMicro()
     } 
     if (languages.includes("javascript")) {
-      const mersennePrimesJS = (await computeMersenneJS(numbers, 500, numberOfThreads)).filter(p=>p.isPrime)
+      const mersennePrimesJS = (await computeMersenneJS(numbers, numberOfThreads, numberOfThreads)).filter(p=>p.isPrime)
       const timeForJSLLTP = getTimeMicro() - elapsed
       elapsed = getTimeMicro()    
 
@@ -249,7 +261,11 @@ async function computeLLTPScala(primes: number[], numThreads: number): Promise<M
 ///////////////////////////////////////////////////////////
 async function computeMersenneJS(primesArray: number[], batchSize: number, numberOfThreads: number): Promise<MersennePrime[]> {
   const mersennePrimes: MersennePrime[] = [];
-
+  // single thread
+  /*return primesArray.map(p => ({
+    isPrime: lucasLehmerTest(p),
+    p,
+  }))*/
   // Process primes in batches
   for (let i = 0; i < primesArray.length; i += batchSize) {
       const batch = primesArray.slice(i, i + batchSize);
@@ -257,7 +273,6 @@ async function computeMersenneJS(primesArray: number[], batchSize: number, numbe
       try {
           // Await the completion of the current batch computation
           const response = await computeLLTPJs(batch, numberOfThreads);
-          console.log("////////////////////////////////////////////////////////////////////////")
           // Push the results of the current batch to the mersennePrimes array
           mersennePrimes.push(...response);
       } catch (error) {
@@ -274,7 +289,7 @@ async function computeLLTPJs(numbers: number[], numThreads: number): Promise<Mer
   if (isMainThread) {
     // This is the main thread
 
-    console.log("Requesting " + numbers.length + " numbers up to " + numbers.slice(-1)[0] + "  with numThreads = " + numThreads)
+    //console.log("Requesting " + numbers.length + " numbers up to " + numbers.slice(-1)[0] + "  with numThreads = " + numThreads)
     
     const workerPromises: Promise<MersennePrime>[] = []; // Adjusted to hold single promises
     let currentIndex = 0;
@@ -378,4 +393,59 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
   const x: any = (await response.json())
 
   return x.filter((p: MersennePrime) => p.isPrime).map((mp: any) => {return {isPrime: mp.isPrime, p: Number(mp.p)}})
+}
+
+///////////////////////////////////////////////////////////
+// Use RUST for the computation!
+///////////////////////////////////////////////////////////
+async function computeMersenneRust(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
+  
+  const mersennePrimes: MersennePrime[] = new Array();
+  
+  for (let i = 0; i < primesArray.length; i += batchSize) {
+      const batch = primesArray.slice(i, i + batchSize);
+      const response = await computeLLTPRust(batch, numThreads);
+      mersennePrimes.push(...response)
+  }
+  
+  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
+}
+
+async function computeLLTPRust(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
+  
+  const url = 'http://37.27.102.105:3030/llt';
+
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+        numbers: primes.map(p => p.toString()),
+        number_of_threads: numThreads,
+    }),
+    timeout: 86400 * 1000, // A day. No timeouts wanted.
+  }
+
+  console.log("Requesting", url, options)
+
+  const response = await fetch(url, options)
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status} ${await response.text()}`);
+  }
+
+  const x: any = (await response.json())
+
+  console.log(x)
+
+  const y = x.filter((p: any) => p.is_prime || p.p === '2')
+
+  console.log(y)
+
+  const z = y.map((mp: any) => {return {isPrime: mp.is_prime || mp.p === '2', p: Number(mp.p)}})
+
+  console.log(z)
+
+  return z
 }

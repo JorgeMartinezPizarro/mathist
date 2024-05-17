@@ -12,6 +12,7 @@
     "@mui/icons-material": "^5.15.15",
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.15.14",
+    "big-integer": "^1.6.52",
     "bigint-gcd": "^1.0.28",
     "decimal.js": "^10.4.3",
     "fft-js": "^0.0.12",
