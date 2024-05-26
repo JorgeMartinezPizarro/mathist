@@ -9,7 +9,6 @@ import getTimeMicro from '@/helpers/getTimeMicro';
 import errorMessage from '@/helpers/errorMessage';
 import duration from '@/helpers/duration';
 import id from "@/helpers/id"
-import { ssTimes } from '@/helpers/multiplication';
 import series from '@/helpers/series';
 import differences from '@/helpers/differences';
 
@@ -48,21 +47,9 @@ export async function GET(request: Request): Promise<Response> {
       }
 
       const bigIntMultiplicationTime = getTimeMicro() - elapsed
-      elapsed = getTimeMicro()
-
-      for (var i = 0; i < t; i++){
-        console.log((t + i) + " / " + t *2)
-        const a = BigInt(id(m))
-        const c = BigInt("2")
-        const b = BigInt(id(m + 1));
-        const x = (ssTimes(a,a) - c) % b
-      }
-      const ssMultiplicationTime = getTimeMicro() - elapsed
-      
+            
       strings = [
         "<p style='text-align: center;'>Squaring " + t + " numbers with " + m + " digits with bigint and mod takes in average " + duration(Math.round((bigIntMultiplicationTime) / t)) + "</p>",
-        "</hr>",
-        "<p style='text-align: center;'>Squaring " + t + " numbers with " + m + " digits with Schönhage-Strassen algorithm in average " + duration(Math.round((ssMultiplicationTime) / t)) + "</p>",
         "</hr>",
       ];
 
