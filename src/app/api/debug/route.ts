@@ -9,7 +9,7 @@ import getTimeMicro from '@/helpers/getTimeMicro';
 import errorMessage from '@/helpers/errorMessage';
 import duration from '@/helpers/duration';
 import id from "@/helpers/id"
-import { karatsuba } from '@/helpers/multiplication';
+import BN from '@/helpers/multiplication';
 import series from '@/helpers/series';
 import differences from '@/helpers/differences';
 
@@ -35,41 +35,30 @@ export async function GET(request: Request): Promise<Response> {
       strings = await primesDifferences(LIMIT)
       filename = "primes.html"
     } else {
-      const t = 3
+      const t = 7
 
+      const m  = 29 * 10 ** 6
 
-      for (var i = 0; i < t; i++) {
-        console.log(i + " / " + (t * 2))
-        const a = BigInt(id(25 * 10**6))
-        const b = BigInt(id(25 * 10**6))
-        a * b
+      for (var i = 0; i < t; i++){
+        console.log(i + " / " + t)
+        const a = BigInt(id(m))
+        const c = BigInt("2")
+        const b = BigInt(id(m + 1));
+        const x = (a**c-BigInt(2)) % b
       }
 
       const bigIntMultiplicationTime = getTimeMicro() - elapsed
 
-      elapsed = getTimeMicro()
-
-      for (var i = 0; i < t; i++){
-        console.log(i + t + " / " + (t*2))
-        const a = BigInt(id(25 * 10**6))
-        const b = BigInt(id(25 * 10**6))
-        karatsuba(a, b)
-      }
-
-      const karatsubaTime = getTimeMicro() - elapsed
-
       strings = [
-        "<p style='text-align: center;'>Multiply 2 numbers with 25 million digits with bigint multiplication takes in average " + duration(Math.round((bigIntMultiplicationTime) / t)) + "</p>",
-        "</hr>",
-        "<p style='text-align: center;'>Multiply 2 numbers with 25 million digits with karatsuba multiplication takes in average " + duration(Math.round((karatsubaTime) / t)) + "</p>",
+        "<p style='text-align: center;'>Squaring " + t + " numbers with " + m + " digits with bigint and mod takes in average " + duration(Math.round((bigIntMultiplicationTime) / t)) + "</p>",
         "</hr>",
       ];
+
       filename= "benchmark.html"
     }
     
     const filepath = "./public/files/" + filename
 
-    
     const stringArray = [
       "<h3 style='text-align: center;'>Benchmark report of mather.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz , " + os.cpus().length + " cores, " + process.arch + "</b></p>",
@@ -109,4 +98,3 @@ async function primesDifferences(LIMIT: number): Promise<string[]> {
     "</tbody></table>",
   ]
 }
-

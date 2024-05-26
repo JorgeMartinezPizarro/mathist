@@ -5,7 +5,6 @@
 import os from 'node:os' 
 import fs from 'fs' 
 import fetch from 'node-fetch';
-import { Worker, isMainThread } from 'worker_threads';
 import _ from "lodash"
 
 import errorMessage from '@/helpers/errorMessage'
@@ -13,9 +12,6 @@ import getTimeMicro from '@/helpers/getTimeMicro'
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
 import { KNOWN_MERSENNE_PRIMES, MERSENNE_TABLE } from '@/Constants';
-import series from '@/helpers/series';
-import differences from '@/helpers/differences';
-import { lucasLehmerTest } from '@/helpers/isMersennePrime';
 
 export interface MersennePrime {
   p: number;
@@ -46,7 +42,7 @@ export async function GET(request: Request): Promise<Response> {
     // TODO: use a temp file to record the processed values. Make the search resumable. Maybe we can just pack all this search into Scala code and use the mather just to link to the results.
     // TODO: use a DB is better than just files.
     ////////////////////////////////////////////////////////////////////////////
-    // Benchmark Scala VS Go vs Js bigint
+    // Benchmark Scala vs Go vs Rust vs C++
     ////////////////////////////////////////////////////////////////////////////
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
@@ -109,7 +105,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
     const mersenneReport: MersenneReport[] = []
 
     if (languages.includes("c")) {
-      const mersennePrimesC = (await (computeMersenneC(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
+      const mersennePrimesC = (await (computeMersenneC(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
       const timeForCLLTP = getTimeMicro() - elapsed
       mersenneReport.push(
         {language: "c++", maxPrime: numbers.slice(-1)[0], time: timeForCLLTP, mersennePrimes: mersennePrimesC}
@@ -117,7 +113,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       elapsed = getTimeMicro()
     } 
     if (languages.includes("rust")) {
-      const mersennePrimesRust = (await (computeMersenneRust(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
+      const mersennePrimesRust = (await (computeMersenneRust(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
       const timeForRustLLTP = getTimeMicro() - elapsed
       mersenneReport.push(
         {language: "rust", maxPrime: numbers.slice(-1)[0], time: timeForRustLLTP, mersennePrimes: mersennePrimesRust}
@@ -125,7 +121,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       elapsed = getTimeMicro()
     } 
     if (languages.includes("go")) {
-      const mersennePrimesGo = (await (computeMersenneGo(numbers, numberOfThreads, numberOfThreads))).filter(p=>p.isPrime)
+      const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
       const timeForGoLLTP = getTimeMicro() - elapsed
       mersenneReport.push(
         {language: "go", maxPrime: numbers.slice(-1)[0], time: timeForGoLLTP, mersennePrimes: mersennePrimesGo}
@@ -133,7 +129,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       elapsed = getTimeMicro()
     } 
     if (languages.includes("scala")) {
-      const mersennePrimesScala = await computeMersenneScala(numbers, numberOfThreads, numberOfThreads)
+      const mersennePrimesScala = await computeMersenneScala(numbers, 500, numberOfThreads)
       const timeForScalaLLTP = getTimeMicro() - elapsed
       mersenneReport.push(
         {language: "scala", maxPrime: numbers.slice(-1)[0], time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala}
@@ -214,7 +210,7 @@ async function computeLLTPScala(primes: number[], numThreads: number): Promise<M
         numbers: primes.join(","),
         numThreads,
     }),
-    timeout: 86400 * 1000, // A day. No timeouts wanted.
+    timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
   }
 
   console.log("Requesting", url, options)
@@ -260,7 +256,7 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
         numbers: primes.join(","),
         num_threads: numThreads,
     }),
-    timeout: 86400 * 1000, // A day. No timeouts wanted.
+    timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
   }
 
   console.log("Requesting", url, options)
@@ -305,7 +301,7 @@ async function computeLLTPRust(primes: number[], numThreads: number): Promise<Me
         numbers: primes.map(p => p.toString()),
         number_of_threads: numThreads,
     }),
-    timeout: 86400 * 1000, // A day. No timeouts wanted.
+    timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
   }
 
   console.log("Requesting", url, options)
@@ -357,7 +353,7 @@ async function computeLLTPC(primes: number[], numThreads: number): Promise<Merse
         numbers: primes.map(p => p.toString()),
         threads: numThreads,
     }),
-    timeout: 86400 * 1000, // A day. No timeouts wanted.
+    timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
   }
 
   console.log("Requesting", url, options)
