@@ -34,9 +34,10 @@ export async function GET(request: Request): Promise<Response> {
       strings = await primesDifferences(LIMIT)
       filename = "primes.html"
     } else {
-      const t = 5
+      
+      const t = 11
 
-      const m  = 1 * 10 ** 6
+      const m  = 71 * 10 ** 6
 
       for (var i = 0; i < t; i++){
         console.log(i + " / " + t * 2)

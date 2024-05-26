@@ -14,7 +14,6 @@
     "@mui/material": "^5.15.14",
     "bigint-gcd": "^1.0.28",
     "decimal.js": "^10.4.3",
-    "fft.js": "^4.0.4",
     "lodash": "^4.17.21",
     "mathjs": "^12.4.1",
     "next": "^14.1.4",
