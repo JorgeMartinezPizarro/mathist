@@ -1,4 +1,3 @@
-import BN from "bn.js"
 import FFT from 'fft.js'
 
 // Helper function to perform FFT
@@ -74,4 +73,3 @@ function bigintToArray(bigint, base) {
   }
   
 export { ssTimes }
-export default BN

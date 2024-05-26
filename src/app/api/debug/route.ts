@@ -9,7 +9,7 @@ import getTimeMicro from '@/helpers/getTimeMicro';
 import errorMessage from '@/helpers/errorMessage';
 import duration from '@/helpers/duration';
 import id from "@/helpers/id"
-import BN, { ssTimes } from '@/helpers/multiplication';
+import { ssTimes } from '@/helpers/multiplication';
 import series from '@/helpers/series';
 import differences from '@/helpers/differences';
 
