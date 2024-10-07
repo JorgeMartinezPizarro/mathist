@@ -10,7 +10,7 @@ export const EXCEL_MAX_COLS = 16384;                                        // F
 
 // Web healthy limits
 export const MAX_SUPPORTED_PARTIAL_SIEVE_LENGTH = BigInt(2)**BigInt(62)
-export const MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH = 10**16                    // with segmented sieve it runs up to 10q is less than a sec
+export const MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH = 10**16                    // with segmented sieve it runs up to 10q in less than a sec
 export const MAX_HEALTHY_SIEVE_LENGTH = 10**8                               // with full sieve 100m run in less than a sec.
 export const MAX_DIGITS_TRIPLE = 180000;                                    // Healthy computation of less than a sec
 export const MAX_LENGTH_TREE = 10;                                          // Healthy computation of just few seconds

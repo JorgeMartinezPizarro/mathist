@@ -96,16 +96,15 @@ const EratosthenesSieve = () => {
         <hr/>
         <p>Eratosthenes sieve of a given length up to 10 quatrillion. Over 100 million we use segmented sieve.</p>
         <hr/>
-        <p>Used to generate prime lists up to 1 trillion. Below some prime files generated:</p>
+        <p>Used to generate prime lists up to 1 trillion (up to 1t there are 450GB of primes, so I will omit that link). Below the prime files generated:</p>
         <hr/>
         <p>
-            <a href="https://mather.ideniox.com/stored/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/stored/primes-to-10m.csv" download="primes-to-10m.csv">primes-to-10m.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/stored/primes-to-100m.csv" download="primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/stored/primes-to-1b.csv" download="primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/stored/primes-to-10b.csv" download="primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/stored/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
-            <a href="https://mather.ideniox.com/stored/primes-to-1t.csv" download="primes-to-1t.csv">primes-to-1t.csv</a>
+            <a href="https://math.ideniox.com/stored/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
+            <a href="https://math.ideniox.com/stored/primes-to-10m.csv" download="primes-to-10m.csv">primes-to-10m.csv</a>,&nbsp;
+            <a href="https://math.ideniox.com/stored/primes-to-100m.csv" download="primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
+            <a href="https://math.ideniox.com/stored/primes-to-1b.csv" download="primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
+            <a href="https://math.ideniox.com/stored/primes-to-10b.csv" download="primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
+            <a href="https://math.ideniox.com/stored/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
         </p>
         <hr/>
         <FormGroup row={true}>

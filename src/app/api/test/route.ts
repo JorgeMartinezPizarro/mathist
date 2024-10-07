@@ -30,7 +30,7 @@ export async function GET(request: Request): Promise<Response> {
     // Duration of the tests: local 12m, !local 42h.
 
     const stringArray = [
-      "<h3 style='text-align: center;'>Test report of mather.ideniox.com</h3>",
+      "<h3 style='text-align: center;'>Test report of math.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz " + process.arch + "</b></p>",
       "<hr/>",
       "<p style='text-align: center;'><b>Test factors(n)</b></p>",

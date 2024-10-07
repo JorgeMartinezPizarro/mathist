@@ -76,7 +76,7 @@ export async function GET(request: Request): Promise<Response> {
     const filepath = "./public" + filename
 
     const stringArray = [
-      "<h3 style='text-align: center;'>Debug report of mather.ideniox.com</h3>",
+      "<h3 style='text-align: center;'>Debug report of math.ideniox.com</h3>",
       "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz , " + os.cpus().length + " cores, " + process.arch + "</b></p>",
       "<hr/>",
       ...strings,

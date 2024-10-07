@@ -1,8 +1,11 @@
 ## About
 
-Mathist is a math website, developed using `nextjs` and using `BigInt`, `mathjs` and `s-bpsw` to do the computations. 
+Mathist is a math website project created by a mathematician who loves primes. The name is inspired by a german mathematician, he is the Mathologer, and I am just a mathist.
 
-It is deployed under [mather.ideniox.com](https://mather.ideniox.com).
+Developed using `nextjs` and using `BigInt`, `mathjs` and `s-bpsw` to do the computations. 
+
+It is deployed under [math.ideniox.com](https://math.ideniox.com).
+
 
 ## Start
 
