@@ -13,7 +13,7 @@ const About = () => {
         <hr/>
         <p>2**82589933 - 1 is the biggest known prime, a prime with 24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a>.</p>
         <hr/>
-        <p>Mome results and experiments regarding Mersenne Primes and the GMPS project are planed.</p>
+        <p>Some results and experiments regarding Mersenne Primes and the GMPS project are planed.</p>
     </>
 }
 
