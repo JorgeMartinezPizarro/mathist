@@ -21,8 +21,6 @@ export async function GET(request: Request): Promise<Response> {
     
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
-    const mode = searchParams.get("mode") || ""
-    const LIMIT = parseInt(searchParams.get("LIMIT") || "0")
     
     let strings = []
 
@@ -30,10 +28,6 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!");
     }
 
-    if (mode === "primes") {
-      strings = await primesDifferences(LIMIT)
-      filename = "primes.html"
-    } else {
       
       const t = 11
 
@@ -55,7 +49,6 @@ export async function GET(request: Request): Promise<Response> {
       ];
 
       filename= "benchmark.html"
-    }
     
     const filepath = "./public/files/" + filename
 
@@ -80,21 +73,4 @@ export async function GET(request: Request): Promise<Response> {
   } catch (error) {
     return Response.json({ error: "Error generating report. " + errorMessage(error) }, { status: 500 });
   }
-}
-
-async function primesDifferences(LIMIT: number): Promise<string[]> {
-  const array = series(2 * LIMIT - 1, "prime")
-  const diff = differences(array, 2)
-  const result = diff.slice(0, LIMIT).map(subDiff => subDiff.slice(0, LIMIT))
-
-  const table = result[0].map((number, i) => "<tr><td style='text-align: center;'>" + (i + 1)  + "</td><td style='text-align: center;'>" + number + "</td><td style='text-align: center;'>" + result[1][i] + "</td><td style='text-align: center;'>" + result[2][i] + "</td></tr>")
-  
-  return [
-    "<table style='width: 500px; margin: 0 auto;'><thead>",
-    "<tr><th>n</th><th>Pn</th><th>Δ(Pn)</th><th>Δ2(Pn)</th></tr>",
-    "</thead>",
-    "<tbody>",
-    ...table,
-    "</tbody></table>",
-  ]
 }
