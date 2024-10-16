@@ -61,11 +61,11 @@ export async function GET(request: Request): Promise<Response> {
     let numbers;
 
     if (mode === "mersenne") {
-      languages = language === "all" ? ["c", "rust", "go", "scala"] : [language]
+      languages = language === "all" ? ["c", "go"] : [language]
       numbers = eratosthenes(LIMIT, LIMIT).primes.map(p=>Number(p))
       
     } else if (mode === "mersenne-check") {
-      languages = language === "all" ? ["c", "rust", "go", "scala"] : [language]
+      languages = language === "all" ? ["c", "go"] : [language]
       numbers = KNOWN_MERSENNE_PRIMES.slice(0, LIMIT)
     } else {
       throw new Error("Unknown mode " + mode);
@@ -112,14 +112,6 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       )
       elapsed = getTimeMicro()
     } 
-    if (languages.includes("rust")) {
-      const mersennePrimesRust = (await (computeMersenneRust(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
-      const timeForRustLLTP = getTimeMicro() - elapsed
-      mersenneReport.push(
-        {language: "rust", maxPrime: numbers.slice(-1)[0], time: timeForRustLLTP, mersennePrimes: mersennePrimesRust}
-      )
-      elapsed = getTimeMicro()
-    } 
     if (languages.includes("go")) {
       const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
       const timeForGoLLTP = getTimeMicro() - elapsed
@@ -128,14 +120,6 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       )
       elapsed = getTimeMicro()
     } 
-    if (languages.includes("scala")) {
-      const mersennePrimesScala = await computeMersenneScala(numbers, 500, numberOfThreads)
-      const timeForScalaLLTP = getTimeMicro() - elapsed
-      mersenneReport.push(
-        {language: "scala", maxPrime: numbers.slice(-1)[0], time: timeForScalaLLTP, mersennePrimes: mersennePrimesScala}
-      )
-      elapsed = getTimeMicro()
-    }  
     
     for (var i = 0; i<mersenneReport.length - 1; i++) {
       if (!_.isEqual(mersenneReport[i].mersennePrimes, mersenneReport[i+1].mersennePrimes)) {
@@ -182,52 +166,6 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
 }
 
 ///////////////////////////////////////////////////////////
-// Use scala for the computation!
-///////////////////////////////////////////////////////////
-async function computeMersenneScala(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
-  
-  const mersennePrimes: MersennePrime[] = new Array();
-  
-  for (let i = 0; i < primesArray.length; i += batchSize) {
-      const batch = primesArray.slice(i, i + batchSize);
-      const response = await computeLLTPScala(batch, numThreads);
-      mersennePrimes.push(...response)
-  }
-  
-  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
-}
-
-async function computeLLTPScala(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
-  
-  const url = 'http://37.27.102.105:8080/lltp';
-
-  const options = {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-        numbers: primes.join(","),
-        numThreads,
-    }),
-    timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
-  }
-
-  console.log("Requesting", url, options)
-
-  const response = await fetch(url, options)
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
-  }
-
-
-  const x: any = (await response.json())
-
-  return x.filter((p: MersennePrime) => p.isPrime)
-}
-
-///////////////////////////////////////////////////////////
 // Use GO for the computation!
 ///////////////////////////////////////////////////////////
 async function computeMersenneGo(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
@@ -270,61 +208,6 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
   const x: any = (await response.json())
 
   return x.filter((p: MersennePrime) => p.isPrime).map((mp: any) => {return {isPrime: mp.isPrime, p: Number(mp.p)}})
-}
-
-///////////////////////////////////////////////////////////
-// Use RUST for the computation!
-///////////////////////////////////////////////////////////
-async function computeMersenneRust(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
-  
-  const mersennePrimes: MersennePrime[] = new Array();
-  
-  for (let i = 0; i < primesArray.length; i += batchSize) {
-      const batch = primesArray.slice(i, i + batchSize);
-      const response = await computeLLTPRust(batch, numThreads);
-      mersennePrimes.push(...response)
-  }
-  
-  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
-}
-
-async function computeLLTPRust(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
-  
-  const url = 'http://37.27.102.105:3030/llt';
-
-  const options = {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-        numbers: primes.map(p => p.toString()),
-        number_of_threads: numThreads,
-    }),
-    timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
-  }
-
-  console.log("Requesting", url, options)
-
-  const response = await fetch(url, options)
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status} ${await response.text()}`);
-  }
-
-  const x: any = (await response.json())
-
-  console.log(x)
-
-  const y = x.filter((p: any) => p.is_prime || p.p === '2')
-
-  console.log(y)
-
-  const z = y.map((mp: any) => {return {isPrime: mp.is_prime || mp.p === '2', p: Number(mp.p)}})
-
-  console.log(z)
-
-  return z
 }
 
 async function computeMersenneC(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
