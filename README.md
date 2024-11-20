@@ -1,4 +1,4 @@
-## About
+## Abstract
 
 Mathist is a math website project created by a mathematician who loves primes. The name is inspired by a german mathematician, he is the Mathologer, and I am just a mathist.
 
@@ -6,6 +6,13 @@ Developed using `nextjs` and using `BigInt`, `mathjs` and `s-bpsw` to do the com
 
 It is deployed under [math.ideniox.com](https://math.ideniox.com).
 
+This project started 25 years ago, as I implemented my first Eratosthenes Sieve, at that time I just had 1GB RAM.
+
+## TODO, or what is comming
+
+1 - An experimental feature involves mersenne primes generation and test. For that I created a separated repository to test and benchmark different languages for the arithmetic computation, https://github.com/JorgeMartinezPizarro/lucas-lehmer-server. Currently I am working on a GPU based implementation. Inspired on the GIMPS project. A lot have been done since the first time I looked at this problem years ago. LLT is not the way to check, before that some probabilistic tests should be used to speed it up. My current record with CPU goes up to a mersenne prime with about 300000 digits, yet very small. Let's see what can a modern GPU do.
+
+2 - Avoid main thread usage on the backend. In the first versions I just wanted to try out nextjs. Backend in js may be an issue if it uses the main thread. Nginx load balancer is a workaround but I want to go for multithread single js docker. Let see if I get it working.
 
 ## Start
 
