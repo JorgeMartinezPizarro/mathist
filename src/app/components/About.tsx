@@ -11,7 +11,7 @@ const About = () => {
         <hr/>
         <p>The Tree and Series page are inspired by <a href="https://www.youtube.com/c/Mathologer">the Mathologer</a>.</p>
         <hr/>
-        <p>2**82589933 - 1 is the biggest known prime, a prime with 24862048 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org/primes/?press=M82589933</a>.</p>
+        <p>2**136279841 - 1 is the biggest known prime, a prime with 41024320 digits. Read more about it <a href="https://www.mersenne.org/primes/?press=M82589933">https://www.mersenne.org</a>.</p>
         <hr/>
         <p>Some results and experiments regarding Mersenne Primes and the GMPS project are planed.</p>
     </>
