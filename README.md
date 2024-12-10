@@ -8,6 +8,10 @@ It is deployed under [math.ideniox.com](https://math.ideniox.com).
 
 This project started 25 years ago, as I implemented my first Eratosthenes Sieve, at that time I just had 1GB RAM.
 
+## Reports and benchmarks
+
+At https://math.ideniox.com/files/test.html you can find more informacion about the calculations done in the software.
+
 ## TODO, or what is comming
 
 1 - An experimental feature involves mersenne primes generation and test. For that I created a separated repository to test and benchmark different languages for the arithmetic computation, https://github.com/JorgeMartinezPizarro/lucas-lehmer-server. Currently I am working on a GPU based implementation. Inspired on the GIMPS project. A lot have been done since the first time I looked at this problem years ago. My current record with CPU goes up to a mersenne prime with about 300000 digits, yet very small. Let's see what can a modern GPU do. Furthermore, LLT is being replaced by PRP in 2021. Besides it, trial divisions and Fermat little theorem may be used before to speed it up.
