@@ -13,6 +13,15 @@ import series from '@/helpers/series';
 import differences from '@/helpers/differences';
 
 
+// TODO: 
+// - calculate rests of n until n
+// - square the restos modulos n to determine primes from n * n to n * n + n
+// use the modular idea to simplify by 2 3 5 7 and 11
+// Compare with the classic segmented sieve algorithm
+
+// Supero a la segmented sieve de una forma significativa?
+
+// LLT, se puede ver matricialmente la operacion Sn de lucas y ser simplificada de algun modo?
 export async function GET(request: Request): Promise<Response> {
 
   try {
@@ -74,4 +83,32 @@ export async function GET(request: Request): Promise<Response> {
   } catch (error) {
     return Response.json({ error: "Error generating report. " + errorMessage(error) }, { status: 500 });
   }
+}
+
+// mejorar la criba segmentada con mi vision de abajo a arriba cuadratica
+// usar anillos para describir la mejora circular de 2 3 5 y 7
+// revivir el script fortran de 1999
+
+const jorgesSieve = (n: bigint): bigint[] => {
+  
+  // Paso 1: crear un array con los impares hasta el n, llamado X
+  // Paso 2: calcular los restos de dividir n entre 2 y los no pares del array X, la lista Y
+  // Paso 3: eleva al cuadrado los restos con respecto de n2
+  // Paso 4: los restos que no sean 0 corresponderan con los primos entre n2 y n2 + n
+  // paso 5: considerar los restos para elimitar 2 3 5 7 y 11
+  
+  // const x = new Bits
+  return []
+}
+
+// mejorar el lucas lehmer test
+// comparar con el metodo trivial de ir paso a paso
+// si funciona escribirlo en go
+// a lo loco ya comprar una GPU
+
+const jorgesLLT = (p: bigint): true | false => {
+
+  // Paso 1: investigar vision matricial de LLT
+  
+  return false;
 }

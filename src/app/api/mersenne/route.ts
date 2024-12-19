@@ -55,7 +55,7 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!");
     }
     
-    let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}.html`
+    let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V2.html`
 
     let languages;
     let numbers;
@@ -113,7 +113,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       elapsed = getTimeMicro()
     } 
     if (languages.includes("go")) {
-      const mersennePrimesGo = (await (computeMersenneGo(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
+      const mersennePrimesGo = (await (computeMersenneGo(numbers, 2500, numberOfThreads))).filter(p=>p.isPrime)
       const timeForGoLLTP = getTimeMicro() - elapsed
       mersenneReport.push(
         {language: "go", maxPrime: numbers.slice(-1)[0], time: timeForGoLLTP, mersennePrimes: mersennePrimesGo}
