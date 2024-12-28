@@ -32,7 +32,7 @@ const EratosthenesSieve = () => {
     
     const downloadCSV = async () => {
         try {
-            const url = "/api/primes?LIMIT="+value+"&excel=true"
+            const url = "/math/api/primes?LIMIT="+value+"&excel=true"
             setError(false)
             setLoading(true)
             setDuration(0)
@@ -66,7 +66,7 @@ const EratosthenesSieve = () => {
 
     const generateSieve = async () => {
         try {
-            const url = "/api/primes?LIMIT="+value
+            const url = "/math/api/primes?LIMIT="+value
             setLoading(true)
             setError(false)
             setPrimes([])
@@ -92,7 +92,7 @@ const EratosthenesSieve = () => {
     }
     
     return <>
-        <p><Image src="/image6.png" priority={true} height={100} width={100 * 217 / 260} alt=""/></p>
+        <p><Image src="/math/image6.png" priority={true} height={100} width={100 * 217 / 260} alt=""/></p>
         <hr/>
         <p>Eratosthenes sieve of a given length up to 10 quatrillion. Over 100 million we use segmented sieve.</p>
         <hr/>

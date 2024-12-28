@@ -47,7 +47,7 @@ const RandomPrimes = () => {
                     number: bigNumber,
                 }),
               }
-            const promise = await fetch("/api/isPrime", options)
+            const promise = await fetch("/math/api/isPrime", options)
             const response = await promise.json();
             if (response.error) {
                 throw new Error(response.error.toString())
@@ -66,7 +66,7 @@ const RandomPrimes = () => {
             setRandomPrimes(initialRandomPrimes)
             setLoading(true)
             setError("")
-            const promise = await fetch("/api/randomPrimes?length=" + length + "&amount=" + amount)
+            const promise = await fetch("/math/api/randomPrimes?length=" + length + "&amount=" + amount)
             const response = await promise.json()
             if (response.error) {
                 throw new Error(response.error.toString())
