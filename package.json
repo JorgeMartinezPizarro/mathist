@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "set MATHER_SECRET=111111 && next dev",
+    "dev": "MATHER_SECRET=77777 && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

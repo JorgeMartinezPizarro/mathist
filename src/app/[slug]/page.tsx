@@ -11,6 +11,7 @@ import PithagoreanTree from "@/app/components/PithagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratosthenesSieve from "@/app/components/EratosthenesSieve";
 import RandomPrimes from '@/app/components/RandomPrimes';
+import Test from '@/app/components/Test';
 import { notFound } from 'next/navigation'
 
 
@@ -23,6 +24,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
     {name: "series", component: <SerieDifferences/>},
     {name: "primes", component: <RandomPrimes/>},
     {name: "about", component: <About/>},
+    {name: "test", component: <Test/>},
   ]
 
   if (!elements.map(el => el.name).includes(params.slug)) {

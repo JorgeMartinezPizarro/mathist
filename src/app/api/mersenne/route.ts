@@ -52,7 +52,7 @@ export async function GET(request: Request): Promise<Response> {
     const mode = searchParams.get("mode") || "mersenne";
     
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
-      throw new Error("Forbidden!");
+      throw new Error("Forbidden!" + KEY + " - " + process.env.MATHER_SECRET);
     }
     
     let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V2.html`
@@ -113,7 +113,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       elapsed = getTimeMicro()
     } 
     if (languages.includes("go")) {
-      const mersennePrimesGo = (await (computeMersenneGo(numbers, 2500, numberOfThreads))).filter(p=>p.isPrime)
+      const mersennePrimesGo = (await (computeMersenneGo(numbers, numberOfThreads * 16, numberOfThreads))).filter(p=>p.isPrime)
       const timeForGoLLTP = getTimeMicro() - elapsed
       mersenneReport.push(
         {language: "go", maxPrime: numbers.slice(-1)[0], time: timeForGoLLTP, mersennePrimes: mersennePrimesGo}

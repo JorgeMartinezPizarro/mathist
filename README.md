@@ -1,18 +1,39 @@
 ## Abstract
 
-Mathist is a math website project created by a mathematician who loves primes. The name is inspired by a german mathematician, he is the Mathologer, and I am just a mathist.
+## Abstract
 
-Developed using `nextjs` and using `BigInt`, `mathjs` and `s-bpsw` to do the computations. 
+Mathist is a math website project created by a mathematician who loves primes. The name is inspired by a great German mathematician known as the Mathologer; I am just a mathist.
 
-It is deployed under [math.ideniox.com](https://math.ideniox.com).
+The platform is built with `nextjs` and leverages powerful computation libraries like `BigInt`, `mathjs`, and `s-bpsw` to explore the fascinating world of prime numbers. Deployed at [math.ideniox.com](https://math.ideniox.com), Mathist allows users to experiment with advanced arithmetic, prime testing, and more.
 
-This project started 25 years ago, as I implemented my first Eratosthenes Sieve, at that time I just had 1GB RAM.
+This project began 25 years ago with my first implementation of the Sieve of Eratosthenes on a machine with just 1GB of RAM. Since then, Mathist has evolved into a robust platform for modern mathematics exploration.
 
 ## Reports and benchmarks
 
 At https://math.ideniox.com/files/test.html you can find more informacion about the calculations done in the software.
 
 ## TODO, or what is comming
+
+0 - Improve visualization and data export, example of view:
+
+Path entered: 12121221212101010
+Steps computed: 17
+Time taken: 264 μs
+
+Generated Fibonacci-like square:
+[235701, 72811, 381323, 308512]
+
+Pythagorean triple generated:
+<89878212423, 44926134464, 100481095865>
+
+Pythagorean tree (depth 3):
+<3, 4, 5> <-- Root
+    <15, 8, 17>    <21, 20, 29>    <5, 12, 13>
+    <35, 12, 37>   <65, 72, 97>    <33, 56, 65>
+    <77, 36, 85>   <119, 120, 169> <39, 80, 89>
+    <45, 28, 53>   <55, 48, 73>    <7, 24, 25>
+
+Click here to visualize in GeoGebra: [Tree Visualization](https://www.geogebra.org/calculator/hd2hcvas)
 
 1 - An experimental feature involves mersenne primes generation and test. For that I created a separated repository to test and benchmark different languages for the arithmetic computation, https://github.com/JorgeMartinezPizarro/lucas-lehmer-server. Currently I am working on a GPU based implementation. Inspired on the GIMPS project. A lot have been done since the first time I looked at this problem years ago. My current record with CPU goes up to a mersenne prime with about 300000 digits, yet very small. Let's see what can a modern GPU do. Furthermore, LLT is being replaced by PRP in 2021. Besides it, trial divisions and Fermat little theorem may be used before to speed it up.
 
