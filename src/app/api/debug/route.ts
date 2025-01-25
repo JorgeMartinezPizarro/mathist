@@ -22,6 +22,7 @@ export async function GET(request: Request): Promise<Response> {
     
     const { searchParams } = new URL(request.url||"".toString())
     const KEY: string = searchParams.get('KEY') || "";
+    const N: string = searchParams.get('N') || "";
     
     let strings = []
 
@@ -29,27 +30,17 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!");
     }
 
-      
-      const t = 11
+    const url = 'http://37.27.102.105:5003/sieve?n=10000000';
+    
+    const x = await fetch(url, {
+      method: "GET"
+    });
 
-      const m  = 71 * 10 ** 6
 
-      for (var i = 0; i < t; i++){
-        console.log(i + " / " + t * 2)
-        const a = BigInt(id(m))
-        const c = BigInt("2")
-        const b = BigInt(id(m + 1));
-        const x = (a**c - c) % b
-      }
+    const primes = await x.json()
+    strings = ["<p>Last 10 primes</p>", JSON.stringify(primes.primes.slice(-20), null, 2)];
 
-      const bigIntMultiplicationTime = getTimeMicro() - elapsed
-            
-      strings = [
-        "<p style='text-align: center;'>Squaring " + t + " numbers with " + m + " digits with bigint and mod takes in average " + duration(Math.round((bigIntMultiplicationTime) / t)) + "</p>",
-        "</hr>",
-      ];
-
-      filename= "benchmark.html"
+    filename= "fortran-report.html"
     
     const filepath = "./public/files/" + filename
 
@@ -72,6 +63,6 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({message: "Report generated under " + filename, time: getTimeMicro() - start})
 
   } catch (error) {
-    return Response.json({ error: "Error generating report. " + errorMessage(error) }, { status: 500 });
+    return Response.json({ error: process.env.MATHER_SECRET + "Error generating report. " + errorMessage(error) }, { status: 500 });
   }
 }
