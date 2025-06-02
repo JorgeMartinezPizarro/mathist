@@ -27,7 +27,7 @@ const PrimeFactorization = () => {
 
     const submitNumber = useCallback(() => {
         
-        const url = "/math/api/factors?LIMIT=" + value
+        const url = "/api/factors?LIMIT=" + value
         setLoading(true)
         setError(false)
         setNumber([])

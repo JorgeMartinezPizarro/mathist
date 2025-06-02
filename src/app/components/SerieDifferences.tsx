@@ -17,7 +17,7 @@ const SerieDifferences = () => {
 
   const handleSubmit = useCallback(() => {
     setLoading(true)
-    fetch("/math/api/differences?name=" + value + "&length=" + MAX_SERIES_DIFFERENCES_SIZE)
+    fetch("/api/differences?name=" + value + "&length=" + MAX_SERIES_DIFFERENCES_SIZE)
       .then(res => res.json())
       .then(res => {
         if (res.error) {

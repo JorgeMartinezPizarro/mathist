@@ -52,7 +52,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
             <ListItem key={element.name} disablePadding>
               <ListItemButton onClick={(e) => {e.stopPropagation(); redirect("/" + element.name)}}>
                 <ListItemIcon>
-                  <a href={"/math/" + element.name}>
+                  <a href={element.name}>
                     <SubdirectoryArrowRight className="icon"/>
                     <Button className="item" ><span>{element.name}</span></Button>
                   </a>
