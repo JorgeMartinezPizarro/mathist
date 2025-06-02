@@ -225,7 +225,7 @@ async function computeMersenneC(primesArray: number[], batchSize: number, numThr
 
 async function computeLLTPC(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = 'http://37.27.102.105:5004/lltp';
+  const url = 'http://37.27.102.105:5004/lucas-lehmer';
 
   const options = {
     method: "POST",
