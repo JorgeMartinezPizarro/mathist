@@ -233,7 +233,7 @@ async function computeLLTPC(primes: number[], numThreads: number): Promise<Merse
       "content-type": "application/json",
     },
     body: JSON.stringify({
-        numbers: primes.map(p => p.toString())
+        numbers: primes.map(p => p)
     }),
     timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
   }
