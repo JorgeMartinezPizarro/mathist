@@ -77,18 +77,18 @@ export default () => {
         <p>Eratosthenes sieve:</p>
         <table>
             <tbody>
-                {a.map(b => <tr>{b.map(x => <td style={{padding: "8px", background: color(x)}}>{x}</td>)}</tr>)}
+                {a.map(b => <tr key={b.toString()}>{b.map(x => <td key={x} style={{padding: "8px", background: color(x)}}>{x}</td>)}</tr>)}
             </tbody>
         </table>
         <hr/>
         <p>Eratosthenes sieve without 2, 3 and 5:</p>
         <table>
             <tbody>
-                {d.map(b => <tr>{b.map(x => <td style={{padding: "8px", background: color(x)}}>{x}</td>)}</tr>)}
+                {d.map(b => <tr key={b.toString()}>{b.map(x => <td key={x} style={{padding: "8px", background: color(x)}}>{x}</td>)}</tr>)}
             </tbody>
         </table>
         {Object.keys(r).map(k =>
-            <p>{k}: {JSON.stringify(r[k])}</p>
+            <p key={k}>{k}: {JSON.stringify(r[k])}</p>
         )}
     </div>
 }
