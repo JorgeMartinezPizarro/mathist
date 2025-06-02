@@ -1,4 +1,4 @@
-export default () => {
+const Test = () => {
 
     const a = []
 
@@ -92,3 +92,5 @@ export default () => {
         )}
     </div>
 }
+
+export default Test;
