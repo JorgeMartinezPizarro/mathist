@@ -247,8 +247,8 @@ async function computeLLTPC(primes: number[], numThreads: number): Promise<Merse
   }
 
   const x: any = (await response.json())
-  console.log(x)
-  const y = x.mersenne_primes.map((p: number) => ({p, isPrime: true}))
+  
+  const y = x.results.filter((r: any) => r.is_prime).map((r: any) => ({p: r.p, isPrime: true}))
 
   return y
 }
