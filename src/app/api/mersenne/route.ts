@@ -225,7 +225,7 @@ async function computeMersenneC(primesArray: number[], batchSize: number, numThr
 
 async function computeLLTPC(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = 'http://37.27.102.105:5003/lltp';
+  const url = 'http://37.27.102.105:5004/lltp';
 
   const options = {
     method: "POST",
@@ -233,8 +233,7 @@ async function computeLLTPC(primes: number[], numThreads: number): Promise<Merse
       "content-type": "application/json",
     },
     body: JSON.stringify({
-        numbers: primes.map(p => p.toString()),
-        threads: numThreads,
+        numbers: primes.map(p => p.toString())
     }),
     timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
   }
