@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	basePath: '/math',
+	basePath: '/',
 };
 
 export default nextConfig;
