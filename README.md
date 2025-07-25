@@ -1,7 +1,5 @@
 ## Abstract
 
-## Abstract
-
 Mathist is a math website project created by a mathematician who loves primes. The name is inspired by a great German mathematician known as the Mathologer; I am just a mathist.
 
 The platform is built with `nextjs` and leverages powerful computation libraries like `BigInt`, `mathjs`, and `s-bpsw` to explore the fascinating world of prime numbers. Deployed at [math.ideniox.com](https://math.ideniox.com), Mathist allows users to experiment with advanced arithmetic, prime testing, and more.
