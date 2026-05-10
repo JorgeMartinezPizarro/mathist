@@ -3,12 +3,14 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "MATHER_SECRET=77777 PORT=3011 next dev",
+    "dev": "WATCHPACK_POLLING=true MATHER_SECRET=77777 PORT=3011 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^5.15.15",
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.15.14",

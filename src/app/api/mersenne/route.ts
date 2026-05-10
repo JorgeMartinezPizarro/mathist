@@ -52,7 +52,7 @@ export async function GET(request: Request): Promise<Response> {
     const mode = searchParams.get("mode") || "mersenne";
     
     if (KEY !== process.env.MATHER_SECRET?.trim()) {
-      throw new Error("Forbidden!" + KEY + " - " + process.env.MATHER_SECRET);
+      throw new Error("Forbidden!");
     }
     
     let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V2.html`
@@ -95,6 +95,7 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({message: "Report generated under " + filename, time: getTimeMicro() - start})
 
   } catch (error) {
+	console.log(error);
     return Response.json({ error: "Error generating report. " + errorMessage(error) }, { status: 500 });
   }
 }
@@ -112,7 +113,7 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
       )
       elapsed = getTimeMicro()
     } 
-    if (languages.includes("go")) {
+	if (languages.includes("go")) {
       const mersennePrimesGo = (await (computeMersenneGo(numbers, numberOfThreads * 16, numberOfThreads))).filter(p=>p.isPrime)
       const timeForGoLLTP = getTimeMicro() - elapsed
       mersenneReport.push(
@@ -139,7 +140,10 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
 
     const mersennePrimesRow = mersenneReport[0].mersennePrimes.map(mp => {
       const mersenneRow = MERSENNE_TABLE.find(mr => mr.prime === mp.p)
-      return "<tr><td style='text-align: center'>" + mersenneRow?.position + "</td><td style='text-align: center'>2**" + mersenneRow?.prime + "-1</td><td style='text-align: center'>" + mersenneRow?.discoveryDate + "</td><td style='text-align: center'>" + mersenneRow?.discoveredBy + "</td></tr>"
+	  if (mersenneRow != undefined)
+      	return "<tr><td style='text-align: center'>" + mersenneRow?.position + "</td><td style='text-align: center'>2**" + mersenneRow?.prime + "-1</td><td style='text-align: center'>" + mersenneRow?.discoveryDate + "</td><td style='text-align: center'>" + mersenneRow?.discoveredBy + "</td></tr>"
+	  else
+		return "";
     })
 
     const benchmarkRows = mersenneReport.reduce((acc: string[], val: MersenneReport) => {
@@ -183,7 +187,7 @@ async function computeMersenneGo(primesArray: number[], batchSize: number, numTh
 
 async function computeLLTPGo(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = 'http://37.27.102.105:5002/lltp';
+  const url = 'http://localhost:5002/lltp';
 
   const options = {
     method: "POST",
@@ -209,7 +213,9 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
 
   return x.filter((p: MersennePrime) => p.isPrime).map((mp: any) => {return {isPrime: mp.isPrime, p: Number(mp.p)}})
 }
-
+/////////////////////////////////////////////
+// USE C 
+///////////////////////////////////////////////
 async function computeMersenneC(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
   
   const mersennePrimes: MersennePrime[] = new Array();
@@ -225,7 +231,7 @@ async function computeMersenneC(primesArray: number[], batchSize: number, numThr
 
 async function computeLLTPC(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = 'http://37.27.102.105:5004/lucas-lehmer';
+  const url = 'http://localhost:5004/lucas-lehmer';
 
   const options = {
     method: "POST",
@@ -233,7 +239,8 @@ async function computeLLTPC(primes: number[], numThreads: number): Promise<Merse
       "content-type": "application/json",
     },
     body: JSON.stringify({
-        numbers: primes.map(p => p)
+        numbers: primes.map(p => p),
+		num_threads: numThreads,
     }),
     timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
   }
