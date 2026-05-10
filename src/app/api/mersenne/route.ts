@@ -187,7 +187,7 @@ async function computeMersenneGo(primesArray: number[], batchSize: number, numTh
 
 async function computeLLTPGo(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = 'http://localhost:5002/lltp';
+  const url = 'http://37.27.102.105:5002/lltp';
 
   const options = {
     method: "POST",
@@ -231,7 +231,7 @@ async function computeMersenneC(primesArray: number[], batchSize: number, numThr
 
 async function computeLLTPC(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = 'http://localhost:5004/lucas-lehmer';
+  const url = 'http://37.27.102.105:5004/lucas-lehmer';
 
   const options = {
     method: "POST",
