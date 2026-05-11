@@ -109,7 +109,7 @@ button, button:disabled {
 .MuiDrawer-root .MuiDrawer-paper {
   padding-top: 25px;
   padding-right: 4px;
-  width: 190px;
+  width: 250px;
   overflow-x: hidden;
   background: #1976d2;
 }
@@ -138,15 +138,8 @@ a {
   max-width: calc(100% - 48px);
 }
 .icon {
-  font-family: Arial;
   color: white;
-  font-size: 13pt;
-  display: inline-block!important;
-  width: 35px!important;
-  height: 35px!important;
-  padding: 0!important;
-  margin: 0!important;
-  
+  font-size: 40px !important;
 }
 
 .item {
@@ -157,7 +150,6 @@ a {
   text-decoration: none!important;
   display: inline-block!important;
   height: 35px!important;
-  margin-top: -35px !important;
 }
 
 .title {
