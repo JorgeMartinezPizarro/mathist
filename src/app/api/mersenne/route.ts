@@ -25,6 +25,11 @@ export interface MersenneReport {
   mersennePrimes: MersennePrime[];
 }
 
+const SERVER = "37.27.102.105"
+//const SERVER = "localhost"
+const URL_GO = "http://" + SERVER + ":5002/lltp";
+const URL_C = "http://" + SERVER + ":5004/lucas-lehmer";
+
 //https://en.wikipedia.org/wiki/Pocklington_primality_test
 
 //https://es.wikipedia.org/wiki/N%C3%BAmero_primo_de_Mersenne
@@ -187,7 +192,7 @@ async function computeMersenneGo(primesArray: number[], batchSize: number, numTh
 
 async function computeLLTPGo(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = 'http://37.27.102.105:5002/lltp';
+  const url = URL_GO;
 
   const options = {
     method: "POST",
@@ -231,7 +236,7 @@ async function computeMersenneC(primesArray: number[], batchSize: number, numThr
 
 async function computeLLTPC(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = 'http://37.27.102.105:5004/lucas-lehmer';
+  const url = URL_C;
 
   const options = {
     method: "POST",
