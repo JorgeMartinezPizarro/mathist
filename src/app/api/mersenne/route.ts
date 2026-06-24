@@ -60,7 +60,7 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!");
     }
     
-    let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V2.html`
+    let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V3.html`
 
     let languages;
     let numbers;
