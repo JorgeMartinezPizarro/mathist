@@ -75,7 +75,8 @@ docker run -d jorgemartinezpizarro/mathist:latest
 To generate your own docker image, run:
 
 ```
-docker build .
+docker build -t jorgemartinezpizarro/mathist:latest .
+docker push jorgemartinezpizarro/mathist:latest
 ```
 
 I use an apache2 file server to serve files inside the docker volumes, an example `docker-compose.yml`:
