@@ -54,31 +54,24 @@ export default function factors(n: bigint ): Factorization {
     }
 }
 
-function addFactorsWithMethod(factors: PrimePower[], factor: bigint, factorizationMethod: any) {
-    const computedFactor = factorizationMethod(factor)
-    
-    if (computedFactor !== factor) {
-        let c = 1
-        let p: bigint = computedFactor
-        let rest = factor / p
-        if (isProbablePrime(p)) {
-            addPrime(factors, p)
-        }
-        while (p > two && !isProbablePrime(rest) && isProbablePrime(p)) {
-            p = factorizationMethod(rest)
-            rest = rest / p;
-            c++
-            addPrime(factors, p)
-        }
-        
-        addPrime(factors, rest)
+// Split n with the method until every part is prime. The method may return a
+// composite part (brentFactor returns the root of a perfect square as it is),
+// so both sides are split again.
+function addFactorsWithMethod(factors: PrimePower[], n: bigint, factorizationMethod: (n: bigint) => bigint) {
+    if (isProbablePrime(n)) {
+        addPrime(factors, n)
+        return
     }
+    const p = factorizationMethod(n)
+    addFactorsWithMethod(factors, p, factorizationMethod)
+    addFactorsWithMethod(factors, n / p, factorizationMethod)
 }
 
 function addPrime(factors: PrimePower[], factor: bigint): void {
-    
-    if (factors.length > 0 && factors.slice(-1)[0].prime === factor) {
-        factors[factors.length - 1].exponent++;
+    // Brent finds the primes in any order, so a prime may come back after others
+    const known = factors.find(f => f.prime === factor)
+    if (known) {
+        known.exponent++;
     } else {
         factors.push({
             prime: factor,
