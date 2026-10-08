@@ -11,6 +11,7 @@ import errorMessage from '@/helpers/errorMessage'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
+import computeServer from '@/helpers/computeServer';
 import { KNOWN_MERSENNE_PRIMES, MERSENNE_TABLE } from '@/Constants';
 
 export interface MersennePrime {
@@ -24,11 +25,6 @@ export interface MersenneReport {
   time: number;
   mersennePrimes: MersennePrime[];
 }
-
-const SERVER = "37.27.102.105"
-//const SERVER = "localhost"
-const URL_GO = "http://" + SERVER + ":5002/lltp";
-const URL_C = "http://" + SERVER + ":5004/lucas-lehmer";
 
 //https://en.wikipedia.org/wiki/Pocklington_primality_test
 
@@ -192,7 +188,7 @@ async function computeMersenneGo(primesArray: number[], batchSize: number, numTh
 
 async function computeLLTPGo(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = URL_GO;
+  const url = computeServer(5002) + "/lltp";
 
   const options = {
     method: "POST",
@@ -236,7 +232,7 @@ async function computeMersenneC(primesArray: number[], batchSize: number, numThr
 
 async function computeLLTPC(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
   
-  const url = URL_C;
+  const url = computeServer(5004) + "/lucas-lehmer";
 
   const options = {
     method: "POST",

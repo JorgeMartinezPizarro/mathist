@@ -10,7 +10,7 @@ import Progress from "@/widgets/Progress"
 import duration from "@/helpers/duration"
 import { Tree, Triple } from "@/types"
 
-const PithagoreanTree = () => {
+const PythagoreanTree = () => {
     const [tree, setTree] = useState<Tree>({tree: [], time: 0})
     const [loading, setLoading] = useState(false)
 
@@ -37,7 +37,7 @@ const PithagoreanTree = () => {
             }),
           }
         setError(false)
-        fetch("/api/pithagoreanTriple", options)
+        fetch("/api/pythagoreanTriple", options)
             .then(res => res.json())
             .then(res => {
                 if (res.error) {
@@ -55,7 +55,7 @@ const PithagoreanTree = () => {
     }
 
     useEffect(() => {
-        fetch("/api/pithagoreanTree?LIMIT=" + size.toString())
+        fetch("/api/pythagoreanTree?LIMIT=" + size.toString())
             .then(res => res.json())
             .then(res => setTree(res))
             .catch(error => setError(error))
@@ -71,7 +71,7 @@ const PithagoreanTree = () => {
         <hr />
         <p>A visualization tool for the triples: <a href="https://www.geogebra.org/calculator/hd2hcvas">https://www.geogebra.org/calculator/hd2hcvas</a></p>
         <hr/>
-        <p>Write a path in base 3 to generate a pithagorean triple. The max length of the path is {MAX_DIGITS_TRIPLE}.</p>
+        <p>Write a path in base 3 to generate a Pythagorean triple. The max length of the path is {MAX_DIGITS_TRIPLE}.</p>
         <hr />
         <FormGroup row={true}>
             <TextField
@@ -115,7 +115,7 @@ const PithagoreanTree = () => {
             </>}
             {triple.triple && triple.triple && triple.triple.length === 3 && <>
                 <hr />
-                <p>The pithagorean triple generated:</p>
+                <p>The Pythagorean triple generated:</p>
                 <hr />
                 <Grid container spacing={2}>
                     {[0, 1, 2].map(n => {
@@ -127,29 +127,29 @@ const PithagoreanTree = () => {
             </>}
             <hr />
         </>}
-        <p>Pithagorean tree of length 3 calculated in {duration(tree.time)}</p>
+        <p>Pythagorean tree of length 3 calculated in {duration(tree.time)}</p>
         <hr />
         <div style={{overflowX: "auto"}}>
-            <table className="pithagorean"><tbody>{tree.tree.length > 0 && (<>
+            <table className="pythagorean"><tbody>{tree.tree.length > 0 && (<>
                 <tr>
                     <td title={"<"+ tree.tree[0][0].triple.join(", ")+">"}>&lt;{tree.tree[0][0].triple.join(", ")}&gt;</td>
                 </tr>
                 <tr>
                     <td>
-                        <table className="pithagorean"><tbody><tr>{tree.tree[1].map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
+                        <table className="pythagorean"><tbody><tr>{tree.tree[1].map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <table className="pithagorean"><tbody><tr>
+                        <table className="pythagorean"><tbody><tr>
                             <td key={"1"}>
-                                <table className="pithagorean"><tbody><tr>{tree.tree[2].slice(0, 3).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"} >&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
+                                <table className="pythagorean"><tbody><tr>{tree.tree[2].slice(0, 3).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"} >&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
                             </td>
                             <td key={"2"}>
-                                <table className="pithagorean"><tbody><tr>{tree.tree[2].slice(3, 6).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
+                                <table className="pythagorean"><tbody><tr>{tree.tree[2].slice(3, 6).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
                             </td>
                             <td key={"3"}>
-                                <table className="pithagorean"><tbody><tr>{tree.tree[2].slice(6, 9).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
+                                <table className="pythagorean"><tbody><tr>{tree.tree[2].slice(6, 9).map(el => <td key={el.triple.toString()} title={"<"+ el.triple.join(", ")+">"}>&lt;{el.triple.join(", ")}&gt;</td>)}</tr></tbody></table>
                             </td>
                         </tr></tbody></table>
                     </td>
@@ -159,4 +159,4 @@ const PithagoreanTree = () => {
     </>
 }
 
-export default PithagoreanTree;
+export default PythagoreanTree;

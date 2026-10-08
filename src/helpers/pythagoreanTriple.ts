@@ -1,7 +1,7 @@
 import getTimeMicro from "@/helpers/getTimeMicro"
-import { childrenAt, PithagoreanTriple as pt } from "@/helpers/pithagoreanTree"
+import { childrenAt, PythagoreanTriple as pt } from "@/helpers/pythagoreanTree"
 
-export default function PithagoreanTriple(n: string) {
+export default function PythagoreanTriple(n: string) {
     
     const start = getTimeMicro()
 

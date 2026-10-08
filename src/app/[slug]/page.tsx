@@ -4,7 +4,7 @@ import ClientPage from "./ClientPage";
 
 import About from "@/app/components/About";
 import PrimeFactorization from "@/app/components/PrimeFactorization";
-import PithagoreanTree from "@/app/components/PithagoreanTree";
+import PythagoreanTree from "@/app/components/PythagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratosthenesSieve from "@/app/components/EratosthenesSieve";
 import RandomPrimes from "@/app/components/RandomPrimes";
@@ -20,7 +20,7 @@ export default async function Page({
 
   const elements = [
     { name: "sieve", component: <EratosthenesSieve /> },
-    { name: "tree", component: <PithagoreanTree /> },
+    { name: "tree", component: <PythagoreanTree /> },
     { name: "factors", component: <PrimeFactorization /> },
     { name: "series", component: <SerieDifferences /> },
     { name: "primes", component: <RandomPrimes /> },

@@ -94,9 +94,9 @@ export default function testRandom(local: boolean): string[] {
       "</tr></tbody></table>",
       "<hr/>",
       ...errorsArray.slice(0, 1000),
-      "<p style='text-align: center;'><b>Used the following primaly algorithms</b></p>",
+      "<p style='text-align: center;'><b>Used the following primality algorithms</b></p>",
       "<p style='text-align: center;'>Find factors for values up to 1E23</p>",
-      "<p style='text-align: center;'>Miller-Rabin and Baillie probabilistic primaly test up to 1E3000</p>",
+      "<p style='text-align: center;'>Miller-Rabin and Baillie probabilistic primality test up to 1E3000</p>",
       "<hr/>",
     ]
 

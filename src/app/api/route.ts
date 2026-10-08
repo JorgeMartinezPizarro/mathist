@@ -1,9 +1,9 @@
 export async function GET(request: Request) {
     const valid_endpoints = [
-        "differeneces",
+        "differences",
         "factors",
-        "PithagoreanTree",
-        "PithagoreanTriple",
+        "PythagoreanTree",
+        "PythagoreanTriple",
         "primes",
         "randomPrimes",
         "isPrime",

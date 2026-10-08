@@ -1,7 +1,7 @@
 import { TreeElement } from "@/types"
 import getTimeMicro from "@/helpers/getTimeMicro"
 
-export default function PithagoreanTree(n: bigint) {
+export default function PythagoreanTree(n: bigint) {
     
     const start = getTimeMicro()
     
@@ -15,7 +15,7 @@ export default function PithagoreanTree(n: bigint) {
 
     const result: TreeElement[] = arrayOfSquares.map(square => {
         return {
-            triple: PithagoreanTriple(square),
+            triple: PythagoreanTriple(square),
             square,
         }
     });
@@ -42,7 +42,7 @@ const iterate = (arrayOfSquares: bigint[][][]): bigint[][][] => {
     return nextArrayOfSquares;
 }
 
-export const PithagoreanTriple = (fibonacciSquare: bigint[][]): bigint[] => {
+export const PythagoreanTriple = (fibonacciSquare: bigint[][]): bigint[] => {
 
     const triple: bigint[] = [
         (fibonacciSquare[0][0] * fibonacciSquare[1][0]), 
@@ -50,11 +50,11 @@ export const PithagoreanTriple = (fibonacciSquare: bigint[][]): bigint[] => {
         (fibonacciSquare[0][0] * fibonacciSquare[1][1]) + (fibonacciSquare[0][1] * fibonacciSquare[1][0]),
     ]
     
-    // The pithagorean triple must verify the pithagorean formel, a**2 + b**2 - c**2 =0
+    // The pythagorean triple must verify the Pythagorean formula, a**2 + b**2 - c**2 =0
     if (
         triple[0] * triple[0] + triple[1] * triple[1] - triple[2] * triple[2] !== BigInt(0) 
     ) 
-        throw new Error("The triple does not satisfy the pithagorean theorem!")
+        throw new Error("The triple does not satisfy the Pythagorean theorem!")
     
     return triple;
 }

@@ -15,7 +15,7 @@ table tbody tr td {
   padding: 4px;
 }
 
-table.pithagorean {
+table.pythagorean {
   width: 100%;
   border: none;
   border-collapse: collapse;
@@ -23,7 +23,7 @@ table.pithagorean {
   max-width: 1000px;
 }
 
-table.pithagorean tbody tr td {
+table.pythagorean tbody tr td {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 2px;

@@ -3,7 +3,7 @@
 import { Alert, Button, FormGroup, TextField } from "@mui/material";
 import { useState } from "react";
 
-import { MAX_DIGITS_PRIMALY_TEST } from "@/Constants";
+import { MAX_DIGITS_PRIMALITY_TEST } from "@/Constants";
 import NumberToLocale from "@/widgets/NumberToLocale";
 import NumberToString from "@/widgets/NumberToString";
 import Progress from "@/widgets/Progress";
@@ -80,7 +80,7 @@ const RandomPrimes = () => {
     }
 
     return <>
-        <p>Enter a number to test if it is prime. Max value is 10**{MAX_DIGITS_PRIMALY_TEST}-1.</p>
+        <p>Enter a number to test if it is prime. Max value is 10**{MAX_DIGITS_PRIMALITY_TEST}-1.</p>
         <hr/>
         <FormGroup row={true}>
             <TextField
@@ -92,7 +92,7 @@ const RandomPrimes = () => {
                 onChange={(event => {
                     // check it is base 3
                     const regex = new RegExp("[^0123456789$]");
-                    if (event.target.value.length < MAX_DIGITS_PRIMALY_TEST && !regex.test(event.target.value))
+                    if (event.target.value.length < MAX_DIGITS_PRIMALITY_TEST && !regex.test(event.target.value))
                         try {
                             setBigNumber(event.target.value)
                             setTestTime(0)

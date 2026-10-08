@@ -19,7 +19,7 @@ export const MAX_COMPUTATION_FACTORS = 1 * 10**7;                           // H
 export const MAX_SERIES_DIFFERENCES_SIZE = 20;                              // Healthy size of the displayed number square
 export const MAX_DISPLAY_SIEVE = 10;                                        // Healthy amount of primes displayed
 export const MAX_DIGITS_RANDOM_PRIMES = 400;                                // Healthy limit of few seconds generating the primes
-export const MAX_DIGITS_PRIMALY_TEST = 3000;                                // Healthy primaly test for less than a second
+export const MAX_DIGITS_PRIMALITY_TEST = 3000;                              // Healthy primality test for less than a second
 export const MAX_CLASSIC_SIEVE_LENGTH = 2**32                               // From that, it worths to use segmented sieve. Array max length is a problem so it requires a complex data structure.
 
 export const KNOWN_MERSENNE_PRIMES = [
@@ -28,7 +28,7 @@ export const KNOWN_MERSENNE_PRIMES = [
     23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787,
     1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583,
     25964951, 30402457, 32582657, 37156667, 42643801, 43112609,
-    57885161, 74207281, 77232917, 82589933	
+    57885161, 74207281, 77232917, 82589933, 136279841
 ]
 
 interface MersennePrimeRow {
@@ -90,6 +90,7 @@ export const MERSENNE_TABLE: MersennePrimeRow[] = `
 49	74 207 281	300376418…086436351	22 338 618	07-01-2016	GIMPS / Curtis Cooper
 50	77 232 917	467333183…762179071	23 249 425	26-12-2017	GIMPS / Jonathan Pace
 51	82 589 933	148894445…217902591	24 862 048	07-12-2018	GIMPS / Patrick Laroche
+52	136 279 841	881694327…486871551	41 024 320	12-10-2024	GIMPS / Luke Durant
 `.split("\n").filter(s => s !== "").map((line: string) => {
     const [position, prime, , , discoveryDate, discoveredBy] = line.split("\t")
     return {

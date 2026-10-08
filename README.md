@@ -8,9 +8,9 @@ This project began 25 years ago with my first implementation of the Sieve of Era
 
 ## Reports and benchmarks
 
-At https://math.ideniox.com/files/test.html you can find more informacion about the calculations done in the software.
+At https://math.ideniox.com/files/test.html you can find more information about the calculations done in the software.
 
-## TODO, or what is comming
+## TODO, or what is coming
 
 0 - Improve visualization and data export, example of view:
 
@@ -37,7 +37,7 @@ Click here to visualize in GeoGebra: [Tree Visualization](https://www.geogebra.o
 
 2 - Avoid main thread usage on the backend. In the first versions I just wanted to try out nextjs. Backend in js may be an issue if it uses the main thread. Nginx load balancer is a workaround but I want to go for multithread single js docker. Let see if I get it working.
 
-3 - Parallelization of Segmented Sieve algorithm, I would like to speed up the process of counting primes up to a number. The current record is about 10**23.
+3 - Parallelization of Segmented Sieve algorithm, I would like to speed up the process of counting primes up to a number. The current world record is pi(10**29), computed by David Baugh and Kim Walisch in 2022 with primecount.
 
 ## Start
 
@@ -96,6 +96,9 @@ services:
     restart: always
     ports:
       - 3000:3000
+    environment:
+      - MATHER_SECRET=YOUR_SECRET
+      - MATHER_COMPUTE_HOST=YOUR_COMPUTE_HOST
     volumes:
       - /VOLUMES_PATH:/app/public/files
 ```
@@ -119,6 +122,6 @@ server {
 }
 ```
 
-For this to work you need to set up a valid value for `YOUR_DOMAIN` and `VOLUME_PATH`. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
+For this to work you need to set up a valid value for `YOUR_DOMAIN` and `VOLUMES_PATH`. `MATHER_SECRET` is the `KEY` that unlocks the admin endpoints and the GUI limits, and `MATHER_COMPUTE_HOST` is the host running the external compute services: the [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server) used by `/api/mersenne` and the Fortran sieve used by `/api/debug`. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
 
 To start the containers use `docker compose up -d`.

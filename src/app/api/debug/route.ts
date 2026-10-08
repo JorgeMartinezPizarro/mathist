@@ -11,6 +11,7 @@ import duration from '@/helpers/duration';
 import id from "@/helpers/id"
 import series from '@/helpers/series';
 import differences from '@/helpers/differences';
+import computeServer from '@/helpers/computeServer';
 
 
 export async function GET(request: Request): Promise<Response> {
@@ -30,7 +31,7 @@ export async function GET(request: Request): Promise<Response> {
       throw new Error("Forbidden!");
     }
 
-    const url = 'http://37.27.102.105:5003/sieve?n=10000000';
+    const url = computeServer(5003) + '/sieve?n=10000000';
     
     const x = await fetch(url, {
       method: "GET"
@@ -63,6 +64,6 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({message: "Report generated under " + filename, time: getTimeMicro() - start})
 
   } catch (error) {
-    return Response.json({ error: process.env.MATHER_SECRET + "Error generating report. " + errorMessage(error) }, { status: 500 });
+    return Response.json({ error: "Error generating report. " + errorMessage(error) }, { status: 500 });
   }
 }

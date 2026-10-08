@@ -1,4 +1,4 @@
-import { MAX_DIGITS_PRIMALY_TEST } from '@/Constants'
+import { MAX_DIGITS_PRIMALITY_TEST } from '@/Constants'
 import errorMessage from '@/helpers/errorMessage';
 import getTimeMicro from '@/helpers/getTimeMicro'
 import isProbablePrime from '@/helpers/isProbablePrime'
@@ -16,8 +16,8 @@ export async function POST(request: Request) {
 
     const number: bigint = BigInt(body.number);
     
-    if (number.toString().length > MAX_DIGITS_PRIMALY_TEST) {
-      throw new Error("Invalid number length = " + number + ", max allowed is " + MAX_DIGITS_PRIMALY_TEST)
+    if (number.toString().length > MAX_DIGITS_PRIMALITY_TEST) {
+      throw new Error("Invalid number length = " + number + ", max allowed is " + MAX_DIGITS_PRIMALITY_TEST)
     }
 
     (BigInt.prototype as any).toJSON = function() {

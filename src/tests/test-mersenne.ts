@@ -30,7 +30,7 @@ export default function testMersenne(LIMIT: number = 1000) {
     "</tr>"),
      "</tbody></table><hr/>",
      "<p style='text-align: center;'><b>Generated " + mersennePrimes.length + " mersenne primes</b></p>",
-      "<p style='text-align: center;'>Used Lucas Lehmer Primaly Test</p>",
+      "<p style='text-align: center;'>Used Lucas Lehmer Primality Test</p>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + "</p>",
       "<hr/>"
     ]

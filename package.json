@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env WATCHPACK_POLLING=true MATHER_SECRET=77777 PORT=3011 next dev",
+    "dev": "cross-env WATCHPACK_POLLING=true MATHER_SECRET=77777 MATHER_COMPUTE_HOST=localhost PORT=3011 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
