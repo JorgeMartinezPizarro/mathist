@@ -4,6 +4,7 @@ import duration from '@/helpers/duration'
 import percent from '@/helpers/percent'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import factors from '@/helpers/factors'
+import isProbablePrime from '@/helpers/isProbablePrime'
 import { PrimePower } from '@/types'
 import { max, min } from '@/helpers/math'
 
@@ -149,9 +150,12 @@ function testRow(testValuesArray: bigint[], n: number): string[][] {
     let factorsCount = 0;
     let factorsLengthSum = 0;
     let factorsArray: PrimePower[] = []
+    let time = 0
 
     try {
       const f = factors(BigInt(number))
+      // Measured before the check below, so the report keeps timing only factors()
+      time = getTimeMicro() - start
       factorsCount = f.factors.reduce((acc: number, val: PrimePower): number => {
         return acc + val.exponent
       }, 0)
@@ -160,13 +164,21 @@ function testRow(testValuesArray: bigint[], n: number): string[][] {
       }, 0)
       factorsArray = f.factors
       if (f.message) error = f.message
+      // Check the answer, not only that it did not throw
+      const product = f.factors.reduce((acc: bigint, val: PrimePower): bigint => acc * val.prime ** BigInt(val.exponent), BigInt(1))
+      const wrong = f.factors.some((val: PrimePower, i: number) => !isProbablePrime(val.prime) || (i > 0 && f.factors[i - 1].prime >= val.prime))
+      if (product !== number || wrong) {
+        failed = true
+        error = "Wrong factorization of " + sort + ": " + f.factors.map(val => val.prime + "^" + val.exponent).join(" * ")
+      }
     } catch (e) {
+      time = getTimeMicro() - start
       failed = true
       error = "Failed factoring " + sort + ". " + errorMessage(e)
     }
-    
+
     return {
-      time: getTimeMicro() - start,
+      time,
       name: "Factorize " + sort,
       passed: !failed,
       error,

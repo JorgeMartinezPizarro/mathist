@@ -5,7 +5,6 @@ import { abs, min, sqrt } from "@/helpers/math";
 import id from "@/helpers/id"
 import { MAX_COMPUTATION_FACTORS } from "@/Constants";
 import { Factor, Factorization, PrimePower } from "@/types"
-import { NoMeals } from "@mui/icons-material";
 
 const [zero, one, two]: bigint[] = [0, 1, 2 ,3].map(n => BigInt(n))
 

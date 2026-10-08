@@ -2,11 +2,15 @@
   "name": "mather",
   "version": "0.2.0",
   "private": true,
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "dev": "cross-env WATCHPACK_POLLING=true MATHER_SECRET=77777 MATHER_COMPUTE_HOST=localhost PORT=3011 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run"
   },
   "dependencies": {
 	"@emotion/react": "^11.14.0",
@@ -27,7 +31,7 @@
   },
 	"devDependencies": {
 	"@types/lodash": "^4.17.1",
-	"@types/node": "^20",
+	"@types/node": "^22",
 	"@types/node-fetch": "^2.6.11",
 	"@types/react": "^18",
 	"@types/react-dom": "^18",
@@ -37,6 +41,7 @@
 	"eslint-config-next": "^15.3.3",
 	"postcss": "^8",
 	"ts-node": "^10.9.2",
-	"typescript": "^5"
+	"typescript": "^5",
+	"vitest": "^5.0.3"
   }
 }
