@@ -83,21 +83,19 @@ Any other value of `short` is answered with a 400.
 
 ## Docker
 
-The easiest way to deploy the website is using `docker`.
+The easiest way to deploy the website is using `docker`, you need it installed on your system.
 
-There is a version of mathist dockerized under [hub.docker.com](https://hub.docker.com/repository/docker/jorgemartinezpizarro/mathist).
-
-To run it you need `docker` installed on your system and run:
+To generate your docker image and push it to your registry, run:
 
 ```
-docker run -d jorgemartinezpizarro/mathist:latest
+docker build -t YOUR_DOCKERHUB_USER/YOUR_IMAGE:latest .
+docker push YOUR_DOCKERHUB_USER/YOUR_IMAGE:latest
 ```
 
-To generate your own docker image, run:
+To run it:
 
 ```
-docker build -t jorgemartinezpizarro/mathist:latest .
-docker push jorgemartinezpizarro/mathist:latest
+docker run -d -p 3000:3000 YOUR_DOCKERHUB_USER/YOUR_IMAGE:latest
 ```
 
 I use an apache2 file server to serve files inside the docker volumes, an example `docker-compose.yml`:
@@ -113,7 +111,7 @@ services:
       - 2900:80
 
   mather:
-    image: jorgemartinezpizarro/mathist:latest
+    image: YOUR_DOCKERHUB_USER/YOUR_IMAGE:latest
     restart: always
     ports:
       - 3000:3000
@@ -143,6 +141,6 @@ server {
 }
 ```
 
-For this to work you need to set up a valid value for `YOUR_DOMAIN` and `VOLUMES_PATH`. `MATHER_SECRET` is the `KEY` that unlocks the admin endpoints and the GUI limits, and `MATHER_COMPUTE_HOST` is the host running the external compute services: the [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server) used by `/api/mersenne` and the Fortran sieve used by `/api/debug`. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
+For this to work you need to set up a valid value for `YOUR_DOMAIN`, `VOLUMES_PATH` and `YOUR_DOCKERHUB_USER/YOUR_IMAGE`. `MATHER_SECRET` is the `KEY` that unlocks the admin endpoints and the GUI limits, and `MATHER_COMPUTE_HOST` is the host running the external compute services: the [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server) used by `/api/mersenne` and the Fortran sieve used by `/api/debug`. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
 
 To start the containers use `docker compose up -d`.
