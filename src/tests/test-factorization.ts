@@ -21,9 +21,9 @@ interface TestFactorReport {
 let totalTests = 0
 
 //test the factorization and generate a report
-export default function testFactorization(local: boolean): string[] {
+export default function testFactorization(short: boolean): string[] {
   
-  const randomTestSize = local ? 10**2 : 10**5
+  const randomTestSize = short ? 10**2 : 10**5
 
   const elapsed = getTimeMicro()
 
@@ -34,11 +34,11 @@ export default function testFactorization(local: boolean): string[] {
   // STEP 2: run the reports and generate the html
   // ==============================
 
-  const testFullValues = local  
+  const testFullValues = short  
     ? [1, 2, 3, 4]
     : [1, 2, 3, 4, 5, 6]
 
-  const testRandomValues = local
+  const testRandomValues = short
     ? new Array(18).fill(0).map((e, i) => i + 5) // 5 to 22
     : new Array(19).fill(0).map((e, i) => i + 7) // 7 to 25
 

@@ -1,7 +1,7 @@
 import os from 'node:os' 
 import fs from "fs"
 
-import { errorResponse } from '@/helpers/http'
+import { badRequest, errorResponse } from '@/helpers/http'
 import { requireAdmin } from '@/helpers/auth'
 import duration from '@/helpers/duration'
 import getTimeMicro from '@/helpers/getTimeMicro'
@@ -19,14 +19,17 @@ export async function GET(request: Request): Promise<Response> {
   try {
 
     const { searchParams } = new URL(request.url||"".toString())
-    const KEY: string = searchParams.get('KEY') || "";
     const start = getTimeMicro()
 
     requireAdmin(request)
 
-    const local = KEY == "111111"
-
-    // Duration of the tests: local 12m, !local 42h.
+    // short=1 runs a reduced version of the tests, short=0 (default) the full one.
+    // Duration of the tests: short 12m, full 42h.
+    const shortParam = searchParams.get('short') || "0"
+    if (!["0", "1"].includes(shortParam)) {
+      throw badRequest("Invalid short = " + shortParam + ", use 0 or 1")
+    }
+    const short = shortParam === "1"
 
     const stringArray = [
       "<h3 style='text-align: center;'>Test report of math.ideniox.com</h3>",
@@ -34,13 +37,13 @@ export async function GET(request: Request): Promise<Response> {
       "<hr/>",
       "<p style='text-align: center;'><b>Test factors(n)</b></p>",
       "<hr/>",
-      ...testFactorization(local),
+      ...testFactorization(short),
       "<p style='text-align: center;'><b>Test randomPrimes(n)</b></p>",
       "<hr/>",
-      ...testRandom(local),
+      ...testRandom(short),
       "<p style='text-align: center;'><b>Test sieve functions</b></p>",
       "<hr/>",
-      ...testSieve(local),
+      ...testSieve(short),
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report.</p>",
     ]
 

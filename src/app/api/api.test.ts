@@ -61,6 +61,10 @@ describe('admin endpoints', () => {
     await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&maxPrime=10`)), 500, 'MATHER_COMPUTE_HOST is not set')
   })
 
+  it('test rejects a short other than 0 or 1 before running anything', async () => {
+    await expectError(await testReport(get(`/api/test?KEY=${SECRET}&short=2`)), 400, 'Invalid short = 2, use 0 or 1')
+  })
+
   it('mersenne rejects an unknown mode with 400', async () => {
     await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&mode=foo`)), 400, 'Unknown mode foo')
   })

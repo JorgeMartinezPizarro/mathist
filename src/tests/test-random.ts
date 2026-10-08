@@ -17,8 +17,8 @@ interface TestRandomReport {
 
 let totalTests = 0
 
-export default function testRandom(local: boolean): string[] {
-    const randomTestSize = local ? 10**2 : 10**5
+export default function testRandom(short: boolean): string[] {
+    const randomTestSize = short ? 10**2 : 10**5
 
     // STEP 1: vales to evaluate
     // ==============================
@@ -30,7 +30,7 @@ export default function testRandom(local: boolean): string[] {
     // STEP 2: run the reports and generate the html
     // ==============================
 
-    const testRandomValues = local
+    const testRandomValues = short
       ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 200]
       : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 200, 300, 400]
     

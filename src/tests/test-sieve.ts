@@ -21,29 +21,29 @@ interface TestReport {
   count: number;
 }
 
-export default function testSieve(local: boolean = true): string[] {
+export default function testSieve(short: boolean = true): string[] {
   const start = getTimeMicro();
     // STEP 1: define values to test
     // ==============================
     
-    // local tests should run in few seconds if !local, tests takes 4 hours. use it on a server
-    const testValues = local
+    // short tests should run in few seconds if !short, tests takes 4 hours. use it on a server
+    const testValues = short
       ? [10**6, 10**7, 10**8]
       : [10**6, 10**7, 10**8, 10**9, 10**10, 10**11, 10**12]
 
     
     // TODO: group following 1500 tests into suites.
     const testLastValues: bigint[] = [
-      ...local 
+      ...short 
         ? [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16)]
         : [BigInt(10**11), BigInt(10**12), BigInt(10**13), BigInt(10**14), BigInt(10**15), BigInt(10**16), BigInt(10**17), BigInt(10)**BigInt(18), BigInt(2)**BigInt(62)]
       ,
-      ...local
+      ...short
         ? []
         : new Array(10000).fill(0).map(e => BigInt(id(12)))
     ]
     
-    const randomTestLastValues: bigint[] = (new Array(local ? 100 : 50000).fill(0)).map(e => BigInt(id(7)))
+    const randomTestLastValues: bigint[] = (new Array(short ? 100 : 50000).fill(0)).map(e => BigInt(id(7)))
 
     // STEP 2: test over the values
     // ==============================
