@@ -1,155 +1,95 @@
 'use client'
 
-import { Button, TextField, Alert, FormGroup } from "@mui/material"
+import Image from "next/image"
 import { useState } from "react"
-import Image from "next/image";
 
-import {default as d} from "@/helpers/duration"
+import duration from "@/helpers/duration"
 import { MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH } from "@/Constants"
-import toHuman from "@/helpers/toHuman";
-import NumberToLocale from "@/widgets/NumberToLocale";
-import NumberToString from "@/widgets/NumberToString";
-import Progress from "@/widgets/Progress";
-import errorMessage from "@/helpers/errorMessage";
+import useApi from "@/hooks/useApi"
+import { SieveReport } from "@/types"
+import ActionForm from "@/widgets/ActionForm"
+import ErrorAlert from "@/widgets/ErrorAlert"
+import { DigitsField } from "@/widgets/Field"
+import NumberGrid from "@/widgets/NumberGrid"
+import NumberToLocale from "@/widgets/NumberToLocale"
+import NumberToString from "@/widgets/NumberToString"
+
+const STORED_FILES = ["1m", "10m", "100m", "1b", "10b", "100b"]
+
+// Example shown before the first request
+const INITIAL_SIEVE: SieveReport = { primes: [2], length: 1, time: 1, isPartial: false, filename: "" }
 
 const EratosthenesSieve = () => {
 
-    const [primes, setPrimes] = useState<number[]>([2])
+    const [value, setValue] = useState("2")
+    const sieve = useApi<SieveReport>(INITIAL_SIEVE)
+    const download = useApi<SieveReport>()
+    const loading = sieve.loading || download.loading
 
-    const [value, setValue] = useState<string>("2")
+    const generate = () => {
+        download.reset()
+        sieve.get("/api/primes?LIMIT=" + value)
+    }
 
-    const [duration, setDuration] = useState(1)
-
-    const [isPartial, setIsPartial] = useState(false)
-
-    const [durationFull, setDurationFull] = useState(0)
-
-    const [length, setLength] = useState(1)
-
-    const [loading, setLoading] = useState<boolean>(false)
-    
-    const [error, setError] = useState<string|boolean>(false)
-    
     const downloadCSV = async () => {
-        try {
-            const url = "/api/primes?LIMIT="+value+"&excel=true"
-            setError(false)
-            setLoading(true)
-            setDuration(0)
-            setPrimes([])
-            setLength(0)
-            setDurationFull(0)            
-            const promise = await fetch(url)
-            const response = await promise.json()
-            const {filename, time, error, length: l} = response
-            if (error) {
-                throw new Error(error.toString())
-            }
-            if (filename === "") {
-                throw new Error("Failed to generate the file with primes.")
-            }
-            const link = document.createElement("a");
-            link.href = filename;
-            link.download = "primes-to-" + value + ".csv";
-            document.body.appendChild(link);
-            link.click();        
-            document.body.removeChild(link);
-            setLength(l)
-            setIsPartial(true)
-            setLoading(false)
-            setDurationFull(time)
-        } catch (error) {
-            setError(errorMessage(error))
-            setLoading(false)
-        }
-    };
-
-    const generateSieve = async () => {
-        try {
-            const url = "/api/primes?LIMIT="+value
-            setLoading(true)
-            setError(false)
-            setPrimes([])
-            setLength(0)
-            setDurationFull(0)
-            const promise = await fetch(url)
-            const response = await promise.json()
-            const {primes, time, length, error, isPartial} = response
-            if (error) {
-                throw new Error(error.toString())
-            }
-            setDuration(time)
-            setLength(length)
-            setLoading(false)
-            setPrimes(primes)
-            setIsPartial(isPartial)
-        } catch(error) {
-            setLoading(false)
-            setError(errorMessage(error))
-            setLength(0)
-            setPrimes([])
+        sieve.reset()
+        const report = await download.get("/api/primes?LIMIT=" + value + "&excel=true")
+        if (report?.filename) {
+            // The server writes the file under /files, the browser saves it
+            const link = document.createElement("a")
+            link.href = report.filename
+            link.download = "primes-to-" + value + ".csv"
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
         }
     }
-    
+
+    const downloadError = download.data && !download.data.filename ? "Failed to generate the file with primes." : download.error
+
     return <>
-        <p><Image src="/image6.png" priority={true} height={100} width={Math.round(100 * 217 / 260)} alt=""/></p>
-        <hr/>
-        <p>Eratosthenes sieve of a given length up to 10 quatrillion. Over 100 million we use segmented sieve.</p>
-        <hr/>
-        <p>Used to generate prime lists up to 1 trillion (up to 1t there are 450GB of primes, so I will omit that link). Below the prime files generated:</p>
-        <hr/>
-        <p>
-            <a href="https://math.ideniox.com/stored/primes-to-1m.csv" download="primes-to-1m.csv">primes-to-1m.csv</a>,&nbsp;
-            <a href="https://math.ideniox.com/stored/primes-to-10m.csv" download="primes-to-10m.csv">primes-to-10m.csv</a>,&nbsp;
-            <a href="https://math.ideniox.com/stored/primes-to-100m.csv" download="primes-to-100m.csv">primes-to-100m.csv</a>,&nbsp;
-            <a href="https://math.ideniox.com/stored/primes-to-1b.csv" download="primes-to-1b.csv">primes-to-1b.csv</a>,&nbsp;
-            <a href="https://math.ideniox.com/stored/primes-to-10b.csv" download="primes-to-10b.csv">primes-to-10b.csv</a>,&nbsp;
-            <a href="https://math.ideniox.com/stored/primes-to-100b.csv" download="primes-to-100b.csv">primes-to-100b.csv</a>,&nbsp;
-        </p>
-        <hr/>
-        <FormGroup row={true}>
-            <TextField
-                className="input"
+        <div className="illustrations">
+            <Image src="/image6.png" preload height={100} width={Math.round(100 * 217 / 260)} alt="" />
+        </div>
+        <div className="intro">
+            <p>Eratosthenes sieve of a given length up to 10 quadrillion. Over 100 million we use segmented sieve.</p>
+            <p>Used to generate prime lists up to 1 trillion (up to 1t there are 450GB of primes, so I will omit that link). Below the prime files generated:</p>
+            <p>
+                {STORED_FILES.map((size, index) => <span key={size}>
+                    {index > 0 && ", "}
+                    <a href={"https://math.ideniox.com/stored/primes-to-" + size + ".csv"} download={"primes-to-" + size + ".csv"}>primes-to-{size}.csv</a>
+                </span>)}
+            </p>
+        </div>
+        <ActionForm onSubmit={generate} loading={loading}>
+            <DigitsField
                 label="Length"
-                type="text"
-                disabled={loading}
                 value={value}
-                onChange={(event => {
-                    const regex = new RegExp("[^0123456789$]");
-                    if (event.target.value.length <= MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH.toString().length && !regex.test(event.target.value)) {
-                        setValue(event.target.value)
-                        setPrimes([])
-                        setDurationFull(0)
-                        setDuration(0)
-                        setLength(0)
-                    }
-                })}
+                maxLength={MAX_HEALTHY_SEGMENTED_SIEVE_LENGTH.toString().length}
+                disabled={loading}
+                onChange={newValue => {
+                    setValue(newValue)
+                    sieve.reset()
+                    download.reset()
+                }}
             />
-            <Button disabled={loading} onClick={generateSieve} variant="contained">GENERATE</Button>
-            <Button disabled={loading} onClick={downloadCSV} variant="contained">DOWNLOAD</Button>
-            <Progress loading={loading}/>
-        </FormGroup>
-        {error && <><hr/><Alert severity="error">{error}</Alert></>}
-        {!error && durationFull !== 0 && <>
-            <hr/>
-            {length > 0 && <p>Generated download of <NumberToString number={length} /> primes in {d(durationFull)}</p>}
-        </>}
-        {!error && (primes.length > 0) && !loading && (<>
-            <hr/>
-            {!isPartial && <p>Total of primes smaller or equal than <NumberToString number={BigInt(value)} /> is <NumberToString number={length} />, it took {d(duration)}. Used eratosthenes sieve.</p>}
-            {isPartial && <p>Ten primes up to <NumberToString number={BigInt(value)} /> found using the segmented sieve in {d(duration)} </p>}
-            <hr/>
-            <p>Last <NumberToLocale number={primes.length} singular={"prime"} /> of the sieve:</p>
-            <hr/>
-            <p className="inline-grid">[&nbsp;{primes.map((prime: number, index: number) => <span key={prime}>
-                <span key={"number"}><NumberToString number={prime} /></span>
-                {index !== primes.length - 1 && <span key={"divider"}>,&nbsp;</span>}
-            </span>)}&nbsp;]</p>
-        </>)}
-        {(!error && duration > 0 && !length && !loading) && <>
-            <hr/>
-            <p>No primes smaller or equal than {parseInt(value)}</p>
-        </>}
+            <button type="submit" disabled={loading}>Generate</button>
+            <button type="button" disabled={loading} onClick={downloadCSV}>Download</button>
+        </ActionForm>
+        <ErrorAlert error={sieve.error || downloadError} />
+        {download.data?.filename && <section className="result">
+            <p>Generated download of <NumberToString number={download.data.length} /> primes in {duration(download.data.time)}</p>
+        </section>}
+        {sieve.data && <section className="result">
+            {sieve.data.length === 0 && <p>No primes smaller or equal than <NumberToString number={value} /></p>}
+            {sieve.data.length > 0 && <>
+                {sieve.data.isPartial
+                    ? <p>Ten primes up to <NumberToString number={value} /> found using the segmented sieve in {duration(sieve.data.time)}</p>
+                    : <p>Total of primes smaller or equal than <NumberToString number={value} /> is <NumberToString number={sieve.data.length} />, it took {duration(sieve.data.time)}. Used eratosthenes sieve.</p>}
+                <p className="caption">Last <NumberToLocale number={sieve.data.primes.length} singular="prime" /> of the sieve:</p>
+                <NumberGrid numbers={sieve.data.primes} columns={Math.min(5, sieve.data.primes.length)} />
+            </>}
+        </section>}
     </>
 }
 

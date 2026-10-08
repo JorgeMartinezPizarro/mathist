@@ -1,42 +1,48 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 
-import ClientPage from "./ClientPage";
-
+import { SECTIONS, Slug, findSection } from "@/app/sections";
 import About from "@/app/components/About";
 import PrimeFactorization from "@/app/components/PrimeFactorization";
 import PythagoreanTree from "@/app/components/PythagoreanTree";
 import SerieDifferences from "@/app/components/SerieDifferences";
 import EratosthenesSieve from "@/app/components/EratosthenesSieve";
 import RandomPrimes from "@/app/components/RandomPrimes";
-import Test from "@/app/components/Test";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+const PAGES: Record<Slug, ReactNode> = {
+  sieve: <EratosthenesSieve />,
+  tree: <PythagoreanTree />,
+  factors: <PrimeFactorization />,
+  series: <SerieDifferences />,
+  primes: <RandomPrimes />,
+  about: <About />,
+};
 
+type Props = { params: Promise<{ slug: string }> };
+
+// Only the known sections exist, prerendered at build time. Anything else is a 404.
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return SECTIONS.map(({ slug }) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  return { title: findSection(slug)?.title };
+}
 
-  const elements = [
-    { name: "sieve", component: <EratosthenesSieve /> },
-    { name: "tree", component: <PythagoreanTree /> },
-    { name: "factors", component: <PrimeFactorization /> },
-    { name: "series", component: <SerieDifferences /> },
-    { name: "primes", component: <RandomPrimes /> },
-    { name: "about", component: <About /> },
-  ];
+export default async function Page({ params }: Props) {
+  const { slug } = await params;
+  const section = findSection(slug);
 
-  const currentElement = elements.find(el => el.name === slug);
-
-  if (!currentElement) {
+  if (!section) {
     notFound();
   }
 
-  return (
-    <ClientPage
-      currentElement={currentElement}
-      elements={elements}
-    />
-  );
+  return <>
+    <h1>{section.title}</h1>
+    {PAGES[section.slug]}
+  </>
 }

@@ -1,9 +1,7 @@
-'use client'
+import { redirect } from "next/navigation";
 
-import { redirect } from 'next/navigation'
+import { SECTIONS } from "@/app/sections";
 
-const Home = () => {
-    redirect("/sieve");
+export default function Home() {
+    redirect("/" + SECTIONS[0].slug);
 }
-
-export default Home;

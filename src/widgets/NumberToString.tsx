@@ -1,20 +1,18 @@
 import locale from "@/helpers/locale";
 
 interface NumberToStringProps {
-    number: number|bigint;
+    // The API sends big integers as strings
+    number: number | bigint | string;
 }
 
 function NumberToString(props: NumberToStringProps) {
 
     const {number} = props;
-    
-    return (<>
-        <span title={number.toString().length > 5 ? "It is a " + number.toString().length + " digits number, " +  locale(BigInt(number)) : undefined}>
-            {number.toString()}
-        </span>
-        
-    
-    </>);
+    const digits = number.toString();
+
+    return <span className="num" title={digits.length > 5 ? "It is a " + digits.length + " digits number, " + locale(BigInt(number)) : undefined}>
+        {digits}
+    </span>
 }
 
-export default  NumberToString;
+export default NumberToString;

@@ -6,17 +6,13 @@
     "node": ">=22.12"
   },
   "scripts": {
-    "dev": "cross-env WATCHPACK_POLLING=true MATHER_SECRET=77777 MATHER_COMPUTE_HOST=localhost PORT=3011 next dev --webpack",
+    "dev": "cross-env MATHER_SECRET=77777 MATHER_COMPUTE_HOST=localhost PORT=3011 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^5.15.15",
-    "@mui/material": "^5.15.14",
     "bigint-gcd": "^1.0.28",
     "decimal.js": "^10.4.3",
     "lodash": "^4.17.21",

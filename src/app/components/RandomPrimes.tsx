@@ -1,173 +1,82 @@
 'use client'
 
-import { Alert, Button, FormGroup, TextField } from "@mui/material";
 import { useState } from "react";
 
 import { MAX_DIGITS_PRIMALITY_TEST } from "@/Constants";
-import NumberToLocale from "@/widgets/NumberToLocale";
-import NumberToString from "@/widgets/NumberToString";
-import Progress from "@/widgets/Progress";
 import duration from "@/helpers/duration";
-import errorMessage from "@/helpers/errorMessage";
+import useApi from "@/hooks/useApi";
 import { RandomPrimesReport } from "@/types";
+import ActionForm from "@/widgets/ActionForm";
+import ErrorAlert from "@/widgets/ErrorAlert";
+import { DigitsField } from "@/widgets/Field";
+import NumberGrid from "@/widgets/NumberGrid";
+import NumberToLocale from "@/widgets/NumberToLocale";
 
-const initialRandomPrimes: RandomPrimesReport = {
-    primes: [],
-    length: 0,
-    time: 0,
-    amount: 0,
-    tries: 0,
+interface PrimalityReport {
+    isPrime: boolean;
+    number: string;
+    time: number;
 }
 
 const RandomPrimes = () => {
 
-    const [loading, setLoading] = useState<boolean>(false)
-    const [loadingTest, setLoadingTest] = useState<boolean>(false)
-    const [randomPrimes, setRandomPrimes] = useState<RandomPrimesReport>(initialRandomPrimes)
-    const [length, setLength] = useState<string>("40")
-    const [testTime, setTestTime] = useState<number>(0)
-    const [bigNumber, setBigNumber] = useState<string>("1111111111111111111")
-    const [amount, setAmount] = useState<string>("10")
-    const [error, setError] = useState<string>("")
-    const [errorTest, setErrorTest] = useState<string>("")
-    const [isPrime, setIsPrime] = useState<boolean>(false);
-
-    const handleTestIfPrime = async () => {
-        try {
-            setErrorTest("")
-            setTestTime(0)
-            setIsPrime(false)
-            setLoadingTest(true)
-            const options = {
-                method: "POST",
-                headers: {
-                  "content-type": "application/json",
-                },
-                body: JSON.stringify({
-                    number: bigNumber,
-                }),
-              }
-            const promise = await fetch("/api/isPrime", options)
-            const response = await promise.json();
-            if (response.error) {
-                throw new Error(response.error.toString())
-            }
-            setIsPrime(response.isPrime)
-            setTestTime(response.time)
-            setLoadingTest(false)
-        } catch (error) {
-            setLoadingTest(false)
-            setErrorTest(errorMessage(error))
-        }
-    }
-
-    const handleSend = async () => {
-        try {
-            setRandomPrimes(initialRandomPrimes)
-            setLoading(true)
-            setError("")
-            const promise = await fetch("/api/randomPrimes?length=" + length + "&amount=" + amount)
-            const response = await promise.json()
-            if (response.error) {
-                throw new Error(response.error.toString())
-            }
-            setRandomPrimes(response)
-            setLoading(false)
-        } catch (error) {
-            setLoading(false)
-            setError(errorMessage(error))
-        }
-    }
+    const [candidate, setCandidate] = useState("1111111111111111111")
+    const [length, setLength] = useState("40")
+    const [amount, setAmount] = useState("10")
+    const test = useApi<PrimalityReport>()
+    const random = useApi<RandomPrimesReport>()
 
     return <>
-        <p>Enter a number to test if it is prime. Max value is 10**{MAX_DIGITS_PRIMALITY_TEST}-1.</p>
-        <hr/>
-        <FormGroup row={true}>
-            <TextField
-                className="input"
+        <div className="intro">
+            <p>Enter a number to test if it is prime. Max value is 10**{MAX_DIGITS_PRIMALITY_TEST}-1.</p>
+        </div>
+        <ActionForm onSubmit={() => test.post("/api/isPrime", { number: candidate })} loading={test.loading}>
+            <DigitsField
                 label="Number"
-                type="string"
-                value={bigNumber}
-                disabled={loadingTest}
-                onChange={(event => {
-                    // check it is base 3
-                    const regex = new RegExp("[^0123456789$]");
-                    if (event.target.value.length < MAX_DIGITS_PRIMALITY_TEST && !regex.test(event.target.value))
-                        try {
-                            setBigNumber(event.target.value)
-                            setTestTime(0)
-                        } catch (e) {
-
-                        }
-                })}
+                value={candidate}
+                maxLength={MAX_DIGITS_PRIMALITY_TEST}
+                disabled={test.loading}
+                onChange={newCandidate => {
+                    setCandidate(newCandidate)
+                    test.reset()
+                }}
             />
-            <Button disabled={loadingTest} onClick={handleTestIfPrime} variant="contained">Test</Button>
-            <Progress loading={loadingTest} />
-        </FormGroup>
-        {errorTest && <><hr/><Alert severity="error">{errorTest}</Alert></>}
-        <hr/>
-        { testTime > 0 && <>
-            <p>The number entered with <NumberToLocale number={bigNumber.length} singular="digit"/>{isPrime ? " is prime" : " is not prime"}, it took {duration(testTime)}</p>
-            <hr/>
-        </>}
-        <p>Write length and amount to generate random primes:</p>
-        <hr/>
-        <FormGroup row={true}>
-            <TextField
-                className="input"
+            <button type="submit" disabled={test.loading}>Test</button>
+        </ActionForm>
+        <ErrorAlert error={test.error} />
+        {test.data && <section className="result">
+            <p>The number entered with <NumberToLocale number={candidate.length} singular="digit" /> <strong>{test.data.isPrime ? "is prime" : "is not prime"}</strong>, it took {duration(test.data.time)}</p>
+        </section>}
+        <hr />
+        <div className="intro">
+            <p>Write length and amount to generate random primes:</p>
+        </div>
+        <ActionForm onSubmit={() => random.get("/api/randomPrimes?length=" + length + "&amount=" + amount)} loading={random.loading}>
+            <DigitsField
                 label="Length"
-                type="string"
                 value={length}
-                disabled={loading}
-                onChange={(event => {
-                    // check it is an integer
-                    const regex = new RegExp("[^0123456789$]");
-                    if (!regex.test(event.target.value))
-                        try {
-                            setLength(event.target.value)
-                            setRandomPrimes(initialRandomPrimes)
-                        } catch (e) {
-
-                        }
-                })}
+                disabled={random.loading}
+                onChange={newLength => {
+                    setLength(newLength)
+                    random.reset()
+                }}
             />
-            <TextField
-                className="input"
+            <DigitsField
                 label="Amount"
-                type="string"
-                disabled={loading}
                 value={amount}
-                onChange={(event => {
-                    // check it an integer
-                    const regex = new RegExp("[^0123456789$]");
-                    if (!regex.test(event.target.value))
-                        try {
-                            setAmount(event.target.value)
-                            setRandomPrimes(initialRandomPrimes)
-                        } catch (e) {
-
-                        }
-                })}
+                disabled={random.loading}
+                onChange={newAmount => {
+                    setAmount(newAmount)
+                    random.reset()
+                }}
             />
-            <Button onClick={handleSend} disabled={loading} variant="contained">GENERATE</Button>
-            <Progress loading={loading} />
-        </FormGroup>
-        {error && <><hr/><Alert severity="error">{error}</Alert></>}
-
-        {!error && randomPrimes.primes.length > 0 && <>
-            <hr key={"first-lane"}/>
-            <p key={"second-lane"}>
-                Generated <NumberToLocale number={parseInt(amount)} singular="prime"/> with <NumberToLocale number={parseInt(length)} singular="digit" /> in {duration(randomPrimes.time)}
-            </p>
-            {randomPrimes.primes.map(prime => 
-                <div key={prime + "-container"}>
-                    <hr key={prime + "-divider"}/>
-                    <p className="inline-grid" key={prime+"-paragraph"}>
-                        <span key={prime + "-number"}><NumberToString number={prime}/></span>
-                    </p>
-                </div>
-            )}
-        </>}
+            <button type="submit" disabled={random.loading}>Generate</button>
+        </ActionForm>
+        <ErrorAlert error={random.error} />
+        {random.data && <section className="result">
+            <p>Generated <NumberToLocale number={random.data.amount} singular="prime" /> with <NumberToLocale number={random.data.length} singular="digit" /> in {duration(random.data.time)}</p>
+            <NumberGrid numbers={random.data.primes} columns={1} />
+        </section>}
     </>
 }
 

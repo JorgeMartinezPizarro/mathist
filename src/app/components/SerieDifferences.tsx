@@ -1,102 +1,71 @@
 'use client'
 
-import { useState, useCallback } from "react"
-import { TextField, Button, FormGroup, Alert, MenuItem } from "@mui/material"
+import { useState } from "react"
 
 import { MAX_SERIES_DIFFERENCES_SIZE } from "@/Constants"
+import useApi from "@/hooks/useApi"
+import ActionForm from "@/widgets/ActionForm"
+import ErrorAlert from "@/widgets/ErrorAlert"
+import { Field } from "@/widgets/Field"
 import NumberToString from "@/widgets/NumberToString"
-import Progress from "@/widgets/Progress"
-import errorMessage from "@/helpers/errorMessage"
+
+// value is the name the API expects
+const SERIES = [
+  { value: "integer", label: "Integers" },
+  { value: "square", label: "Squares" },
+  { value: "triangular", label: "Triangulars" },
+  { value: "penthagonal", label: "Pentagonals" },
+  { value: "hexagonal", label: "Hexagonals" },
+  { value: "cube", label: "Cubes" },
+  { value: "exponential", label: "Exponentials" },
+  { value: "prime", label: "Primes" },
+  { value: "fibonacci", label: "Fibonacci" },
+  { value: "luca", label: "Lucas" },
+  { value: "factorial", label: "Factorials" },
+]
 
 const SerieDifferences = () => {
-  
-  const [number, setNumber] = useState<bigint[][]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string>("")
-  const [value, setValue] = useState<string>("integer")
 
-  const handleSubmit = useCallback(() => {
-    setLoading(true)
-    fetch("/api/differences?name=" + value + "&length=" + MAX_SERIES_DIFFERENCES_SIZE)
-      .then(res => res.json())
-      .then(res => {
-        if (res.error) {
-          throw new Error(res.error)
-        }
-        setNumber(res)
-        setLoading(false)
-      })
-      .catch(error=> {
-        setError(errorMessage(error))
-        setLoading(false)
-      })
-  }, [value])
+  const [name, setName] = useState(SERIES[0].value)
+  const differences = useApi<string[][]>()
+  const label = SERIES.find(series => series.value === name)?.label
+  // Rows with only zeros say nothing, so they are hidden
+  const rows = (differences.data || []).filter(row => row.some(n => BigInt(n) !== BigInt(0)))
 
-  return (
-    <>
-        <p>Select a serie to obtain it&apos;s series of differences. Some of these series of series have regularities, while others not.</p>
-        <hr />
-        <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
-        <hr />
-      <FormGroup row={true}>
-        <TextField
-          value={value}
-          label="Number"
-          name="number"
-          id="number"
+  return <>
+    <div className="intro">
+      <p>Select a series to obtain its series of differences. Some of these series of series have regularities, while others not.</p>
+      <p>Here an explanation of the differences of series: <a href="https://www.youtube.com/watch?v=4AuV93LOPcE">https://www.youtube.com/watch?v=4AuV93LOPcE</a></p>
+    </div>
+    <ActionForm onSubmit={() => differences.get("/api/differences?name=" + name + "&length=" + MAX_SERIES_DIFFERENCES_SIZE)} loading={differences.loading}>
+      <Field label="Series">
+        <select
+          value={name}
+          disabled={differences.loading}
           onChange={event => {
-            setValue(event.target.value)
-            setNumber([])
+            setName(event.target.value)
+            differences.reset()
           }}
-          select 
         >
-          <MenuItem key={"integer"} value={"integer"}>Integers</MenuItem>
-          <MenuItem key={"square"} value={"square"}>Squares</MenuItem>
-          <MenuItem key={"triangular"} value={"triangular"}>Triangulars</MenuItem>
-          <MenuItem key={"penthagonal"} value={"penthagonal"}>Penthagonals</MenuItem>
-          <MenuItem key={"hexagonal"} value={"hexagonal"}>Hexagonals</MenuItem>
-          <MenuItem key={"cube"} value={"cube"}>Cubes</MenuItem>
-          <MenuItem key={"exponential"} value={"exponential"}>Exponentials</MenuItem>
-          <MenuItem key={"prime"} value={"prime"}>Primes</MenuItem>
-          <MenuItem key={"fibonacci"} value={"fibonacci"}>Fibonacci</MenuItem>
-          <MenuItem key={"luca"} value={"luca"}>Luca</MenuItem>
-          <MenuItem key={"factorial"} value={"factorial"}>Factorials</MenuItem>
-        </TextField>
-        <Button disabled={loading} onClick={()=> {
-          handleSubmit()
-        }} variant="contained">GENERATE</Button>
-        <Progress loading={loading} />
-      </FormGroup>
-      
-      {error && <><hr/><Alert severity="error">{error}</Alert></>}
-      
-      {number.length > 0 && (<>
-        <hr />
-        <p>Below the {MAX_SERIES_DIFFERENCES_SIZE} first {value} numbers and it&apos;s nth-differences up to {MAX_SERIES_DIFFERENCES_SIZE}</p>
-        
-      </>)}
-      {number.length > 0 &&  <>
-        <hr />
-        <div style={{overflowX: "auto"}}>
-          <table className="series">
-            <tbody>
-              {number.filter((el, id) => {
-                for (var idx = 0; idx<el.length; idx++) {
-                  if (BigInt(el[idx].toString()) !== BigInt(0))
-                    return true
-                }
-                return false
-              }).map((row, i) => 
-                <tr key={JSON.stringify(row)}>{row.map((nr, j) => 
-                  <td className={i === j ? "diagonal" : ""} key={j}><NumberToString number={nr} /></td>
-                )}</tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </>}
-    </>
-  );
+          {SERIES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+        </select>
+      </Field>
+      <button type="submit" disabled={differences.loading}>Generate</button>
+    </ActionForm>
+    <ErrorAlert error={differences.error} />
+    {rows.length > 0 && <section className="result">
+      <p>{label}: the first {MAX_SERIES_DIFFERENCES_SIZE} terms and their nth-differences up to {MAX_SERIES_DIFFERENCES_SIZE}</p>
+      <div className="table-scroll">
+        <table className="series">
+          <tbody>
+            {rows.map((row, i) => <tr key={i}>
+              {row.map((n, j) => <td key={j} className={i === j ? "diagonal" : undefined}><NumberToString number={n} /></td>)}
+            </tr>)}
+          </tbody>
+        </table>
+      </div>
+    </section>}
+  </>
 }
 
 export default SerieDifferences;
