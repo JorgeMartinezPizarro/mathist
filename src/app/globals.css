@@ -206,8 +206,7 @@ div[role="alert"] {
   display: inline-block;
 }
 
+/* The size comes from the width and height props of next/image */
 img {
   margin: 8px;
-  width: auto;
-  height: 100px;
 }
