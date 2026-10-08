@@ -1,5 +1,5 @@
 import { MAX_DIGITS_RANDOM_PRIMES } from '@/Constants'
-import errorMessage from '@/helpers/errorMessage';
+import { badRequest, errorResponse } from '@/helpers/http';
 import randomPrimes from '@/helpers/randomPrimes'
 
 export async function GET(request: Request) {
@@ -10,11 +10,11 @@ export async function GET(request: Request) {
     const amount: number = parseInt(searchParams.get('amount') || "NaN");
     
     if (isNaN(LIMIT) || isNaN(amount)) {
-      throw new Error("Invalid parameters length = " + LIMIT + ", amount = " + amount)
+      throw badRequest("Invalid parameters length = " + LIMIT + ", amount = " + amount)
     }
 
     if (amount * LIMIT > MAX_DIGITS_RANDOM_PRIMES) {
-      throw new Error("Invalid parameters length = " + LIMIT + ", amount = " + amount + " the max total of DIGITS is " + MAX_DIGITS_RANDOM_PRIMES)
+      throw badRequest("Invalid parameters length = " + LIMIT + ", amount = " + amount + " the max total of DIGITS is " + MAX_DIGITS_RANDOM_PRIMES)
     }
 
     (BigInt.prototype as any).toJSON = function() {
@@ -23,6 +23,6 @@ export async function GET(request: Request) {
 
     return Response.json( randomPrimes(LIMIT, amount) )
   } catch (error) {
-    return Response.json({ error: errorMessage(error) }, { status: 500 });
+    return errorResponse(error);
   }
 }

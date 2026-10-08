@@ -1,31 +1,31 @@
 import { MAX_DIGITS_TRIPLE } from '@/Constants';
-import errorMessage from '@/helpers/errorMessage';
+import { badRequest, errorResponse, methodNotAllowed, parseJsonBody } from '@/helpers/http';
 import PythagoreanTriple from '@/helpers/pythagoreanTriple'
 
 export async function GET(request: Request) {
-  return Response.json({ error: "invalid protocol GET, available protocol POST"}, {status: 500})
+  return methodNotAllowed("POST")
 }
 
 export async function POST(request: Request) {
   
   try {
   
-    const body = await request.json();
+    const body = await parseJsonBody(request);
 
     const LIMIT: string | undefined = body.number;
 
-    if (LIMIT === undefined) {
-      throw new Error("Missing parameter LIMIT");
+    if (typeof LIMIT !== "string") {
+      throw badRequest("Missing parameter number");
     }
 
     const regex = new RegExp("[^012$]");
 
     if (regex.test(LIMIT)) {
-        throw new Error("Invalid base 3 path provided: " + LIMIT)
+        throw badRequest("Invalid base 3 path provided: " + LIMIT)
     }
-  
+
     if (LIMIT.length > MAX_DIGITS_TRIPLE) {
-      throw new Error("Max path length is " + LIMIT)
+      throw badRequest("Max path length is " + MAX_DIGITS_TRIPLE + ", " + LIMIT.length + " provided")
     }
 
     (BigInt.prototype as any).toJSON = function() {
@@ -35,6 +35,6 @@ export async function POST(request: Request) {
     return Response.json(PythagoreanTriple(LIMIT))
   
   } catch (error) {
-    return Response.json({ error: errorMessage(error) }, { status: 500 });
+    return errorResponse(error);
   }
 }

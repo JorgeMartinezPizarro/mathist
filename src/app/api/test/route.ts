@@ -1,7 +1,8 @@
 import os from 'node:os' 
 import fs from "fs"
 
-import errorMessage from '@/helpers/errorMessage'
+import { errorResponse } from '@/helpers/http'
+import { requireAdmin } from '@/helpers/auth'
 import duration from '@/helpers/duration'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import testRandom from '@/tests/test-random'
@@ -21,9 +22,7 @@ export async function GET(request: Request): Promise<Response> {
     const KEY: string = searchParams.get('KEY') || "";
     const start = getTimeMicro()
 
-    if (KEY !== process.env.MATHER_SECRET?.trim()) {
-      throw new Error("Forbidden!")
-    }
+    requireAdmin(request)
 
     const local = KEY == "111111"
 
@@ -56,7 +55,7 @@ export async function GET(request: Request): Promise<Response> {
 
     return Response.json( {time: getTimeMicro() - start, message: "test report generated under /files/test.html"} )
   } catch (error) {
-    return Response.json({ error: errorMessage(error) }, { status: 500 });
+    return errorResponse(error);
   }
 }
 

@@ -8,5 +8,5 @@ export async function GET(request: Request) {
         "randomPrimes",
         "isPrime",
     ];
-    return Response.json({ error: "invalid endpoint /, existing endpoints " + valid_endpoints.join(", ")}, {status: 500});
+    return Response.json({ error: "invalid endpoint /, existing endpoints " + valid_endpoints.join(", ")}, {status: 404});
   }

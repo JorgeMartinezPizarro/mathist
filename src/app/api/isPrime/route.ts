@@ -1,10 +1,10 @@
 import { MAX_DIGITS_PRIMALITY_TEST } from '@/Constants'
-import errorMessage from '@/helpers/errorMessage';
+import { badRequest, errorResponse, methodNotAllowed, parseBigInt, parseJsonBody } from '@/helpers/http';
 import getTimeMicro from '@/helpers/getTimeMicro'
 import isProbablePrime from '@/helpers/isProbablePrime'
 
 export async function GET(request: Request) {
-  return Response.json({ error: "invalid protocol GET, available protocol POST"}, {status: 500})
+  return methodNotAllowed("POST")
 }
 
 export async function POST(request: Request) {
@@ -12,12 +12,12 @@ export async function POST(request: Request) {
   try {
     const start = getTimeMicro();
 
-    const body = await request.json();
+    const body = await parseJsonBody(request);
 
-    const number: bigint = BigInt(body.number);
-    
+    const number: bigint = parseBigInt(body.number, "number");
+
     if (number.toString().length > MAX_DIGITS_PRIMALITY_TEST) {
-      throw new Error("Invalid number length = " + number + ", max allowed is " + MAX_DIGITS_PRIMALITY_TEST)
+      throw badRequest("Invalid number length = " + number + ", max allowed is " + MAX_DIGITS_PRIMALITY_TEST)
     }
 
     (BigInt.prototype as any).toJSON = function() {
@@ -28,6 +28,6 @@ export async function POST(request: Request) {
 
     return Response.json( {isPrime, number, time: getTimeMicro() - start} )
   } catch (error) {
-    return Response.json({ error: errorMessage(error) }, { status: 500 });
+    return errorResponse(error);
   }
 }

@@ -1,6 +1,7 @@
 import { MAX_SERIES_DIFFERENCES_SIZE } from '@/Constants';
 import differences from '@/helpers/differences';
-import errorMessage from '@/helpers/errorMessage';
+import { badRequest, errorResponse } from '@/helpers/http';
+import { isAdmin } from '@/helpers/auth';
 import series from '@/helpers/series';
 
 export async function GET(request: Request) {
@@ -11,14 +12,12 @@ export async function GET(request: Request) {
     const deep = parseInt(searchParams.get('deep') || "") || length;
     const name = searchParams.get('name') || "";
 
-    const KEY: string = searchParams.get('KEY') || "";
-    
     (BigInt.prototype as any).toJSON = function() {
       return this.toString()
     };
 
-    if (KEY !== process.env.MATHER_SECRET?.trim() && length > MAX_SERIES_DIFFERENCES_SIZE )
-      throw new Error("Max length allowed " + (MAX_SERIES_DIFFERENCES_SIZE))
+    if (!isAdmin(request) && length > MAX_SERIES_DIFFERENCES_SIZE )
+      throw badRequest("Max length allowed " + (MAX_SERIES_DIFFERENCES_SIZE))
 
     // TODO: Generate full row of series difference
     const array = series(2 * length - 1, name)
@@ -26,6 +25,6 @@ export async function GET(request: Request) {
     const result = diff.slice(0, length).map(subDiff => subDiff.slice(0, length))
     return Response.json(result)
   } catch (error) {
-    return Response.json({ error: errorMessage(error) }, { status: 500 });
+    return errorResponse(error);
   }
 }

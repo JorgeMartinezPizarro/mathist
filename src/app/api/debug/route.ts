@@ -6,7 +6,8 @@ import os from 'node:os'
 import fs from 'fs' 
 import _ from "lodash"
 import getTimeMicro from '@/helpers/getTimeMicro';
-import errorMessage from '@/helpers/errorMessage';
+import { errorResponse } from '@/helpers/http';
+import { requireAdmin } from '@/helpers/auth';
 import duration from '@/helpers/duration';
 import id from "@/helpers/id"
 import series from '@/helpers/series';
@@ -22,14 +23,11 @@ export async function GET(request: Request): Promise<Response> {
     let filename = `benchmark.html`
     
     const { searchParams } = new URL(request.url||"".toString())
-    const KEY: string = searchParams.get('KEY') || "";
     const N: string = searchParams.get('N') || "";
-    
+
     let strings = []
 
-    if (KEY !== process.env.MATHER_SECRET?.trim()) {
-      throw new Error("Forbidden!");
-    }
+    requireAdmin(request)
 
     const url = computeServer(5003) + '/sieve?n=10000000';
     
@@ -64,6 +62,6 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({message: "Report generated under " + filename, time: getTimeMicro() - start})
 
   } catch (error) {
-    return Response.json({ error: "Error generating report. " + errorMessage(error) }, { status: 500 });
+    return errorResponse(error, "Error generating report. ");
   }
 }

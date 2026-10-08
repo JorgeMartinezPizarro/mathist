@@ -7,7 +7,8 @@ import fs from 'fs'
 import fetch from 'node-fetch';
 import _ from "lodash"
 
-import errorMessage from '@/helpers/errorMessage'
+import { badRequest, errorResponse, HttpError } from '@/helpers/http'
+import { requireAdmin } from '@/helpers/auth'
 import getTimeMicro from '@/helpers/getTimeMicro'
 import duration from '@/helpers/duration';
 import eratosthenes from '@/helpers/eratosthenes';
@@ -46,16 +47,13 @@ export async function GET(request: Request): Promise<Response> {
     // Benchmark Scala vs Go vs Rust vs C++
     ////////////////////////////////////////////////////////////////////////////
     const { searchParams } = new URL(request.url||"".toString())
-    const KEY: string = searchParams.get('KEY') || "";
     const LIMIT: number = parseInt(searchParams.get('maxPrime') || "128");
     const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "16");
     const language: string = searchParams.get("lang") || "go"
     const mode = searchParams.get("mode") || "mersenne";
     
-    if (KEY !== process.env.MATHER_SECRET?.trim()) {
-      throw new Error("Forbidden!");
-    }
-    
+    requireAdmin(request)
+
     let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V3.html`
 
     let languages;
@@ -69,7 +67,7 @@ export async function GET(request: Request): Promise<Response> {
       languages = language === "all" ? ["c", "go"] : [language]
       numbers = KNOWN_MERSENNE_PRIMES.slice(0, LIMIT)
     } else {
-      throw new Error("Unknown mode " + mode);
+      throw badRequest("Unknown mode " + mode);
     }
 
     const strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
@@ -97,7 +95,7 @@ export async function GET(request: Request): Promise<Response> {
 
   } catch (error) {
 	console.log(error);
-    return Response.json({ error: "Error generating report. " + errorMessage(error) }, { status: 500 });
+    return errorResponse(error, "Error generating report. ");
   }
 }
 
@@ -207,7 +205,7 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
   const response = await fetch(url, options)
 
   if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status} ${response.toString()}`);
+    throw new HttpError(502, `Go server error! Status: ${response.status} ${await response.text()}`);
   }
 
   const x: any = (await response.json())
@@ -251,7 +249,7 @@ async function computeLLTPC(primes: number[], numThreads: number): Promise<Merse
   const response = await fetch(url, options)
 
   if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status} ${await response.text()}`);
+    throw new HttpError(502, `C server error! Status: ${response.status} ${await response.text()}`);
   }
 
   const x: any = (await response.json())
