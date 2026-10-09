@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 
-import errorMessage from "@/helpers/errorMessage"
+import errorMessage from "@/utils/errorMessage"
 
 // State of a call to our API: its last answer, whether it is running and its
 // error message. The API answers errors as { error } with a 4xx or 5xx status.

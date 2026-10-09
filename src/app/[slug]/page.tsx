@@ -2,19 +2,19 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 
-import { SECTIONS, Slug, findSection } from "@/app/sections";
-import About from "@/app/components/About";
-import PrimeFactorization from "@/app/components/PrimeFactorization";
-import PythagoreanTree from "@/app/components/PythagoreanTree";
-import SerieDifferences from "@/app/components/SerieDifferences";
-import EratosthenesSieve from "@/app/components/EratosthenesSieve";
-import RandomPrimes from "@/app/components/RandomPrimes";
+import { SECTIONS, Slug, findSection } from "@/sections";
+import About from "@/components/sections/About";
+import PrimeFactorization from "@/components/sections/PrimeFactorization";
+import PythagoreanTree from "@/components/sections/PythagoreanTree";
+import SeriesDifferences from "@/components/sections/SeriesDifferences";
+import EratosthenesSieve from "@/components/sections/EratosthenesSieve";
+import RandomPrimes from "@/components/sections/RandomPrimes";
 
 const PAGES: Record<Slug, ReactNode> = {
   sieve: <EratosthenesSieve />,
   tree: <PythagoreanTree />,
   factors: <PrimeFactorization />,
-  series: <SerieDifferences />,
+  series: <SeriesDifferences />,
   primes: <RandomPrimes />,
   about: <About />,
 };

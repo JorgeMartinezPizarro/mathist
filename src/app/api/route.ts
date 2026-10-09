@@ -1,12 +1,6 @@
-export async function GET(request: Request) {
-    const valid_endpoints = [
-        "differences",
-        "factors",
-        "PythagoreanTree",
-        "PythagoreanTriple",
-        "primes",
-        "randomPrimes",
-        "isPrime",
-    ];
-    return Response.json({ error: "invalid endpoint /, existing endpoints " + valid_endpoints.join(", ")}, {status: 404});
-  }
+// Public endpoints. The admin ones, mersenne and report, need the KEY.
+const ENDPOINTS = ["differences", "factors", "isPrime", "primes", "pythagoreanTree", "pythagoreanTriple", "randomPrimes"]
+
+export async function GET() {
+    return Response.json({ error: "invalid endpoint /, existing endpoints " + ENDPOINTS.join(", ") }, { status: 404 })
+}

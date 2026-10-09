@@ -1,7 +1,7 @@
-import { MAX_DIGITS_PRIMALITY_TEST } from '@/Constants'
-import { badRequest, errorResponse, methodNotAllowed, parseBigInt, parseJsonBody } from '@/helpers/http';
-import getTimeMicro from '@/helpers/getTimeMicro'
-import isProbablePrime from '@/helpers/isProbablePrime'
+import { MAX_DIGITS_PRIMALITY_TEST } from '@/constants'
+import { badRequest, errorResponse, jsonResponse, methodNotAllowed, parseBigInt, parseJsonBody } from '@/server/http';
+import getTimeMicro from '@/utils/getTimeMicro'
+import isProbablePrime from '@/math/isProbablePrime'
 
 export async function GET(request: Request) {
   return methodNotAllowed("POST")
@@ -20,13 +20,9 @@ export async function POST(request: Request) {
       throw badRequest("Invalid number length = " + number + ", max allowed is " + MAX_DIGITS_PRIMALITY_TEST)
     }
 
-    (BigInt.prototype as any).toJSON = function() {
-      return this.toString()
-    }
-
     const isPrime = isProbablePrime(number)
 
-    return Response.json( {isPrime, number, time: getTimeMicro() - start} )
+    return jsonResponse( {isPrime, number, time: getTimeMicro() - start} )
   } catch (error) {
     return errorResponse(error);
   }

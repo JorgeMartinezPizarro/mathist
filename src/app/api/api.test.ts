@@ -1,10 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { MAX_DIGITS_TRIPLE } from '@/Constants'
+import { MAX_DIGITS_TRIPLE } from '@/constants'
 import { GET as index } from '@/app/api/route'
-import { GET as debug } from '@/app/api/debug/route'
 import { GET as mersenne } from '@/app/api/mersenne/route'
-import { GET as sieve } from '@/app/api/sieve/route'
-import { GET as testReport } from '@/app/api/test/route'
+import { GET as report } from '@/app/api/report/route'
 import { GET as differences } from '@/app/api/differences/route'
 import { GET as primes } from '@/app/api/primes/route'
 import { GET as factors } from '@/app/api/factors/route'
@@ -39,8 +37,8 @@ afterEach(() => {
 })
 
 describe('admin endpoints', () => {
-  // Only the forbidden paths: with the right KEY sieve and test run for minutes.
-  it.each([['debug', debug], ['mersenne', mersenne], ['sieve', sieve], ['test', testReport]])(
+  // Only the forbidden paths: with the right KEY the report runs for minutes.
+  it.each([['mersenne', mersenne], ['report', report]])(
     '/api/%s answers 403 without the right KEY',
     async (name, GET) => {
       for (const query of ['', '?KEY=', '?KEY=wrong']) {
@@ -52,17 +50,16 @@ describe('admin endpoints', () => {
 
   it('a blank MATHER_SECRET disables admin access instead of matching an empty KEY', async () => {
     vi.stubEnv('MATHER_SECRET', '  ')
-    await expectError(await debug(get('/api/debug?KEY=')), 403, 'Forbidden')
-    await expectError(await debug(get('/api/debug')), 403, 'Forbidden')
+    await expectError(await report(get('/api/report?KEY=')), 403, 'Forbidden')
+    await expectError(await report(get('/api/report')), 403, 'Forbidden')
   })
 
   it('with the right KEY a missing MATHER_COMPUTE_HOST is a 500', async () => {
-    await expectError(await debug(get(`/api/debug?KEY=${SECRET}`)), 500, 'MATHER_COMPUTE_HOST is not set')
     await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&maxPrime=10`)), 500, 'MATHER_COMPUTE_HOST is not set')
   })
 
-  it('test rejects a short other than 0 or 1 before running anything', async () => {
-    await expectError(await testReport(get(`/api/test?KEY=${SECRET}&short=2`)), 400, 'Invalid short = 2, use 0 or 1')
+  it('report rejects a short other than 0 or 1 before running anything', async () => {
+    await expectError(await report(get(`/api/report?KEY=${SECRET}&short=2`)), 400, 'Invalid short = 2, use 0 or 1')
   })
 
   it('mersenne rejects an unknown mode with 400', async () => {
@@ -72,7 +69,7 @@ describe('admin endpoints', () => {
 
 describe('public endpoints', () => {
   it('/api answers 404 listing the endpoints', async () => {
-    await expectError(await index(get('/api')), 404, 'existing endpoints')
+    await expectError(await index(), 404, 'pythagoreanTree')
   })
 
   it('differences: over the GUI limit is a 400 unless the KEY is given', async () => {

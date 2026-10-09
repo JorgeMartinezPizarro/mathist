@@ -1,6 +1,6 @@
-import { MAX_DIGITS_TRIPLE } from '@/Constants';
-import { badRequest, errorResponse, methodNotAllowed, parseJsonBody } from '@/helpers/http';
-import PythagoreanTriple from '@/helpers/pythagoreanTriple'
+import { MAX_DIGITS_TRIPLE } from '@/constants';
+import { badRequest, errorResponse, jsonResponse, methodNotAllowed, parseJsonBody } from '@/server/http';
+import PythagoreanTriple from '@/math/pythagoreanTriple'
 
 export async function GET(request: Request) {
   return methodNotAllowed("POST")
@@ -28,11 +28,7 @@ export async function POST(request: Request) {
       throw badRequest("Max path length is " + MAX_DIGITS_TRIPLE + ", " + LIMIT.length + " provided")
     }
 
-    (BigInt.prototype as any).toJSON = function() {
-      return this.toString()
-    }
-    
-    return Response.json(PythagoreanTriple(LIMIT))
+    return jsonResponse(PythagoreanTriple(LIMIT))
   
   } catch (error) {
     return errorResponse(error);

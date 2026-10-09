@@ -1,6 +1,6 @@
-import { MAX_DIGITS_RANDOM_PRIMES } from '@/Constants'
-import { badRequest, errorResponse } from '@/helpers/http';
-import randomPrimes from '@/helpers/randomPrimes'
+import { MAX_DIGITS_RANDOM_PRIMES } from '@/constants'
+import { badRequest, errorResponse, jsonResponse } from '@/server/http';
+import randomPrimes from '@/math/randomPrimes'
 
 export async function GET(request: Request) {
   
@@ -17,11 +17,7 @@ export async function GET(request: Request) {
       throw badRequest("Invalid parameters length = " + LIMIT + ", amount = " + amount + " the max total of DIGITS is " + MAX_DIGITS_RANDOM_PRIMES)
     }
 
-    (BigInt.prototype as any).toJSON = function() {
-      return this.toString()
-    }
-
-    return Response.json( randomPrimes(LIMIT, amount) )
+    return jsonResponse( randomPrimes(LIMIT, amount) )
   } catch (error) {
     return errorResponse(error);
   }

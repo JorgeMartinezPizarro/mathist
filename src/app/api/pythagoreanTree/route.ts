@@ -1,6 +1,6 @@
-import { MAX_LENGTH_TREE } from '@/Constants';
-import { badRequest, errorResponse, parseBigInt } from '@/helpers/http';
-import PythagoreanTree from '@/helpers/pythagoreanTree'
+import { MAX_LENGTH_TREE } from '@/constants';
+import { badRequest, errorResponse, jsonResponse, parseBigInt } from '@/server/http';
+import PythagoreanTree from '@/math/pythagoreanTree'
 
 export async function GET(request: Request) {
   
@@ -9,15 +9,11 @@ export async function GET(request: Request) {
     const limit: string = searchParams.get('LIMIT') || "";
     const LIMIT = parseBigInt(limit, "LIMIT");
 
-    (BigInt.prototype as any).toJSON = function() {
-      return this.toString()
-    }
-
     if (LIMIT > MAX_LENGTH_TREE) {
       throw badRequest("Max length of Pythagorean tree is " + MAX_LENGTH_TREE + ", " + LIMIT + " provided.")
     }
 
-    return Response.json( PythagoreanTree(LIMIT) )
+    return jsonResponse( PythagoreanTree(LIMIT) )
   } catch (error) {
     return errorResponse(error);
   }

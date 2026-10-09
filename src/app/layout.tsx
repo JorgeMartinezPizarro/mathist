@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 
-import Nav from "@/app/Nav";
+import Nav from "@/components/Nav";
 import "./globals.css";
 
 // Self hosted by next/font, exposed as CSS variables for globals.css

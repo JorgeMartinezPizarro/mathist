@@ -1,14 +1,10 @@
-import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH } from '@/Constants'
-import eratosthenes, { lastTenEratosthenes } from '@/helpers/eratosthenes'
-import { badRequest, errorResponse, parseBigInt } from '@/helpers/http'
-import { isAdmin } from '@/helpers/auth'
-import toHuman from '@/helpers/toHuman'
+import { MAX_SUPPORTED_SIEVE_LENGTH, MAX_DISPLAY_SIEVE, MAX_HEALTHY_SIEVE_LENGTH } from '@/constants'
+import eratosthenes, { lastTenEratosthenes } from '@/math/eratosthenes'
+import { badRequest, errorResponse, jsonResponse, parseBigInt } from '@/server/http'
+import { isAdmin } from '@/server/auth'
+import toHuman from '@/utils/toHuman'
 
 export async function GET(request: Request): Promise<Response> {
-
-  (BigInt.prototype as any).toJSON = function() {
-    return this.toString()
-  }
 
   try {
 
@@ -24,7 +20,7 @@ export async function GET(request: Request): Promise<Response> {
       throw badRequest("Invalid parameters amount = " + amount + ", LIMIT = " + LIMIT)
     };
     if (!admin && !excel && LIMIT_BI > MAX_HEALTHY_SIEVE_LENGTH) {
-      return Response.json( lastTenEratosthenes(LIMIT_BI) )
+      return jsonResponse( lastTenEratosthenes(LIMIT_BI) )
     }
     if (!admin && LIMIT > MAX_HEALTHY_SIEVE_LENGTH) {
       // 500m up to 30MB RAM 245MB disk, natural limit for the web, it takes 3s to compute.
@@ -36,7 +32,7 @@ export async function GET(request: Request): Promise<Response> {
       throw badRequest("Max length is " + MAX_SUPPORTED_SIEVE_LENGTH + ", which takes " + toHuman(MAX_SUPPORTED_SIEVE_LENGTH / 16) + " RAM and 452GB disk.")
     }
 
-    return Response.json( eratosthenes(LIMIT, amount, excel) )
+    return jsonResponse( eratosthenes(LIMIT, amount, excel) )
   } catch (error) {
     return errorResponse(error);
   }

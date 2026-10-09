@@ -2,18 +2,17 @@
 // Understand demonstration: https://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test#Proof_of_correctness
 // Investigate GPU usage: https://github.com/preda/gpuowl
 // http://www.polprimos.com/
-import os from 'node:os' 
-import fs from 'fs' 
 import fetch from 'node-fetch';
 import _ from "lodash"
 
-import { badRequest, errorResponse, HttpError } from '@/helpers/http'
-import { requireAdmin } from '@/helpers/auth'
-import getTimeMicro from '@/helpers/getTimeMicro'
-import duration from '@/helpers/duration';
-import eratosthenes from '@/helpers/eratosthenes';
-import computeServer from '@/helpers/computeServer';
-import { KNOWN_MERSENNE_PRIMES, MERSENNE_TABLE } from '@/Constants';
+import { badRequest, errorResponse, HttpError, jsonResponse } from '@/server/http'
+import { requireAdmin } from '@/server/auth'
+import writeReport from '@/server/report'
+import getTimeMicro from '@/utils/getTimeMicro'
+import duration from '@/utils/duration';
+import eratosthenes from '@/math/eratosthenes';
+import computeServer from '@/server/computeServer';
+import { KNOWN_MERSENNE_PRIMES, MERSENNE_TABLE } from '@/constants';
 
 export interface MersennePrime {
   p: number;
@@ -34,10 +33,6 @@ export interface MersenneReport {
 export async function GET(request: Request): Promise<Response> {
 
   const start = getTimeMicro();
-  
-  (BigInt.prototype as any).toJSON = function() {
-    return this.toString()
-  }
 
   try {
     
@@ -54,7 +49,7 @@ export async function GET(request: Request): Promise<Response> {
     
     requireAdmin(request)
 
-    let filename = `/files/debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V3.html`
+    const filename = `debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V3.html`
 
     let languages;
     let numbers;
@@ -72,26 +67,13 @@ export async function GET(request: Request): Promise<Response> {
 
     const strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
 
-    const filepath = "./public" + filename
-
-    const stringArray = [
-      "<h3 style='text-align: center;'>Debug report of math.ideniox.com</h3>",
-      "<p style='text-align: center;'><b>" + os.cpus()[0].model + " " + (os.cpus()[0].speed/1000) + "GHz , " + os.cpus().length + " cores, " + process.arch + "</b></p>",
-      "<hr/>",
+    const path = writeReport(filename, "Debug report", [
       ...strings,
-      "</hr>",
       "<p style='text-align: center;'>It took " + duration(getTimeMicro() - start) + " to generate the report</p>",
       "<hr/>",
-    ]
-    
-    fs.writeFileSync(filepath, '<!DOCTYPE html><html><head><style>hr {height: 1px;background-color: #1976d2!important;border: none;margin: 16px!important;} b, th, h3 {color: #1976d2;}</style><meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8" /><meta http-equiv="content-type" content="application/json; charset=utf-8" /></head><body>', 'utf8')
-    stringArray.forEach(string => 
-      fs.appendFileSync(filepath, string, 'utf8')
-    );
-    
-    fs.appendFileSync(filepath, "</body></html>", 'utf8')
+    ])
 
-    return Response.json({message: "Report generated under " + filename, time: getTimeMicro() - start})
+    return jsonResponse({message: "Report generated under " + path, time: getTimeMicro() - start})
 
   } catch (error) {
 	console.log(error);

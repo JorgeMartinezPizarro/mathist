@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SECTIONS } from "@/app/sections";
+import { SECTIONS } from "@/sections";
 
 export default function NotFound() {
   return <>

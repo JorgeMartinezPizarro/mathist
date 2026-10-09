@@ -1,6 +1,6 @@
 'use client' // Error components must be Client Components
 
-import ErrorAlert from "@/widgets/ErrorAlert";
+import ErrorAlert from "@/components/ui/ErrorAlert";
 
 export default function Error({
   error,
