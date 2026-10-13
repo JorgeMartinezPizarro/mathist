@@ -62,7 +62,7 @@ Running in production will fail the `sieve` to `DOWNLOAD`, since `public/files` 
 
 ### Mersenne primes with the lucas-lehmer-server
 
-`/api/mersenne` sends the Lucas-Lehmer tests to the C and Go servers of [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server), always on `127.0.0.1`, at the ports set in `MERSENNE_PORT_C` and `MERSENNE_PORT_GO`. `npm run dev` and `local.env` already point to its default ports, 5004 and 5002. To use it locally, start the servers in that repository with `make start`, then run `npm run dev` here and:
+`/api/mersenne` sends the Lucas-Lehmer tests to the C and Go servers of [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server), at the host and port set in `MERSENNE_HOST_C` and `MERSENNE_PORT_C`, and `MERSENNE_HOST_GO` and `MERSENNE_PORT_GO`. The host defaults to `127.0.0.1`, and `npm run dev` and `local.env` already point to the default ports of the servers, 5004 and 5002. To use it locally, start the servers in that repository with `make start`, then run `npm run dev` here and:
 
 ```
 curl "http://localhost:3011/api/mersenne?KEY=$MATHER_SECRET&lang=all&maxPrime=1000"
@@ -140,15 +140,25 @@ services:
   mather:
     image: YOUR_DOCKERHUB_USER/YOUR_IMAGE:latest
     restart: always
-    # Host network: localhost inside the container is the server, so it reaches
-    # the lucas-lehmer-server ports bound to 127.0.0.1. It listens on 3000 directly.
-    network_mode: host
+    ports:
+      - 3000:3000
     environment:
       - MATHER_SECRET=YOUR_SECRET
-      - MERSENNE_PORT_C=5004
-      - MERSENNE_PORT_GO=5002
+      # The lucas-lehmer-server below, by service name and container port
+      - MERSENNE_HOST_C=llt-c
+      - MERSENNE_PORT_C=8000
+      - MERSENNE_HOST_GO=llt-go
+      - MERSENNE_PORT_GO=8080
     volumes:
       - /VOLUMES_PATH:/app/public/files
+
+  llt-c:
+    image: jorgemartinezpizarro/lucas-lehmer-server:c
+    restart: always
+
+  llt-go:
+    image: jorgemartinezpizarro/lucas-lehmer-server:go
+    restart: always
 ```
 
 and the `/etc/nginx/sites-available/default` nginx config file:
@@ -170,6 +180,6 @@ server {
 }
 ```
 
-For this to work you need to set up a valid value for `YOUR_DOMAIN`, `VOLUMES_PATH` and `YOUR_DOCKERHUB_USER/YOUR_IMAGE`. `MATHER_SECRET` is the `KEY` that unlocks the admin endpoints and the GUI limits. `MERSENNE_PORT_C` and `MERSENNE_PORT_GO` are the ports of the C and Go [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server), see above. Since they are reached on `127.0.0.1`, the servers can be published on localhost only, for example `127.0.0.1:5004:8000`. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
+For this to work you need to set up a valid value for `YOUR_DOMAIN`, `VOLUMES_PATH` and `YOUR_DOCKERHUB_USER/YOUR_IMAGE`. `MATHER_SECRET` is the `KEY` that unlocks the admin endpoints and the GUI limits. The `MERSENNE_HOST_*` and `MERSENNE_PORT_*` variables point to the C and Go [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server), see above. Inside the compose network the host is the service name and the port the one of the container, so those servers do not need to publish any port. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
 
 To start the containers use `docker compose up -d`.

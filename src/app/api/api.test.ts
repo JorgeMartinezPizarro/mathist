@@ -26,6 +26,8 @@ const expectError = async (res: Response, status: number, message: string) => {
 
 beforeEach(() => {
   vi.stubEnv('MATHER_SECRET', SECRET)
+  vi.stubEnv('MERSENNE_HOST_C', '')
+  vi.stubEnv('MERSENNE_HOST_GO', '')
   vi.stubEnv('MERSENNE_PORT_C', '')
   vi.stubEnv('MERSENNE_PORT_GO', '')
   // Routes log the errors they answer with, and the sieves print their progress
@@ -64,11 +66,22 @@ describe('admin endpoints', () => {
     await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&lang=c`)), 500, 'MERSENNE_PORT_C = 99999 is not a valid port')
   })
 
-  it('mersenne servers are reached on localhost only, each language on its port', () => {
+  it('mersenne servers default to 127.0.0.1, each language on its port', () => {
     vi.stubEnv('MERSENNE_PORT_C', '5004')
     vi.stubEnv('MERSENNE_PORT_GO', ' 5002 ')
     expect(mersenneServer('c')).toBe('http://127.0.0.1:5004')
     expect(mersenneServer('go')).toBe('http://127.0.0.1:5002')
+  })
+
+  it('mersenne servers take their host from the env, like compose service names', () => {
+    vi.stubEnv('MERSENNE_HOST_C', 'llt-c')
+    vi.stubEnv('MERSENNE_PORT_C', '8000')
+    vi.stubEnv('MERSENNE_HOST_GO', 'llt-go')
+    vi.stubEnv('MERSENNE_PORT_GO', '8080')
+    expect(mersenneServer('c')).toBe('http://llt-c:8000')
+    expect(mersenneServer('go')).toBe('http://llt-go:8080')
+    vi.stubEnv('MERSENNE_HOST_GO', 'evil.com/x?')
+    expect(() => mersenneServer('go')).toThrow('MERSENNE_HOST_GO = evil.com/x? is not a valid host')
   })
 
   it('mersenne rejects an unknown lang with 400', async () => {
