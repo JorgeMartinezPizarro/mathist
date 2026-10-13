@@ -84,7 +84,7 @@ export async function GET(request: Request): Promise<Response> {
 
 // Both servers answer the same API, they only differ in how many primes go in each request
 const BENCHMARKS: Record<MersenneLanguage, { label: string, batchSize: (numberOfThreads: number) => number }> = {
-  c: { label: "c++", batchSize: () => 500 },
+  c: { label: "c", batchSize: () => 500 },
   go: { label: "go", batchSize: numberOfThreads => numberOfThreads * 16 },
 }
 
