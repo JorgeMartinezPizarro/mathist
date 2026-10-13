@@ -6,7 +6,7 @@
     "node": ">=22.12"
   },
   "scripts": {
-    "dev": "cross-env MATHER_SECRET=77777 MATHER_COMPUTE_HOST=localhost PORT=3011 next dev",
+    "dev": "cross-env MATHER_SECRET=77777 MERSENNE_PORT_C=5004 MERSENNE_PORT_GO=5002 PORT=3011 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

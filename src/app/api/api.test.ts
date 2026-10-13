@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MAX_DIGITS_TRIPLE } from '@/constants'
 import { GET as index } from '@/app/api/route'
 import { GET as mersenne } from '@/app/api/mersenne/route'
+import mersenneServer from '@/server/mersenneServer'
 import { GET as report } from '@/app/api/report/route'
 import { GET as differences } from '@/app/api/differences/route'
 import { GET as primes } from '@/app/api/primes/route'
@@ -25,7 +26,8 @@ const expectError = async (res: Response, status: number, message: string) => {
 
 beforeEach(() => {
   vi.stubEnv('MATHER_SECRET', SECRET)
-  vi.stubEnv('MATHER_COMPUTE_HOST', '')
+  vi.stubEnv('MERSENNE_PORT_C', '')
+  vi.stubEnv('MERSENNE_PORT_GO', '')
   // Routes log the errors they answer with, and the sieves print their progress
   vi.spyOn(console, 'log').mockImplementation(() => {})
   vi.spyOn(process.stdout, 'write').mockImplementation(() => true)
@@ -54,8 +56,24 @@ describe('admin endpoints', () => {
     await expectError(await report(get('/api/report')), 403, 'Forbidden')
   })
 
-  it('with the right KEY a missing MATHER_COMPUTE_HOST is a 500', async () => {
-    await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&maxPrime=10`)), 500, 'MATHER_COMPUTE_HOST is not set')
+  it('mersenne answers 500 when the port of a requested language is missing or invalid', async () => {
+    await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&maxPrime=10`)), 500, 'MERSENNE_PORT_GO is not set')
+    vi.stubEnv('MERSENNE_PORT_GO', '5002')
+    await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&lang=all`)), 500, 'MERSENNE_PORT_C is not set')
+    vi.stubEnv('MERSENNE_PORT_C', '99999')
+    await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&lang=c`)), 500, 'MERSENNE_PORT_C = 99999 is not a valid port')
+  })
+
+  it('mersenne servers are reached on localhost only, each language on its port', () => {
+    vi.stubEnv('MERSENNE_PORT_C', '5004')
+    vi.stubEnv('MERSENNE_PORT_GO', ' 5002 ')
+    expect(mersenneServer('c')).toBe('http://127.0.0.1:5004')
+    expect(mersenneServer('go')).toBe('http://127.0.0.1:5002')
+  })
+
+  it('mersenne rejects an unknown lang with 400', async () => {
+    await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&lang=rust`)), 400, 'Unknown lang rust, use c, go or all')
+    await expectError(await mersenne(get(`/api/mersenne?KEY=${SECRET}&lang=toString`)), 400, 'Unknown lang toString')
   })
 
   it('report rejects a short other than 0 or 1 before running anything', async () => {

@@ -60,6 +60,16 @@ Open [localhost:3000](http://localhost:3000) with your browser to see the result
 
 Running in production will fail the `sieve` to `DOWNLOAD`, since `public/files` generated on the fly are not accessible, so we need a webserver serving the `public/files` directory.
 
+### Mersenne primes with the lucas-lehmer-server
+
+`/api/mersenne` sends the Lucas-Lehmer tests to the C and Go servers of [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server), always on `127.0.0.1`, at the ports set in `MERSENNE_PORT_C` and `MERSENNE_PORT_GO`. `npm run dev` and `local.env` already point to its default ports, 5004 and 5002. To use it locally, start the servers in that repository with `make start`, then run `npm run dev` here and:
+
+```
+curl "http://localhost:3011/api/mersenne?KEY=$MATHER_SECRET&lang=all&maxPrime=1000"
+```
+
+`lang` picks the servers: `c`, `go` (default) or `all`, which runs both and checks that they agree. The report is written under `public/files/`.
+
 ## Code structure
 
 ```
@@ -130,11 +140,13 @@ services:
   mather:
     image: YOUR_DOCKERHUB_USER/YOUR_IMAGE:latest
     restart: always
-    ports:
-      - 3000:3000
+    # Host network: localhost inside the container is the server, so it reaches
+    # the lucas-lehmer-server ports bound to 127.0.0.1. It listens on 3000 directly.
+    network_mode: host
     environment:
       - MATHER_SECRET=YOUR_SECRET
-      - MATHER_COMPUTE_HOST=YOUR_COMPUTE_HOST
+      - MERSENNE_PORT_C=5004
+      - MERSENNE_PORT_GO=5002
     volumes:
       - /VOLUMES_PATH:/app/public/files
 ```
@@ -158,6 +170,6 @@ server {
 }
 ```
 
-For this to work you need to set up a valid value for `YOUR_DOMAIN`, `VOLUMES_PATH` and `YOUR_DOCKERHUB_USER/YOUR_IMAGE`. `MATHER_SECRET` is the `KEY` that unlocks the admin endpoints and the GUI limits, and `MATHER_COMPUTE_HOST` is the host running the [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server) used by `/api/mersenne`. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
+For this to work you need to set up a valid value for `YOUR_DOMAIN`, `VOLUMES_PATH` and `YOUR_DOCKERHUB_USER/YOUR_IMAGE`. `MATHER_SECRET` is the `KEY` that unlocks the admin endpoints and the GUI limits. `MERSENNE_PORT_C` and `MERSENNE_PORT_GO` are the ports of the C and Go [lucas-lehmer-server](https://github.com/JorgeMartinezPizarro/lucas-lehmer-server), see above. Since they are reached on `127.0.0.1`, the servers can be published on localhost only, for example `127.0.0.1:5004:8000`. If you plan to host the site on your own, I recommend to use a load balancer with several instances running, since javascript works in single thread.
 
 To start the containers use `docker compose up -d`.

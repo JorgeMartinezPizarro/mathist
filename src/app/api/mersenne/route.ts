@@ -11,7 +11,7 @@ import writeReport from '@/server/report'
 import getTimeMicro from '@/utils/getTimeMicro'
 import duration from '@/utils/duration';
 import eratosthenes from '@/math/eratosthenes';
-import computeServer from '@/server/computeServer';
+import mersenneServer, { isMersenneLanguage, MERSENNE_LANGUAGES, MersenneLanguage } from '@/server/mersenneServer';
 import { KNOWN_MERSENNE_PRIMES, MERSENNE_TABLE } from '@/constants';
 
 export interface MersennePrime {
@@ -46,26 +46,27 @@ export async function GET(request: Request): Promise<Response> {
     const numberOfThreads: number = parseInt(searchParams.get('numberOfThreads') || "16");
     const language: string = searchParams.get("lang") || "go"
     const mode = searchParams.get("mode") || "mersenne";
-    
+
     requireAdmin(request)
+
+    if (mode !== "mersenne" && mode !== "mersenne-check") {
+      throw badRequest("Unknown mode " + mode);
+    }
+    if (language !== "all" && !isMersenneLanguage(language)) {
+      throw badRequest("Unknown lang " + language + ", use c, go or all");
+    }
 
     const filename = `debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V3.html`
 
-    let languages;
-    let numbers;
+    // Before computing anything, so a missing port fails fast
+    const languages = language === "all" ? MERSENNE_LANGUAGES : [language]
+    const servers = languages.map(l => [l, mersenneServer(l)] as const)
 
-    if (mode === "mersenne") {
-      languages = language === "all" ? ["c", "go"] : [language]
-      numbers = eratosthenes(LIMIT, LIMIT).primes.map(p=>Number(p))
-      
-    } else if (mode === "mersenne-check") {
-      languages = language === "all" ? ["c", "go"] : [language]
-      numbers = KNOWN_MERSENNE_PRIMES.slice(0, LIMIT)
-    } else {
-      throw badRequest("Unknown mode " + mode);
-    }
+    const numbers = mode === "mersenne"
+      ? eratosthenes(LIMIT, LIMIT).primes.map(p=>Number(p))
+      : KNOWN_MERSENNE_PRIMES.slice(0, LIMIT)
 
-    const strings = await mersennePrimesBenchmark(numbers, numberOfThreads, languages)
+    const strings = await mersennePrimesBenchmark(numbers, numberOfThreads, servers)
 
     const path = writeReport(filename, "Debug report", [
       ...strings,
@@ -81,27 +82,25 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
-async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: number, languages: string[]): Promise<string[]> {
-    
+// Both servers answer the same API, they only differ in how many primes go in each request
+const BENCHMARKS: Record<MersenneLanguage, { label: string, batchSize: (numberOfThreads: number) => number }> = {
+  c: { label: "c++", batchSize: () => 500 },
+  go: { label: "go", batchSize: numberOfThreads => numberOfThreads * 16 },
+}
+
+async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: number, servers: (readonly [MersenneLanguage, string])[]): Promise<string[]> {
+
     let elapsed = getTimeMicro();
     const mersenneReport: MersenneReport[] = []
 
-    if (languages.includes("c")) {
-      const mersennePrimesC = (await (computeMersenneC(numbers, 500, numberOfThreads))).filter(p=>p.isPrime)
-      const timeForCLLTP = getTimeMicro() - elapsed
+    for (const [language, server] of servers) {
+      const { label, batchSize } = BENCHMARKS[language]
+      const mersennePrimes = await computeMersenne(label, server, numbers, batchSize(numberOfThreads), numberOfThreads)
       mersenneReport.push(
-        {language: "c++", maxPrime: numbers.slice(-1)[0], time: timeForCLLTP, mersennePrimes: mersennePrimesC}
+        {language: label, maxPrime: numbers.slice(-1)[0], time: getTimeMicro() - elapsed, mersennePrimes}
       )
       elapsed = getTimeMicro()
-    } 
-	if (languages.includes("go")) {
-      const mersennePrimesGo = (await (computeMersenneGo(numbers, numberOfThreads * 16, numberOfThreads))).filter(p=>p.isPrime)
-      const timeForGoLLTP = getTimeMicro() - elapsed
-      mersenneReport.push(
-        {language: "go", maxPrime: numbers.slice(-1)[0], time: timeForGoLLTP, mersennePrimes: mersennePrimesGo}
-      )
-      elapsed = getTimeMicro()
-    } 
+    }
     
     for (var i = 0; i<mersenneReport.length - 1; i++) {
       if (!_.isEqual(mersenneReport[i].mersennePrimes, mersenneReport[i+1].mersennePrimes)) {
@@ -151,24 +150,24 @@ async function mersennePrimesBenchmark(numbers: number[], numberOfThreads: numbe
 }
 
 ///////////////////////////////////////////////////////////
-// Use GO for the computation!
+// POST /lucas-lehmer-test, the same in the C and Go servers
 ///////////////////////////////////////////////////////////
-async function computeMersenneGo(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
-  
+async function computeMersenne(label: string, server: string, primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
+
   const mersennePrimes: MersennePrime[] = new Array();
-  
+
   for (let i = 0; i < primesArray.length; i += batchSize) {
       const batch = primesArray.slice(i, i + batchSize);
-      const response = await computeLLTPGo(batch, numThreads);
+      const response = await lucasLehmerTest(label, server, batch, numThreads);
       mersennePrimes.push(...response)
   }
-  
+
   return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
 }
 
-async function computeLLTPGo(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
-  
-  const url = computeServer(5002) + "/lltp";
+async function lucasLehmerTest(label: string, server: string, primes: number[], numThreads: number): Promise<MersennePrime[]>  {
+
+  const url = server + "/lucas-lehmer-test";
 
   const options = {
     method: "POST",
@@ -176,7 +175,7 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
       "content-type": "application/json",
     },
     body: JSON.stringify({
-        numbers: primes.join(","),
+        numbers: primes,
         num_threads: numThreads,
     }),
     timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
@@ -187,56 +186,10 @@ async function computeLLTPGo(primes: number[], numThreads: number): Promise<Mers
   const response = await fetch(url, options)
 
   if (!response.ok) {
-    throw new HttpError(502, `Go server error! Status: ${response.status} ${await response.text()}`);
+    throw new HttpError(502, `${label} server error! Status: ${response.status} ${await response.text()}`);
   }
 
-  const x: any = (await response.json())
+  const { results } = await response.json() as { results: { p: number, is_prime: boolean }[] }
 
-  return x.filter((p: MersennePrime) => p.isPrime).map((mp: any) => {return {isPrime: mp.isPrime, p: Number(mp.p)}})
-}
-/////////////////////////////////////////////
-// USE C 
-///////////////////////////////////////////////
-async function computeMersenneC(primesArray: number[], batchSize: number, numThreads: number): Promise<MersennePrime[]> {
-  
-  const mersennePrimes: MersennePrime[] = new Array();
-  
-  for (let i = 0; i < primesArray.length; i += batchSize) {
-      const batch = primesArray.slice(i, i + batchSize);
-      const response = await computeLLTPC(batch, numThreads);
-      mersennePrimes.push(...response)
-  }
-  
-  return mersennePrimes.sort((mp1, mp2) => mp1.p - mp2.p)
-}
-
-async function computeLLTPC(primes: number[], numThreads: number): Promise<MersennePrime[]>  {
-  
-  const url = computeServer(5004) + "/lucas-lehmer";
-
-  const options = {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-        numbers: primes.map(p => p),
-		num_threads: numThreads,
-    }),
-    timeout: 86400 * 1000 * 30, // A month. No timeouts wanted.
-  }
-
-  console.log("Requesting", url, options)
-
-  const response = await fetch(url, options)
-
-  if (!response.ok) {
-    throw new HttpError(502, `C server error! Status: ${response.status} ${await response.text()}`);
-  }
-
-  const x: any = (await response.json())
-  
-  const y = x.results.filter((r: any) => r.is_prime).map((r: any) => ({p: r.p, isPrime: true}))
-
-  return y
+  return results.filter(r => r.is_prime).map(r => ({p: r.p, isPrime: true}))
 }
