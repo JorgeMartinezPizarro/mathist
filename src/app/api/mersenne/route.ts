@@ -30,6 +30,10 @@ export interface MersenneReport {
 
 //https://es.wikipedia.org/wiki/N%C3%BAmero_primo_de_Mersenne
 
+// Goes in the report file name. Bump it when the lucas-lehmer-server changes,
+// so the reports of the new servers do not overwrite the old ones.
+const REPORT_VERSION = "V4"
+
 export async function GET(request: Request): Promise<Response> {
 
   const start = getTimeMicro();
@@ -56,7 +60,7 @@ export async function GET(request: Request): Promise<Response> {
       throw badRequest("Unknown lang " + language + ", use c, go or all");
     }
 
-    const filename = `debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-V3.html`
+    const filename = `debug_${mode}_${numberOfThreads}_${language}_${LIMIT}-${REPORT_VERSION}.html`
 
     // Before computing anything, so a missing port fails fast
     const languages = language === "all" ? MERSENNE_LANGUAGES : [language]
