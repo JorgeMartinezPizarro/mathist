@@ -14,8 +14,6 @@ import NumberGrid from "@/components/ui/NumberGrid"
 import NumberToLocale from "@/components/ui/NumberToLocale"
 import NumberToString from "@/components/ui/NumberToString"
 
-const STORED_FILES = ["1m", "10m", "100m", "1b", "10b", "100b"]
-
 // Example shown before the first request
 const INITIAL_SIEVE: SieveReport = { primes: [2], length: 1, time: 1, isPartial: false, filename: "" }
 
@@ -53,13 +51,7 @@ const EratosthenesSieve = () => {
         </div>
         <div className="intro">
             <p>Eratosthenes sieve of a given length up to 10 quadrillion. Over 100 million we use segmented sieve.</p>
-            <p>Used to generate prime lists up to 1 trillion (up to 1t there are 450GB of primes, so I will omit that link). Below the prime files generated:</p>
-            <p>
-                {STORED_FILES.map((size, index) => <span key={size}>
-                    {index > 0 && ", "}
-                    <a href={"https://math.ideniox.com/stored/primes-to-" + size + ".csv"} download={"primes-to-" + size + ".csv"}>primes-to-{size}.csv</a>
-                </span>)}
-            </p>
+            <p>For advanced sieves, see <a href="https://github.com/jorgemartinezpizarro/eratostenes">eratostenes</a> on GitHub.</p>
         </div>
         <ActionForm onSubmit={generate} loading={loading}>
             <DigitsField
